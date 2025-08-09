@@ -19,6 +19,8 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
     SidebarComponent,
   ],
   templateUrl: './app.component.html',
+
+  styleUrl: './app.component.css',
 })
 export class AppComponent implements OnInit {
   title = 'ERP System';

@@ -3,77 +3,7 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between h-16">
       <div class="flex items-center">
-        <h1 class="text-xl font-bold">{{ title }}</h1>
-      </div>
-      
-      
-      <div class="hidden md:flex items-center space-x-8">
-        <a routerLink="/dashboard" routerLinkActive="text-indigo-200" class="hover:text-indigo-200 px-3 py-2 rounded-md">
-          Dashboard
-        </a>
-
-        <a routerLink="/attendance" routerLinkActive="text-indigo-200" class="hover:text-indigo-200 px-3 py-2 rounded-md">
-          Attendance
-        </a>
-
-        <a routerLink="/employees" routerLinkActive="text-indigo-200" class="hover:text-indigo-200 px-3 py-2 rounded-md">
-          Employee Management
-        </a>
-        <a routerLink="/departments" routerLinkActive="text-indigo-200" class="hover:text-indigo-200 px-3 py-2 rounded-md">
-          Departments
-        </a>
-        <div class="relative group">
-          <button class="hover:text-indigo-200 px-3 py-2 rounded-md flex items-center">
-            Payroll
-            <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
-          </button>
-          <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-            <a routerLink="/payroll/employees" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Employee Management</a>
-            <a routerLink="/payroll/salary-calculation" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Salary Calculation</a>
-            <a routerLink="/payroll/payslips" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Payslips</a>
-          </div>
-        </div>
-        <div class="relative group">
-          <button class="hover:text-indigo-200 px-3 py-2 rounded-md flex items-center">
-            {{ currentUser?.firstName }} {{ currentUser?.lastName }}
-            <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
-          </button>
-          <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-            <a routerLink="/auth/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
-            <button (click)="logout()" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="md:hidden flex items-center">
-        <button (click)="toggleMenu()" class="text-white hover:text-indigo-200">
-          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-          </svg>
-        </button>
-      </div>
-    </div>
-
-    <div *ngIf="isMenuOpen" class="md:hidden">
-      <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-        <a routerLink="/dashboard" (click)="toggleMenu()" class="block px-3 py-2 rounded-md hover:bg-indigo-700">Dashboard</a>
-        <a routerLink="/payroll/employees" (click)="toggleMenu()" class="block px-3 py-2 rounded-md hover:bg-indigo-700">Employee Management</a>
-        <a routerLink="/payroll/salary-calculation" (click)="toggleMenu()" class="block px-3 py-2 rounded-md hover:bg-indigo-700">Salary Calculation</a>
-        <a routerLink="/payroll/payslips" (click)="toggleMenu()" class="block px-3 py-2 rounded-md hover:bg-indigo-700">Payslips</a>
-        <a routerLink="/auth/profile" (click)="toggleMenu()" class="block px-3 py-2 rounded-md hover:bg-indigo-700">Profile</a>
-        <button (click)="logout()" class="block w-full text-left px-3 py-2 rounded-md hover:bg-indigo-700">Logout</button>
-      </div>
-    </div>
-  </div>
-</nav>
-
-<div [class]="isAuthenticated() ? 'min-h-screen bg-gray-50' : ''">
-  <router-outlet></router-outlet>
-</div> -->
+        <h1 class="text-xl font-bold">{{ title }}</h1>-->
 
 <!-- Main Application Layout -->
 <!-- <div class="flex flex-col h-screen">
