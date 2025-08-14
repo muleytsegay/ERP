@@ -1,0 +1,17 @@
+<div [class]="cardClasses">
+  <!-- Card Header -->
+  <div *ngIf="title || subtitle" class="border-b border-gray-200 pb-4 mb-4">
+    <h3 *ngIf="title" class="text-lg font-semibold text-gray-900">{{ title }}</h3>
+    <p *ngIf="subtitle" class="text-sm text-gray-600 mt-1">{{ subtitle }}</p>
+  </div>
+
+  <!-- Card Body -->
+  <div class="card-body">
+    <ng-content></ng-content>
+  </div>
+
+  <!-- Card Footer -->
+  <div class="card-footer">
+    <ng-content select="[slot=footer]"></ng-content>
+  </div>
+</div>

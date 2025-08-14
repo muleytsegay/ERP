@@ -1,0 +1,13 @@
+<div class="relative inline-block">
+  <!-- Trigger Element -->
+  <div class="cursor-help">
+    <ng-content></ng-content>
+  </div>
+  
+  <!-- Tooltip -->
+  <div *ngIf="text && !disabled" [class]="tooltipClasses">
+    {{ text }}
+    <!-- Arrow -->
+    <div [class]="arrowClasses"></div>
+  </div>
+</div>

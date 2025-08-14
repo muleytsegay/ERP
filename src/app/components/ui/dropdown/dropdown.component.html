@@ -1,0 +1,58 @@
+<div class="relative inline-block text-left w-full">
+  <!-- Dropdown Button -->
+  <button
+    type="button"
+    (click)="toggle()"
+    [disabled]="disabled"
+    class="relative w-full bg-white border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+    [class.opacity-50]="disabled"
+    [class.cursor-not-allowed]="disabled">
+    
+    <span class="block truncate" [class.text-gray-500]="selectedOptions.length === 0">
+      {{ displayText }}
+    </span>
+    
+    <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+      <svg class="h-5 w-5 text-gray-400 transition-transform duration-200" 
+           [class.rotate-180]="isOpen"
+           fill="none" 
+           viewBox="0 0 24 24" 
+           stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+      </svg>
+    </span>
+  </button>
+
+  <!-- Dropdown Menu -->
+  <div *ngIf="isOpen" 
+       class="absolute z-50 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+    
+    <div *ngFor="let option of options; trackBy: trackByValue"
+         (click)="selectOption(option)"
+         class="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-indigo-50"
+         [class.text-gray-400]="option.disabled"
+         [class.cursor-not-allowed]="option.disabled"
+         [class.bg-indigo-100]="isSelected(option) && !option.disabled">
+      
+      <span class="block truncate" 
+            [class.font-semibold]="isSelected(option)"
+            [class.font-normal]="!isSelected(option)">
+        {{ option.label }}
+      </span>
+
+      <!-- Checkmark for selected option -->
+      <span *ngIf="isSelected(option)" 
+            class="absolute inset-y-0 right-0 flex items-center pr-4 text-indigo-600">
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+      </span>
+    </div>
+
+    <!-- No options message -->
+    <div *ngIf="options.length === 0" 
+         class="cursor-default select-none relative py-2 pl-3 pr-9 text-gray-500">
+      No options available
+    </div>
+  </div>
+</div>

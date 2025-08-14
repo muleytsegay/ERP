@@ -1,0 +1,27 @@
+<div *ngIf="visible" [ngClass]="{
+  'bg-green-50 border-green-200 text-green-800': type === 'success',
+  'bg-red-50 border-red-200 text-red-800': type === 'error',
+  'bg-blue-50 border-blue-200 text-blue-800': type === 'info',
+  'bg-yellow-50 border-yellow-200 text-yellow-800': type === 'warning'
+}" class="border border-l-4 px-4 py-3 rounded-md relative flex items-start space-x-3 animate-in slide-in-from-top-2 duration-300">
+  
+  <div class="flex-shrink-0">
+    <span class="inline-flex items-center justify-center w-5 h-5 text-sm font-bold">
+      {{ getIcon() }}
+    </span>
+  </div>
+  
+  <div class="flex-1 min-w-0">
+    <ng-content>
+      <span>{{ message }}</span>
+    </ng-content>
+  </div>
+  
+  <button 
+    *ngIf="dismissible" 
+    (click)="close()" 
+    class="flex-shrink-0 text-lg font-bold leading-none hover:opacity-70 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-current rounded transition-opacity"
+    aria-label="Close alert">
+    ×
+  </button>
+</div>

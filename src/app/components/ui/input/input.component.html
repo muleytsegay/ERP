@@ -1,0 +1,43 @@
+<div class="space-y-1">
+  <!-- Label -->
+  <label *ngIf="label" class="block text-sm font-medium text-gray-700">
+    {{ label }}
+    <span *ngIf="required" class="text-red-500 ml-1">*</span>
+  </label>
+
+  <!-- Input Container -->
+  <div [class]="containerClasses">
+    <!-- Left Icon -->
+    <div *ngIf="icon && iconPosition === 'left'" [class]="iconClasses">
+      <span [innerHTML]="icon"></span>
+    </div>
+
+    <!-- Input Field -->
+    <input
+      [type]="type"
+      [placeholder]="placeholder"
+      [disabled]="disabled"
+      [value]="value"
+      [required]="required"
+      [class]="inputClasses"
+      (input)="onInputChange($event)"
+      (blur)="onBlur($event)"
+      (focus)="onFocus($event)"
+    />
+
+    <!-- Right Icon -->
+    <div *ngIf="icon && iconPosition === 'right'" [class]="iconClasses">
+      <span [innerHTML]="icon"></span>
+    </div>
+  </div>
+
+  <!-- Helper Text -->
+  <p *ngIf="helperText && !error" class="text-sm text-gray-500">
+    {{ helperText }}
+  </p>
+
+  <!-- Error Message -->
+  <p *ngIf="error" class="text-sm text-red-600">
+    {{ error }}
+  </p>
+</div>
