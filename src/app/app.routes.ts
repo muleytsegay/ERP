@@ -6,7 +6,9 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 // import { EmployeeManagementComponent } from './components/payroll/employee-management/employee-management.component';
 // import { SalaryCalculationComponent } from './components/payroll/salary-calculation/salary-calculation.component';
 // import { PayslipComponent } from './components/payroll/payslip/payslip.component';
+
 import { DepartmentComponent } from './components/department/department.component';
+import { AttendanceComponent } from './components/attendance/attendance.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/auth/login', pathMatch: 'full' },
@@ -26,6 +28,9 @@ export const routes: Routes = [
 
   //Department Routes
   {path: 'departments', component: DepartmentComponent},
+
+  // Attendance Route
+  { path: 'attendance', component: AttendanceComponent },
 
   // Wildcard route
   { path: '**', redirectTo: '/auth/login' }

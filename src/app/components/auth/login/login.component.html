@@ -12,17 +12,17 @@
     <form class="mt-8 space-y-6" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <div class="rounded-md shadow-sm -space-y-px">
         <div>
-          <label for="username" class="sr-only">Username</label>
+          <label for="email" class="sr-only">Email</label>
           <input
-            id="username"
-            name="username"
+            id="email"
+            name="email"
             type="text"
-            formControlName="username"
+            formControlName="email"
             class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-            placeholder="Username"
+            placeholder="email"
           />
-          <div *ngIf="f['username'].invalid && f['username'].touched" class="text-red-600 text-sm mt-1">
-            Username is required
+          <div *ngIf="f['email'].invalid && f['email'].touched" class="text-red-600 text-sm mt-1">
+            email is required
           </div>
         </div>
         
