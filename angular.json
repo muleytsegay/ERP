@@ -62,11 +62,13 @@
               "buildTarget": "ERP:build:production"
             },
             "development": {
-              "buildTarget": "ERP:build:development"
+              "buildTarget": "ERP:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"
         },
+
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n"
         },

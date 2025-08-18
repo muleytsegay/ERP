@@ -2,10 +2,15 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, tap } from 'rxjs';
-import { User, LoginRequest, RegisterRequest, AuthResponse } from '../../features/auth/profile/models/user.model';
+import {
+  User,
+  LoginRequest,
+  RegisterRequest,
+  AuthResponse,
+} from '../../features/auth/profile/models/user.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   private apiUrl = 'http://localhost:5141/api/v1';
@@ -45,9 +50,10 @@ export class AuthService {
   }
 
   login(credentials: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, credentials)
+    return this.http
+      .post<AuthResponse>(`${this.apiUrl}/auth/login`, credentials)
       .pipe(
-        tap(response => {
+        tap((response) => {
           this.setStorageItem('token', response.token);
           this.setStorageItem('refreshToken', response.refreshToken);
           this.currentUserSubject.next(response.user);
@@ -56,9 +62,10 @@ export class AuthService {
   }
 
   register(userData: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, userData)
+    return this.http
+      .post<AuthResponse>(`${this.apiUrl}/auth/register`, userData)
       .pipe(
-        tap(response => {
+        tap((response) => {
           this.setStorageItem('token', response.token);
           this.setStorageItem('refreshToken', response.refreshToken);
           this.currentUserSubject.next(response.user);
@@ -73,23 +80,21 @@ export class AuthService {
   }
 
   getCurrentUser(): Observable<User> {
-    return this.http.get<User>(`${this.apiUrl}/auth/me`)
-      .pipe(
-        tap(user => this.currentUserSubject.next(user))
-      );
+    return this.http
+      .get<User>(`${this.apiUrl}/auth/me`)
+      .pipe(tap((user) => this.currentUserSubject.next(user)));
   }
 
   updateProfile(userData: Partial<User>): Observable<User> {
-    return this.http.put<User>(`${this.apiUrl}/auth/profile`, userData)
-      .pipe(
-        tap(user => this.currentUserSubject.next(user))
-      );
+    return this.http
+      .put<User>(`${this.apiUrl}/auth/profile`, userData)
+      .pipe(tap((user) => this.currentUserSubject.next(user)));
   }
 
   changePassword(oldPassword: string, newPassword: string): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/auth/change-password`, {
       oldPassword,
-      newPassword
+      newPassword,
     });
   }
 
