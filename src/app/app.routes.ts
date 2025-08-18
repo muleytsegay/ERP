@@ -9,28 +9,34 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 
 import { DepartmentComponent } from './components/department/department.component';
 import { AttendanceComponent } from './components/attendance/attendance.component';
+import { EmployeeComponent } from './components/employee/employee.component';
+import { AuthGuard } from './shared/guards/auth.guard';
+import { LoginRedirectGuard } from './shared/guards/login-redirect.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/auth/login', pathMatch: 'full' },
   
   // Authentication routes
-  { path: 'auth/login', component: LoginComponent },
-  { path: 'auth/register', component: RegisterComponent },
-  { path: 'auth/profile', component: ProfileComponent },
+  { path: 'auth/login', component: LoginComponent, canActivate: [LoginRedirectGuard] },
+  { path: 'auth/register', component: RegisterComponent, canActivate: [LoginRedirectGuard] },
+  { path: 'auth/profile', component: ProfileComponent, canActivate: [AuthGuard] },
   
   // Dashboard
-  { path: 'dashboard', component: DashboardComponent },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
   
   // Payroll routes
-  // { path: 'payroll/employees', component: EmployeeManagementComponent },
-  // { path: 'payroll/salary-calculation', component: SalaryCalculationComponent },
-  // { path: 'payroll/payslips', component: PayslipComponent },
+  // { path: 'payroll/employees', component: EmployeeManagementComponent, canActivate: [AuthGuard] },
+  // { path: 'payroll/salary-calculation', component: SalaryCalculationComponent, canActivate: [AuthGuard] },
+  // { path: 'payroll/payslips', component: PayslipComponent, canActivate: [AuthGuard] },
 
   //Department Routes
-  {path: 'departments', component: DepartmentComponent},
+  {path: 'departments', component: DepartmentComponent, canActivate: [AuthGuard]},
 
   // Attendance Route
-  { path: 'attendance', component: AttendanceComponent },
+  { path: 'attendance', component: AttendanceComponent, canActivate: [AuthGuard] },
+
+  // Employee Management Route
+  { path: 'employees', component: EmployeeComponent, canActivate: [AuthGuard] },
 
   // Wildcard route
   { path: '**', redirectTo: '/auth/login' }
