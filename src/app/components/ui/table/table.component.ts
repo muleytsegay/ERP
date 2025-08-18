@@ -19,11 +19,15 @@ export interface TableAction {
 
 @Component({
   selector: 'app-table',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './table.component.html',
   styleUrl: './table.component.css'
 })
 export class TableComponent {
+  shouldShowAction(action: TableAction, row: any): boolean {
+    return action.condition ? action.condition(row) : true;
+  }
   @Input() columns: TableColumn[] = [];
   @Input() data: any[] = [];
   @Input() loading = false;
@@ -96,9 +100,9 @@ export class TableComponent {
     return key.split('.').reduce((obj, prop) => obj?.[prop], row);
   }
 
-  shouldShowAction(action: TableAction, row: any): boolean {
-    return action.condition ? action.condition(row) : true;
-  }
+  // shouldShowAction(action: TableAction, row: any): boolean {
+  //   return action.condition ? action.condition(row) : true;
+  // }
 
   trackByFn(index: number, item: any): any {
     return item.id || index;

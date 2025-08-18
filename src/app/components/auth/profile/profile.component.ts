@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { AuthService } from '../../../shared/services/auth.service';
 import { User } from '../../../shared/models/user.model';
 
@@ -22,7 +23,8 @@ export class ProfileComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {
     this.profileForm = this.formBuilder.group({
       firstName: ['', [Validators.required]],
@@ -137,5 +139,6 @@ export class ProfileComponent implements OnInit {
 
   logout(): void {
     this.authService.logout();
+    this.router.navigate(['/auth/login']);
   }
 }

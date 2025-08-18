@@ -6,7 +6,6 @@ import { AuthService } from '../../../shared/services/auth.service';
 
 @Component({
   selector: 'app-login',
-  standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
@@ -22,7 +21,7 @@ export class LoginComponent implements OnInit {
     private router: Router
   ) {
     this.loginForm = this.formBuilder.group({
-      username: ['', [Validators.required]],
+      email: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
