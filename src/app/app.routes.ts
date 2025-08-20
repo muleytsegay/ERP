@@ -1,17 +1,17 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './components/auth/login/login.component';
-import { RegisterComponent } from './components/auth/register/register.component';
-import { ProfileComponent } from './components/auth/profile/profile.component';
-import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { LoginComponent } from './features/auth/login/login.component';
+import { RegisterComponent } from './features/auth/register/register.component';
+import { ProfileComponent } from './features/auth/profile/components/profile.component';
+import { DashboardComponent } from './features/dashboard/components/dashboard.component';
 // import { EmployeeManagementComponent } from './components/payroll/employee-management/employee-management.component';
 // import { SalaryCalculationComponent } from './components/payroll/salary-calculation/salary-calculation.component';
 // import { PayslipComponent } from './components/payroll/payslip/payslip.component';
 
-import { DepartmentComponent } from './components/department/department.component';
-import { AttendanceComponent } from './components/attendance/attendance.component';
-import { EmployeeComponent } from './components/employee/employee.component';
-import { AuthGuard } from './shared/guards/auth.guard';
-import { LoginRedirectGuard } from './shared/guards/login-redirect.guard';
+import { DepartmentComponent } from './features/department/components/department.component';
+import { AttendanceComponent } from './features/attendance/components/attendance.component';
+import { EmployeeComponent } from './features/employee/components/employee.component';
+import { AuthGuard } from './core/guards/auth.guard';
+import { LoginRedirectGuard } from './core/guards/login-redirect.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/auth/login', pathMatch: 'full' },

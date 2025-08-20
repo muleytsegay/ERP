@@ -1,0 +1,1 @@
+export { LeaveComponent } from './leave.component';
