@@ -2,15 +2,15 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
-import { AttendanceComponent } from './components/attendance/attendance.component';
-import { LoginComponent } from './components/auth/login/login.component';
-import { RegisterComponent } from './components/auth/register/register.component';
-import { ProfileComponent } from './components/auth/profile/profile.component';
-import { DashboardComponent } from './components/dashboard/dashboard.component';
-import { DepartmentComponent } from './components/department/department.component';
-import { EmployeeComponent } from './components/employee/employee.component';
+import { AttendanceComponent } from './features/attendance/components/attendance.component';
+import { LoginComponent } from './features/auth/login/login.component';
+import { RegisterComponent } from './features/auth/register/register.component';
+import { ProfileComponent } from './features/auth/profile/components/profile.component';
+import { DashboardComponent } from './features/dashboard/components/dashboard.component';
+import { DepartmentComponent } from './features/department/components/department.component';
+import { EmployeeComponent } from './features/employee/components/employee.component';
 import { routes } from './app.routes';
-import { TableComponent } from './components/ui/table/table.component';
+import { TableComponent } from './shared/components/ui/table/table.component';
 
 @NgModule({
 		declarations: [
