@@ -15,29 +15,49 @@ import { LoginRedirectGuard } from './core/guards/login-redirect.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/auth/login', pathMatch: 'full' },
-  
+
   // Authentication routes
-  { path: 'auth/login', component: LoginComponent, canActivate: [LoginRedirectGuard] },
-  { path: 'auth/register', component: RegisterComponent, canActivate: [LoginRedirectGuard] },
-  { path: 'auth/profile', component: ProfileComponent, canActivate: [AuthGuard] },
-  
+  {
+    path: 'auth/login',
+    component: LoginComponent,
+    canActivate: [LoginRedirectGuard],
+  },
+  {
+    path: 'auth/register',
+    component: RegisterComponent,
+    canActivate: [LoginRedirectGuard],
+  },
+  // { path: 'auth/profile', component: ProfileComponent, canActivate: [AuthGuard] },
+  { path: 'profile', component: ProfileComponent },
   // Dashboard
-  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
-  
+  {
+    path: 'dashboard',
+    component: DashboardComponent,
+    canActivate: [AuthGuard],
+  },
+
   // Payroll routes
   // { path: 'payroll/employees', component: EmployeeManagementComponent, canActivate: [AuthGuard] },
   // { path: 'payroll/salary-calculation', component: SalaryCalculationComponent, canActivate: [AuthGuard] },
   // { path: 'payroll/payslips', component: PayslipComponent, canActivate: [AuthGuard] },
 
   //Department Routes
-  {path: 'departments', component: DepartmentComponent, canActivate: [AuthGuard]},
+  {
+    path: 'departments',
+    component: DepartmentComponent,
+    canActivate: [AuthGuard],
+  },
 
   // Attendance Route
-  { path: 'attendance', component: AttendanceComponent, canActivate: [AuthGuard] },
+  {
+    path: 'attendance',
+    component: AttendanceComponent,
+    canActivate: [AuthGuard],
+  },
 
   // Employee Management Route
   { path: 'employees', component: EmployeeComponent, canActivate: [AuthGuard] },
 
   // Wildcard route
-  { path: '**', redirectTo: '/auth/login' }
+  { path: '**', redirectTo: '/auth/login' },
 ];

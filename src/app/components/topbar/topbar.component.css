@@ -1,0 +1,52 @@
+/* .user-profile.menu-open .fa-chevron-down {
+  transform: rotate(180deg);
+}
+
+.fa-chevron-down {
+  transition: transform 0.3s ease;
+} */
+/* Add this to your global styles.css or topbar.component.css */
+/* topbar.component.css */
+.user-menu-button {
+  transition: all 0.2s ease;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.user-menu-button:hover {
+  background-color: #f8fafc;
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+/* Dropdown animation */
+.dropdown-menu {
+  animation: dropdownFade 0.2s ease-out;
+}
+
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Ensure dropdown is above everything */
+.absolute {
+  z-index: 1001;
+}
+
+/* Hover effects */
+.hover\:bg-blue-50:hover {
+  background-color: #eff6ff;
+}
+
+.hover\:text-blue-700:hover {
+  color: #1d4ed8;
+}

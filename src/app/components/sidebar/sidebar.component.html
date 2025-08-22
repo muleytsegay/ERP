@@ -1,0 +1,30 @@
+<nav
+  class="sidebar bg-white text-black w-64 h-screen fixed left-0 top-0 bottom-0 z-40 overflow-y-auto pt-16 border-r border-gray-300"
+>
+  <!-- Company Logo -->
+  <div class="p-6 pt-0 mt-0 border-b border-gray-300">
+    <h1 class="text-xl font-bold text-black">HR System</h1>
+    <p class="text-gray-700 text-sm">ERP Platform</p>
+  </div>
+
+  <!-- Navigation Menu -->
+  <ul class="py-4">
+    <li *ngFor="let item of menuItems" class="mb-1">
+      <a
+        [routerLink]="item.route"
+        routerLinkActive="active-route"
+        class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100 hover:text-black transition-colors duration-200"
+      >
+        <i [class]="item.icon" class="mr-3 w-5 text-center"></i>
+        <span>{{ item.label }}</span>
+      </a>
+    </li>
+  </ul>
+
+  <!-- System Info -->
+  <div
+    class="absolute bottom-0 left-0 right-0 p-4 bg-white text-center border-gray-300 border-t"
+  >
+    <p class="text-gray-700 text-sm">&#64;Niyat 2025 HR System</p>
+  </div>
+</nav>
