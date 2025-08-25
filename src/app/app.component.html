@@ -1,35 +1,8 @@
-<!-- 
-<nav *ngIf="isAuthenticated()" class="bg-indigo-600 text-white shadow-lg">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between h-16">
-      <div class="flex items-center">
-        <h1 class="text-xl font-bold">{{ title }}</h1>-->
-
-
-<!-- Main Application Layout -->
-<!-- <div class="flex flex-col h-screen">
-  
-  <app-topbar *ngIf="isAuthenticated()" class="ml-64"></app-topbar>
-
-
-  <div class="flex flex-1" [class.pt-16]="isAuthenticated()">
-    
-    <app-sidebar *ngIf="isAuthenticated()" class="h-screen"></app-sidebar>
-
-    <main
-      class="flex-1 overflow-auto bg-gray-100"
-      [class.ml-64]="isAuthenticated()"
-    >
-      <router-outlet></router-outlet>
-    </main>
-  </div>
-</div> -->
-
 <div *ngIf="isAuthenticated()" class="flex flex-col h-screen">
   <app-topbar></app-topbar>
   <div class="flex flex-1 pt-16">
     <app-sidebar class="hidden md:block"></app-sidebar>
-    <main class="flex-1 overflow-auto p-6 bg-gray-100 ml-0 md:ml-64">
+    <main class="flex-1 overflow-auto p-0 bg-gray-100 ml-0 md:ml-64">
       <router-outlet></router-outlet>
     </main>
   </div>
