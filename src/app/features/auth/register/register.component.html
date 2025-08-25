@@ -1,5 +1,6 @@
-<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-  <div class="max-w-md w-full space-y-8">
+<div class="surface-0 flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden p-3">
+  <p-card class="flex justify-content-center align-items-center" [style]="{width: '360px'}">
+    <div class="max-w-md w-full space-y-8">
     <div>
       <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
         Create your account
@@ -15,6 +16,7 @@
           <div>
             <label for="firstName" class="block text-sm font-medium text-gray-700">First Name</label>
             <input
+            pInputText
               id="firstName"
               name="firstName"
               type="text"
@@ -30,6 +32,7 @@
           <div>
             <label for="lastName" class="block text-sm font-medium text-gray-700">Last Name</label>
             <input
+            pInputText
               id="lastName"
               name="lastName"
               type="text"
@@ -46,6 +49,7 @@
         <div>
           <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
           <input
+          pInputText
             id="username"
             name="username"
             type="text"
@@ -62,6 +66,7 @@
         <div>
           <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
           <input
+          pInputText
             id="email"
             name="email"
             type="email"
@@ -78,6 +83,7 @@
         <div>
           <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
           <input
+          pInputText
             id="password"
             name="password"
             type="password"
@@ -94,6 +100,7 @@
         <div>
           <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirm Password</label>
           <input
+          pInputText
             id="confirmPassword"
             name="confirmPassword"
             type="password"
@@ -135,4 +142,5 @@
       </div>
     </form>
   </div>
+  </p-card>
 </div>

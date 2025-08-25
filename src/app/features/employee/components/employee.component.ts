@@ -1,35 +1,43 @@
-
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Employee } from '../models/employee.model';
 import { EmployeeService } from '../services/employee.service';
-import { TableComponent, TableColumn, TableAction } from '../../../shared/components/ui/table/table.component';
-import { ModalComponent } from '../../../shared/components/ui/modal/modal.component';
-import { InputComponent } from '../../../shared/components/ui/input/input.component';
-import { ButtonComponent } from '../../../shared/components/ui/button/button.component';
-import { DropdownComponent } from '../../../shared/components/ui/dropdown/dropdown.component';
-import { AlertComponent } from '../../../shared/components/ui/alert/alert.component';
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
+import { ToastModule } from 'primeng/toast';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { CardModule } from 'primeng/card';
+import { TooltipModule } from 'primeng/tooltip';
+import { MessageModule } from 'primeng/message';
+import { MessageService, ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'app-employee',
   templateUrl: './employee.component.html',
+  styleUrls: ['./employee.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule, TableComponent, ModalComponent, InputComponent, ButtonComponent, DropdownComponent, AlertComponent]
+  imports: [
+    CommonModule, 
+    ReactiveFormsModule, 
+    TableModule,
+    ButtonModule,
+    DialogModule,
+    InputTextModule,
+    ToastModule,
+    ConfirmDialogModule,
+    CardModule,
+    TooltipModule,
+    MessageModule
+  ],
+  providers: [MessageService, ConfirmationService]
 })
 export class EmployeeComponent implements OnInit {
-  newEmployee: any = {
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    address: '',
-    departmentId: '',
-    positionId: '',
-    hireDate: new Date().toISOString().split('T')[0], // Default to today
-    salary: 0
-  };
-
+  employeeForm: FormGroup;
+  isEditMode = false;
+  
   departmentOptions: { label: string; value: string }[] = [];
   positionOptions: { label: string; value: string }[] = [];
 
@@ -38,27 +46,25 @@ export class EmployeeComponent implements OnInit {
   loading = false;
   error = '';
 
-  employeeColumns: TableColumn[] = [
-    { key: 'fullName', label: 'Name' },
-    { key: 'email', label: 'Email' },
-    { key: 'department', label: 'Department' },
-    { key: 'position', label: 'Position' }
-  ];
-
-  employeeActions: TableAction[] = [
-    {
-      label: 'Edit',
-      action: (row) => this.editEmployee(row),
-      class: 'btn btn-sm btn-primary'
-    },
-    {
-      label: 'Delete',
-      action: (row) => this.deleteEmployee(row.id),
-      class: 'btn btn-sm btn-danger'
-    }
-  ];
-
-  constructor(private employeeService: EmployeeService) {}
+  constructor(
+    private employeeService: EmployeeService,
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService,
+    private fb: FormBuilder
+  ) {
+    this.employeeForm = this.fb.group({
+      id: [''],
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      phone: ['', Validators.required],
+      address: [''],
+      departmentId: ['', Validators.required],
+      positionId: ['', Validators.required],
+      hireDate: ['', Validators.required],
+      salary: [0, [Validators.required, Validators.min(0)]]
+    });
+  }
 
   ngOnInit(): void {
     this.getEmployees();
@@ -68,14 +74,14 @@ export class EmployeeComponent implements OnInit {
 
   getDepartments(): void {
     this.employeeService.getDepartments().subscribe({
-      next: (data) => {
+      next: (data: any) => {
         const departments = Array.isArray(data) ? data : (Array.isArray((data as any).data) ? (data as any).data : []);
         this.departmentOptions = departments.map((dept: any) => ({
           label: dept.name,
           value: dept.id
         }));
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Failed to load departments:', err);
         // Fallback to empty array if API fails
         this.departmentOptions = [];
@@ -85,14 +91,14 @@ export class EmployeeComponent implements OnInit {
 
   getPositions(): void {
     this.employeeService.getPositions().subscribe({
-      next: (data) => {
+      next: (data: any) => {
         const positions = Array.isArray(data) ? data : (Array.isArray((data as any).data) ? (data as any).data : []);
         this.positionOptions = positions.map((pos: any) => ({
           label: pos.title,
           value: pos.id
         }));
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Failed to load positions:', err);
         // Fallback to empty array if API fails
         this.positionOptions = [];
@@ -106,12 +112,13 @@ export class EmployeeComponent implements OnInit {
 
   closeAddModal() {
     this.showAddModal = false;
+    this.resetForm();
   }
 
   getEmployees(): void {
     this.loading = true;
     this.employeeService.getEmployees().subscribe({
-      next: (data) => {
+      next: (data: any) => {
         const employeesArr = Array.isArray(data) ? data : (Array.isArray((data as any).data) ? (data as any).data : []);
         this.employees = (employeesArr as any[]).map((emp: any) => ({
           ...emp,
@@ -119,7 +126,7 @@ export class EmployeeComponent implements OnInit {
         }));
         this.loading = false;
       },
-      error: (err) => {
+      error: (err: any) => {
         this.error = 'Failed to load employees.';
         this.loading = false;
       }
@@ -127,48 +134,103 @@ export class EmployeeComponent implements OnInit {
   }
 
   deleteEmployee(id: string): void {
-    if (!confirm('Are you sure you want to delete this employee?')) return;
-    this.employeeService.deleteEmployee(id).subscribe({
-      next: () => {
-        this.getEmployees();
-      },
-      error: () => {
-        this.error = 'Failed to delete employee.';
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to delete this employee?',
+      header: 'Confirm Delete',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.employeeService.deleteEmployee(id).subscribe({
+          next: () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: 'Employee deleted successfully'
+            });
+            this.getEmployees();
+          },
+          error: () => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'Failed to delete employee'
+            });
+          }
+        });
       }
     });
   }
 
   editEmployee(employee: Employee): void {
-    alert('Edit employee: ' + employee.firstName);
+    this.employeeForm.patchValue(employee);
+    this.isEditMode = true;
+    this.showAddModal = true;
   }
 
   onAddEmployeeSubmit(event?: Event) {
     if (event) {
       event.preventDefault();
     }
-    this.loading = true;
-    this.error = '';
-    this.employeeService.createEmployee(this.newEmployee).subscribe({
-      next: () => {
-        this.loading = false;
-        this.closeAddModal();
-        this.getEmployees();
-        this.newEmployee = { 
-          firstName: '', 
-          lastName: '', 
-          email: '',
-          phone: '',
-          address: '',
-          departmentId: '', 
-          positionId: '',
-          hireDate: new Date().toISOString().split('T')[0],
-          salary: 0
-        };
-      },
-      error: (err) => {
-        this.loading = false;
-        this.error = err.error?.message || 'Failed to add employee.';
+    
+    if (this.employeeForm.valid) {
+      this.loading = true;
+      const employeeData = this.employeeForm.value;
+      
+      if (this.isEditMode) {
+        this.employeeService.updateEmployee(employeeData.id, employeeData).subscribe({
+          next: () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: 'Employee updated successfully'
+            });
+            this.loading = false;
+            this.closeAddModal();
+            this.getEmployees();
+            this.resetForm();
+          },
+          error: (error: any) => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'Failed to update employee'
+            });
+            this.loading = false;
+          }
+        });
+      } else {
+        this.employeeService.createEmployee(employeeData).subscribe({
+          next: () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: 'Employee created successfully'
+            });
+            this.loading = false;
+            this.closeAddModal();
+            this.getEmployees();
+            this.resetForm();
+          },
+          error: (error: any) => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'Failed to create employee'
+            });
+            this.loading = false;
+          }
+        });
       }
-    });
+    } else {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Warning',
+        detail: 'Please fill all required fields'
+      });
+    }
+  }
+
+  resetForm() {
+    this.employeeForm.reset();
+    this.isEditMode = false;
   }
 }

@@ -1,62 +1,259 @@
-<div class="employee-container">
-  <div class="flex justify-between items-center mb-4">
-    <h2 class="text-xl font-bold">Employee Management</h2>
-    <button (click)="openAddModal()" class="btn btn-primary">Add Employee</button>
-  </div>
-
-  <div *ngIf="loading">Loading employees...</div>
-  <div *ngIf="error" class="text-red-600">{{ error }}</div>
-
-  <app-table
-    *ngIf="employees.length > 0"
-    [columns]="employeeColumns"
-    [data]="employees"
-    [loading]="loading"
-    [actions]="employeeActions"
-    [emptyMessage]="'No employees found.'">
-  </app-table>
-
-  <div *ngIf="!loading && employees.length === 0">No employees found.</div>
-
-  <app-modal
-    [isOpen]="showAddModal"
-    title="Add Employee"
-    (closeModal)="closeAddModal()">
-    <div class="max-h-96 overflow-y-auto pr-2">
-      <form (ngSubmit)="onAddEmployeeSubmit($event)">
-        <app-alert *ngIf="error" type="error" [message]="error" [dismissible]="true" (closed)="error = ''"></app-alert>
-        <div class="mb-4">
-          <app-input label="First Name" [(ngModel)]="newEmployee.firstName" name="firstName" [required]="true"></app-input>
-        </div>
-        <div class="mb-4">
-          <app-input label="Last Name" [(ngModel)]="newEmployee.lastName" name="lastName" [required]="true"></app-input>
-        </div>
-        <div class="mb-4">
-          <app-input label="Email" type="email" [(ngModel)]="newEmployee.email" name="email" [required]="true"></app-input>
-        </div>
-        <div class="mb-4">
-          <app-input label="Phone" type="tel" [(ngModel)]="newEmployee.phone" name="phone" [required]="true"></app-input>
-        </div>
-        <div class="mb-4">
-          <app-input label="Address" [(ngModel)]="newEmployee.address" name="address" [required]="true"></app-input>
-        </div>
-        <div class="mb-4">
-          <app-dropdown label="Department" [options]="departmentOptions" [(ngModel)]="newEmployee.departmentId" name="departmentId" [required]="true"></app-dropdown>
-        </div>
-        <div class="mb-4">
-          <app-dropdown label="Position" [options]="positionOptions" [(ngModel)]="newEmployee.positionId" name="positionId" [required]="true"></app-dropdown>
-        </div>
-        <div class="mb-4">
-          <app-input label="Hire Date" type="date" [(ngModel)]="newEmployee.hireDate" name="hireDate" [required]="true"></app-input>
-        </div>
-        <div class="mb-4">
-          <app-input label="Salary" type="number" [(ngModel)]="newEmployee.salary" name="salary" [required]="true"></app-input>
-        </div>
-      </form>
+<div class="p-6">
+  <p-card>
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-bold text-gray-800">Employee Management</h2>
+      <p-button 
+        label="Add Employee" 
+        icon="pi pi-plus" 
+        (onClick)="openAddModal()"
+        class="p-button-primary">
+      </p-button>
     </div>
-    <div class="flex justify-end space-x-2 mt-4 pt-4 border-t">
-      <app-button label="Cancel" (onClick)="closeAddModal()" variant="outline"></app-button>
-      <app-button label="Save" [loading]="loading" (onClick)="onAddEmployeeSubmit($event)"></app-button>
-    </div>
-  </app-modal>
+
+    <p-message *ngIf="error" severity="error" [text]="error"></p-message>
+
+    <p-table 
+      [value]="employees" 
+      [loading]="loading"
+      [paginator]="true" 
+      [rows]="10"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+      styleClass="p-datatable-striped">
+      
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Department</th>
+          <th>Position</th>
+          <th>Hire Date</th>
+          <th>Salary</th>
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+      
+      <ng-template pTemplate="body" let-employee>
+        <tr>
+          <td>{{ employee.firstName }} {{ employee.lastName }}</td>
+          <td>{{ employee.email }}</td>
+          <td>{{ employee.phone }}</td>
+          <td>{{ employee.department }}</td>
+          <td>{{ employee.position }}</td>
+          <td>{{ employee.hireDate | date:'shortDate' }}</td>
+          <td>{{ employee.salary | currency }}</td>
+          <td>
+            <p-button 
+              icon="pi pi-pencil" 
+              [text]="true"
+              [rounded]="true"
+              severity="info" 
+              (onClick)="editEmployee(employee)"
+              pTooltip="Edit">
+            </p-button>
+            <p-button 
+              icon="pi pi-trash" 
+              [text]="true"
+              [rounded]="true"
+              severity="danger" 
+              (onClick)="deleteEmployee(employee.id)"
+              pTooltip="Delete">
+            </p-button>
+          </td>
+        </tr>
+      </ng-template>
+      
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="8" class="text-center p-4">
+            <div class="flex flex-col items-center gap-2">
+              <i class="pi pi-users text-4xl text-gray-400"></i>
+              <span class="text-gray-500">No employees found</span>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+
+  <!-- Add/Edit Employee Dialog -->
+  <p-dialog 
+    [(visible)]="showAddModal" 
+    [header]="isEditMode ? 'Edit Employee' : 'Add Employee'"
+    [modal]="true" 
+    [style]="{width: '600px'}"
+    [draggable]="false"
+    [resizable]="false">
+    
+    <form [formGroup]="employeeForm" (ngSubmit)="onAddEmployeeSubmit()">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        
+        <div class="field">
+          <label for="firstName" class="block text-sm font-medium mb-2">First Name *</label>
+          <input 
+            pInputText 
+            id="firstName" 
+            formControlName="firstName"
+            class="w-full"
+            [class.ng-invalid]="employeeForm.get('firstName')?.invalid && employeeForm.get('firstName')?.touched" />
+          <small 
+            class="p-error" 
+            *ngIf="employeeForm.get('firstName')?.invalid && employeeForm.get('firstName')?.touched">
+            First name is required
+          </small>
+        </div>
+
+        <div class="field">
+          <label for="lastName" class="block text-sm font-medium mb-2">Last Name *</label>
+          <input 
+            pInputText 
+            id="lastName" 
+            formControlName="lastName"
+            class="w-full"
+            [class.ng-invalid]="employeeForm.get('lastName')?.invalid && employeeForm.get('lastName')?.touched" />
+          <small 
+            class="p-error" 
+            *ngIf="employeeForm.get('lastName')?.invalid && employeeForm.get('lastName')?.touched">
+            Last name is required
+          </small>
+        </div>
+
+        <div class="field">
+          <label for="email" class="block text-sm font-medium mb-2">Email *</label>
+          <input 
+            pInputText 
+            id="email" 
+            formControlName="email"
+            type="email"
+            class="w-full"
+            [class.ng-invalid]="employeeForm.get('email')?.invalid && employeeForm.get('email')?.touched" />
+          <small 
+            class="p-error" 
+            *ngIf="employeeForm.get('email')?.invalid && employeeForm.get('email')?.touched">
+            Valid email is required
+          </small>
+        </div>
+
+        <div class="field">
+          <label for="phone" class="block text-sm font-medium mb-2">Phone *</label>
+          <input 
+            pInputText 
+            id="phone" 
+            formControlName="phone"
+            class="w-full"
+            [class.ng-invalid]="employeeForm.get('phone')?.invalid && employeeForm.get('phone')?.touched" />
+          <small 
+            class="p-error" 
+            *ngIf="employeeForm.get('phone')?.invalid && employeeForm.get('phone')?.touched">
+            Phone is required
+          </small>
+        </div>
+
+        <div class="field md:col-span-2">
+          <label for="address" class="block text-sm font-medium mb-2">Address</label>
+          <textarea 
+            id="address" 
+            formControlName="address"
+            rows="3"
+            placeholder="Enter address"
+            class="w-full p-2 border border-gray-300 rounded">
+          </textarea>
+        </div>
+
+        <div class="field">
+          <label for="departmentId" class="block text-sm font-medium mb-2">Department *</label>
+          <select 
+            id="departmentId" 
+            formControlName="departmentId"
+            class="w-full p-2 border border-gray-300 rounded"
+            [class.border-red-500]="employeeForm.get('departmentId')?.invalid && employeeForm.get('departmentId')?.touched">
+            <option value="">Select Department</option>
+            <option *ngFor="let dept of departmentOptions" [value]="dept.value">
+              {{ dept.label }}
+            </option>
+          </select>
+          <small 
+            class="p-error" 
+            *ngIf="employeeForm.get('departmentId')?.invalid && employeeForm.get('departmentId')?.touched">
+            Department is required
+          </small>
+        </div>
+
+        <div class="field">
+          <label for="positionId" class="block text-sm font-medium mb-2">Position *</label>
+          <select 
+            id="positionId" 
+            formControlName="positionId"
+            class="w-full p-2 border border-gray-300 rounded"
+            [class.border-red-500]="employeeForm.get('positionId')?.invalid && employeeForm.get('positionId')?.touched">
+            <option value="">Select Position</option>
+            <option *ngFor="let pos of positionOptions" [value]="pos.value">
+              {{ pos.label }}
+            </option>
+          </select>
+          <small 
+            class="p-error" 
+            *ngIf="employeeForm.get('positionId')?.invalid && employeeForm.get('positionId')?.touched">
+            Position is required
+          </small>
+        </div>
+
+        <div class="field">
+          <label for="hireDate" class="block text-sm font-medium mb-2">Hire Date *</label>
+          <input 
+            type="date"
+            id="hireDate" 
+            formControlName="hireDate"
+            class="w-full p-2 border border-gray-300 rounded"
+            [class.border-red-500]="employeeForm.get('hireDate')?.invalid && employeeForm.get('hireDate')?.touched" />
+          <small 
+            class="p-error" 
+            *ngIf="employeeForm.get('hireDate')?.invalid && employeeForm.get('hireDate')?.touched">
+            Hire date is required
+          </small>
+        </div>
+
+        <div class="field">
+          <label for="salary" class="block text-sm font-medium mb-2">Salary *</label>
+          <input 
+            type="number"
+            id="salary" 
+            formControlName="salary"
+            placeholder="Enter salary"
+            class="w-full p-2 border border-gray-300 rounded"
+            [class.border-red-500]="employeeForm.get('salary')?.invalid && employeeForm.get('salary')?.touched" />
+          <small 
+            class="p-error" 
+            *ngIf="employeeForm.get('salary')?.invalid && employeeForm.get('salary')?.touched">
+            Salary is required
+          </small>
+        </div>
+
+      </div>
+    </form>
+    
+    <ng-template pTemplate="footer">
+      <div class="flex justify-end gap-2">
+        <p-button 
+          label="Cancel" 
+          icon="pi pi-times" 
+          [text]="true"
+          (onClick)="closeAddModal()">
+        </p-button>
+        <p-button 
+          [label]="isEditMode ? 'Update' : 'Save'" 
+          icon="pi pi-check" 
+          (onClick)="onAddEmployeeSubmit()"
+          [loading]="loading">
+        </p-button>
+      </div>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Toast for notifications -->
+  <p-toast></p-toast>
+  
+  <!-- Confirmation dialog -->
+  <p-confirmDialog></p-confirmDialog>
 </div>

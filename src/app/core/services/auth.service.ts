@@ -8,7 +8,7 @@ import { User, LoginRequest, RegisterRequest, AuthResponse } from '../../feature
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:5141/api/v1';
+  private apiUrl = 'http://localhost:3000/api/v1';
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 

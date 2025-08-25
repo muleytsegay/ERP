@@ -1,230 +1,476 @@
-<div class="department-container p-4">
-  <div class="flex justify-between items-center mb-4">
-    <h2 class="text-xl font-bold">Department Management</h2>
-    <div class="flex gap-2">
-      <button class="btn btn-secondary" (click)="openPositionModal()">Add Position</button>
-      <button class="btn btn-primary" (click)="openDepartmentModal()">Add Department</button>
+<div class="component-container">
+  <p-card>
+    <div class="flex justify-content-between align-items-center mb-4">
+      <h2 class="text-2xl font-bold text-900">Department Management</h2>
+      <div class="flex gap-2">
+        <p-button 
+          label="Add Position" 
+          icon="pi pi-plus" 
+          severity="secondary"
+          (onClick)="openPositionModal()">
+        </p-button>
+        <p-button 
+          label="Add Department" 
+          icon="pi pi-plus" 
+          (onClick)="openDepartmentModal()">
+        </p-button>
+      </div>
     </div>
-  </div>
 
-  <!-- Tab Navigation -->
-  <div class="mb-4">
-    <nav class="flex border-b">
-      <button 
-        class="px-4 py-2 border-b-2 font-medium text-sm"
-        [class.border-blue-500]="activeTab === 'departments'"
-        [class.text-blue-600]="activeTab === 'departments'"
-        [class.border-transparent]="activeTab !== 'departments'"
-        [class.text-gray-500]="activeTab !== 'departments'"
-        (click)="setActiveTab('departments')">
-        Departments
-      </button>
-      <button 
-        class="px-4 py-2 border-b-2 font-medium text-sm ml-4"
-        [class.border-blue-500]="activeTab === 'positions'"
-        [class.text-blue-600]="activeTab === 'positions'"
-        [class.border-transparent]="activeTab !== 'positions'"
-        [class.text-gray-500]="activeTab !== 'positions'"
-        (click)="setActiveTab('positions')">
-        Positions
-      </button>
-    </nav>
-  </div>
-
-  <div class="mb-4 flex items-center gap-2">
-    <input type="text" class="form-input" placeholder="Search..." [(ngModel)]="searchTerm" (input)="filterDepartments()" />
-    <span *ngIf="loading" class="ml-2 text-gray-500">Loading...</span>
-    <span *ngIf="error" class="ml-2 text-red-600">{{ error }}</span>
-    <span *ngIf="success" class="ml-2 text-green-600">{{ success }}</span>
-  </div>
-
-  <!-- Departments Tab -->
-  <div *ngIf="activeTab === 'departments'">
-    <app-table
-      [columns]="[
-        { key: 'name', label: 'Name' },
-        { key: 'description', label: 'Description' },
-        { key: 'manager', label: 'Manager' },
-        { key: 'employeeCount', label: 'Employees' },
-        { key: 'positionCount', label: 'Positions' },
-        { key: 'isActive', label: 'Active' }
-      ]"
-      [data]="transformedDepartments"
-      [actions]="departmentActions"
-      [loading]="loading"
-      [emptyMessage]="'No departments found.'"
-    ></app-table>
-  </div>
-
-  <!-- Positions Tab -->
-  <div *ngIf="activeTab === 'positions'">
-    <app-table
-      [columns]="[
-        { key: 'title', label: 'Title' },
-        { key: 'departmentName', label: 'Department' },
-        { key: 'baseSalary', label: 'Base Salary' },
-        { key: 'description', label: 'Description' },
-        { key: 'isActive', label: 'Active' }
-      ]"
-      [data]="transformedPositions"
-      [actions]="positionActions"
-      [loading]="loading"
-      [emptyMessage]="'No positions found.'"
-    ></app-table>
-  </div>
-
-  <!-- Department Modal -->
-  <app-modal [isOpen]="isDepartmentModalOpen" title="{{ isEditingDepartment ? 'Edit Department' : 'Add Department' }}" (closeModal)="closeDepartmentModal()">
-    <div class="max-h-96 overflow-y-auto pr-2">
-      <form [formGroup]="departmentForm" (ngSubmit)="onSubmitDepartment()">
-        <div *ngIf="error" class="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-          {{ error }}
-        </div>
-        <div *ngIf="success" class="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
-          {{ success }}
-        </div>
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
-          <input class="form-input w-full" formControlName="name" required />
-          <div *ngIf="df['name'].invalid && (df['name'].dirty || df['name'].touched)" class="text-red-600 text-xs mt-1">
-            Name is required (min 2 chars).
-          </div>
-        </div>
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-          <textarea class="form-input w-full" formControlName="description" rows="3" required></textarea>
-          <div *ngIf="df['description'].invalid && (df['description'].dirty || df['description'].touched)" class="text-red-600 text-xs mt-1">
-            Description is required.
-          </div>
-        </div>
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Manager</label>
-          <select class="form-input w-full" formControlName="managerId">
-            <option value="">-- No Manager --</option>
-            <option *ngFor="let emp of employees" [value]="emp.id">{{ emp.firstName }} {{ emp.lastName }}</option>
-          </select>
-        </div>
-        <div class="mb-4">
-          <label class="flex items-center">
-            <input type="checkbox" formControlName="isActive" class="mr-2" />
-            <span class="text-sm font-medium text-gray-700">Active</span>
-          </label>
-        </div>
-      </form>
+    <!-- Simple Tab Navigation instead of TabView -->
+    <div class="mb-4">
+      <div class="flex border-b border-surface-200">
+        <button 
+          class="px-4 py-2 border-b-2 font-medium text-sm"
+          [class.border-primary]="activeTabIndex === 0"
+          [class.text-primary]="activeTabIndex === 0"
+          [class.border-transparent]="activeTabIndex !== 0"
+          [class.text-500]="activeTabIndex !== 0"
+          (click)="activeTabIndex = 0">
+          Departments
+        </button>
+        <button 
+          class="px-4 py-2 border-b-2 font-medium text-sm ml-4"
+          [class.border-primary]="activeTabIndex === 1"
+          [class.text-primary]="activeTabIndex === 1"
+          [class.border-transparent]="activeTabIndex !== 1"
+          [class.text-500]="activeTabIndex !== 1"
+          (click)="activeTabIndex = 1">
+          Positions
+        </button>
+      </div>
     </div>
-    <div class="flex justify-end gap-2 mt-4 pt-4 border-t">
-      <button type="button" class="btn btn-outline" (click)="closeDepartmentModal()">Cancel</button>
-      <button type="button" class="btn btn-primary" (click)="onSubmitDepartment()" [disabled]="departmentForm.invalid || loading">
-        {{ loading ? 'Saving...' : (isEditingDepartment ? 'Update' : 'Create') }}
-      </button>
-    </div>
-  </app-modal>
 
-  <!-- Position Modal -->
-  <app-modal [isOpen]="isPositionModalOpen" title="{{ isEditingPosition ? 'Edit Position' : 'Add Position' }}" (closeModal)="closePositionModal()">
-    <div class="max-h-96 overflow-y-auto pr-2">
-      <form [formGroup]="positionForm" (ngSubmit)="onSubmitPosition()">
-        <div *ngIf="error" class="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-          {{ error }}
-        </div>
-        <div *ngIf="success" class="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
-          {{ success }}
-        </div>
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
-          <input class="form-input w-full" formControlName="title" required />
-          <div *ngIf="pf['title'].invalid && (pf['title'].dirty || pf['title'].touched)" class="text-red-600 text-xs mt-1">
-            Title is required (min 2 chars).
-          </div>
-        </div>
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Department</label>
-          <select class="form-input w-full" formControlName="departmentId" required>
-            <option value="">-- Select Department --</option>
-            <option *ngFor="let dept of departments" [value]="dept.id">{{ dept.name }}</option>
-          </select>
-          <div *ngIf="pf['departmentId'].invalid && (pf['departmentId'].dirty || pf['departmentId'].touched)" class="text-red-600 text-xs mt-1">
-            Department is required.
-          </div>
-        </div>
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Base Salary</label>
-          <input class="form-input w-full" type="number" formControlName="baseSalary" min="0" step="0.01" required />
-          <div *ngIf="pf['baseSalary'].invalid && (pf['baseSalary'].dirty || pf['baseSalary'].touched)" class="text-red-600 text-xs mt-1">
-            Base salary is required and must be >= 0.
-          </div>
-        </div>
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-          <textarea class="form-input w-full" formControlName="description" rows="3" required></textarea>
-          <div *ngIf="pf['description'].invalid && (pf['description'].dirty || pf['description'].touched)" class="text-red-600 text-xs mt-1">
-            Description is required.
-          </div>
-        </div>
-        <div class="mb-4">
-          <label class="flex items-center">
-            <input type="checkbox" formControlName="isActive" class="mr-2" />
-            <span class="text-sm font-medium text-gray-700">Active</span>
-          </label>
-        </div>
-      </form>
-    </div>
-    <div class="flex justify-end gap-2 mt-4 pt-4 border-t">
-      <button type="button" class="btn btn-outline" (click)="closePositionModal()">Cancel</button>
-      <button type="button" class="btn btn-primary" (click)="onSubmitPosition()" [disabled]="positionForm.invalid || loading">
-        {{ loading ? 'Saving...' : (isEditingPosition ? 'Update' : 'Create') }}
-      </button>
-    </div>
-  </app-modal>
+    <!-- Departments Tab -->
+    <div *ngIf="activeTabIndex === 0">
+        <p-table 
+          [value]="departments" 
+          [loading]="loading"
+          [paginator]="true" 
+          [rows]="10"
+          [showCurrentPageReport]="true"
+          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+          styleClass="p-datatable-striped">
+          
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Manager</th>
+              <th>Employees</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </ng-template>
+          
+          <ng-template pTemplate="body" let-department>
+            <tr>
+              <td>{{ department.name }}</td>
+              <td>{{ department.description }}</td>
+              <td>{{ getManagerName(department.managerId) }}</td>
+              <td>{{ getDepartmentEmployeeCount(department.id) }}</td>
+              <td>
+                <span 
+                  [class]="department.isActive ? 'text-green-600' : 'text-red-600'"
+                  class="font-semibold">
+                  {{ department.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td>
+                <p-button 
+                  icon="pi pi-pencil" 
+                  [text]="true"
+                  [rounded]="true"
+                  severity="info" 
+                  (onClick)="editDepartment(department)"
+                  title="Edit">
+                </p-button>
+                <p-button 
+                  icon="pi pi-trash" 
+                  [text]="true"
+                  [rounded]="true"
+                  severity="danger" 
+                  (onClick)="deleteDepartment(department.id)"
+                  title="Delete">
+                </p-button>
+              </td>
+            </tr>
+          </ng-template>
+          
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="6" class="text-center p-4">
+                <div class="flex flex-column align-items-center gap-2">
+                  <i class="pi pi-building text-4xl text-400"></i>
+                  <span class="text-500">No departments found</span>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
 
-  <!-- View Department Modal -->
-  <app-modal [isOpen]="isViewModalOpen" title="Department Details" (closeModal)="closeViewModal()">
-    <div *ngIf="selectedDepartment" class="max-h-96 overflow-y-auto pr-2">
+      <!-- Positions Tab -->
+      <div *ngIf="activeTabIndex === 1">
+        <p-table 
+          [value]="positions" 
+          [loading]="loading"
+          [paginator]="true" 
+          [rows]="10"
+          [showCurrentPageReport]="true"
+          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+          styleClass="p-datatable-striped">
+          
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Title</th>
+              <th>Department</th>
+              <th>Description</th>
+              <th>Salary Range</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </ng-template>
+          
+          <ng-template pTemplate="body" let-position>
+            <tr>
+              <td>{{ position.title }}</td>
+              <td>{{ getDepartmentName(position.departmentId) }}</td>
+              <td>{{ position.description }}</td>
+              <td>{{ position.minSalary | currency }} - {{ position.maxSalary | currency }}</td>
+              <td>
+                <span 
+                  [class]="position.isActive ? 'text-green-600' : 'text-red-600'"
+                  class="font-semibold">
+                  {{ position.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td>
+                <p-button 
+                  icon="pi pi-pencil" 
+                  [text]="true"
+                  [rounded]="true"
+                  severity="info" 
+                  (onClick)="editPosition(position)"
+                  title="Edit">
+                </p-button>
+                <p-button 
+                  icon="pi pi-trash" 
+                  [text]="true"
+                  [rounded]="true"
+                  severity="danger" 
+                  (onClick)="deletePosition(position.id)"
+                  title="Delete">
+                </p-button>
+              </td>
+            </tr>
+          </ng-template>
+          
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="6" class="text-center p-4">
+                <div class="flex flex-column align-items-center gap-2">
+                  <i class="pi pi-briefcase text-4xl text-400"></i>
+                  <span class="text-500">No positions found</span>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+  </p-card>
+
+  <!-- Department Dialog -->
+  <p-dialog 
+    [(visible)]="isDepartmentModalOpen" 
+    [header]="isEditingDepartment ? 'Edit Department' : 'Add Department'"
+    [modal]="true"
+    [style]="{width: '500px'}"
+    [draggable]="false"
+    [resizable]="false"
+    (onHide)="closeDepartmentModal()">
+    
+    <form [formGroup]="departmentForm" (ngSubmit)="onSubmitDepartment()">
+      <p-message 
+        *ngIf="error" 
+        severity="error" 
+        [text]="error"
+        class="mb-4">
+      </p-message>
+      
+      <p-message 
+        *ngIf="success" 
+        severity="success" 
+        [text]="success"
+        class="mb-4">
+      </p-message>
+
+      <div class="field mb-4">
+        <label for="deptName" class="block text-900 font-medium mb-2">Name *</label>
+        <input 
+          pInputText 
+          id="deptName" 
+          formControlName="name"
+          class="w-full"
+          placeholder="Enter department name" />
+        <small 
+          *ngIf="df['name'].invalid && (df['name'].dirty || df['name'].touched)" 
+          class="p-error block">
+          Name is required (min 2 chars)
+        </small>
+      </div>
+
+      <div class="field mb-4">
+        <label for="deptDescription" class="block text-900 font-medium mb-2">Description *</label>
+        <textarea 
+          pInputText
+          id="deptDescription" 
+          formControlName="description"
+          rows="3"
+          class="w-full"
+          placeholder="Enter department description">
+        </textarea>
+        <small 
+          *ngIf="df['description'].invalid && (df['description'].dirty || df['description'].touched)" 
+          class="p-error block">
+          Description is required
+        </small>
+      </div>
+
+      <div class="field mb-4">
+        <label for="managerId" class="block text-900 font-medium mb-2">Manager</label>
+        <select 
+          pInputText
+          formControlName="managerId"
+          class="w-full">
+          <option value="">-- No Manager --</option>
+          <option *ngFor="let emp of employees" [value]="emp.id">
+            {{ emp.firstName }} {{ emp.lastName }}
+          </option>
+        </select>
+      </div>
+
+      <div class="field mb-4">
+        <p-checkbox 
+          formControlName="isActive" 
+          binary="true" 
+          label="Active"
+          class="mr-2">
+        </p-checkbox>
+      </div>
+    </form>
+    
+    <ng-template pTemplate="footer">
+      <div class="flex justify-content-end gap-2">
+        <p-button 
+          label="Cancel" 
+          icon="pi pi-times" 
+          [text]="true"
+          (onClick)="closeDepartmentModal()">
+        </p-button>
+        <p-button 
+          [label]="isEditingDepartment ? 'Update' : 'Save'" 
+          icon="pi pi-check" 
+          (onClick)="onSubmitDepartment()"
+          [loading]="loading"
+          [disabled]="departmentForm.invalid">
+        </p-button>
+      </div>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Position Dialog -->
+  <p-dialog 
+    [(visible)]="isPositionModalOpen" 
+    [header]="isEditingPosition ? 'Edit Position' : 'Add Position'"
+    [modal]="true"
+    [style]="{width: '500px'}"
+    [draggable]="false"
+    [resizable]="false"
+    (onHide)="closePositionModal()">
+    
+    <form [formGroup]="positionForm" (ngSubmit)="onSubmitPosition()">
+      <p-message 
+        *ngIf="error" 
+        severity="error" 
+        [text]="error"
+        class="mb-4">
+      </p-message>
+      
+      <p-message 
+        *ngIf="success" 
+        severity="success" 
+        [text]="success"
+        class="mb-4">
+      </p-message>
+
+      <div class="field mb-4">
+        <label for="posTitle" class="block text-900 font-medium mb-2">Title *</label>
+        <input 
+          pInputText 
+          id="posTitle" 
+          formControlName="title"
+          class="w-full"
+          placeholder="Enter position title" />
+        <small 
+          *ngIf="pf['title'].invalid && (pf['title'].dirty || pf['title'].touched)" 
+          class="p-error block">
+          Title is required (min 2 chars)
+        </small>
+      </div>
+
+      <div class="field mb-4">
+        <label for="posDepartmentId" class="block text-900 font-medium mb-2">Department *</label>
+        <select 
+          pInputText
+          formControlName="departmentId"
+          class="w-full">
+          <option value="">-- Select Department --</option>
+          <option *ngFor="let dept of departments" [value]="dept.id">
+            {{ dept.name }}
+          </option>
+        </select>
+        <small 
+          *ngIf="pf['departmentId'].invalid && (pf['departmentId'].dirty || pf['departmentId'].touched)" 
+          class="p-error block">
+          Department is required
+        </small>
+      </div>
+
+      <div class="field mb-4">
+        <label for="baseSalary" class="block text-900 font-medium mb-2">Base Salary *</label>
+        <input 
+          pInputText
+          type="number"
+          step="0.01"
+          min="0"
+          formControlName="baseSalary"
+          class="w-full"
+          placeholder="Enter base salary" />
+        <small 
+          *ngIf="pf['baseSalary'].invalid && (pf['baseSalary'].dirty || pf['baseSalary'].touched)" 
+          class="p-error block">
+          Base salary is required and must be >= 0
+        </small>
+      </div>
+
+      <div class="field mb-4">
+        <label for="posDescription" class="block text-900 font-medium mb-2">Description *</label>
+        <textarea 
+          pInputText
+          id="posDescription" 
+          formControlName="description"
+          rows="3"
+          class="w-full"
+          placeholder="Enter position description">
+        </textarea>
+        <small 
+          *ngIf="pf['description'].invalid && (pf['description'].dirty || pf['description'].touched)" 
+          class="p-error block">
+          Description is required
+        </small>
+      </div>
+
+      <div class="field mb-4">
+        <p-checkbox 
+          formControlName="isActive" 
+          binary="true" 
+          label="Active"
+          class="mr-2">
+        </p-checkbox>
+      </div>
+    </form>
+    
+    <ng-template pTemplate="footer">
+      <div class="flex justify-content-end gap-2">
+        <p-button 
+          label="Cancel" 
+          icon="pi pi-times" 
+          [text]="true"
+          (onClick)="closePositionModal()">
+        </p-button>
+        <p-button 
+          [label]="isEditingPosition ? 'Update' : 'Save'" 
+          icon="pi pi-check" 
+          (onClick)="onSubmitPosition()"
+          [loading]="loading"
+          [disabled]="positionForm.invalid">
+        </p-button>
+      </div>
+    </ng-template>
+  </p-dialog>
+
+  <!-- View Department Dialog -->
+  <p-dialog 
+    [(visible)]="isViewModalOpen" 
+    header="Department Details"
+    [modal]="true"
+    [style]="{width: '600px'}"
+    [draggable]="false"
+    [resizable]="false"
+    (onHide)="closeViewModal()">
+    
+    <div *ngIf="selectedDepartment" class="max-h-96 overflow-y-auto">
       <div class="mb-4">
-        <h3 class="text-lg font-semibold mb-2">{{ selectedDepartment.name }}</h3>
-        <p class="text-gray-600 mb-2">{{ selectedDepartment.description }}</p>
+        <h3 class="text-xl font-semibold mb-2 text-900">{{ selectedDepartment.name }}</h3>
+        <p class="text-600 mb-2">{{ selectedDepartment.description }}</p>
         <p class="mb-2"><strong>Manager:</strong> {{ getManagerName(selectedDepartment.managerId) }}</p>
-        <p class="mb-4"><strong>Status:</strong> 
-          <span [class]="selectedDepartment.isActive ? 'text-green-600' : 'text-red-600'">
+        <p class="mb-4">
+          <strong>Status:</strong> 
+          <span [class]="selectedDepartment.isActive ? 'text-green-600' : 'text-red-600'" class="font-semibold">
             {{ selectedDepartment.isActive ? 'Active' : 'Inactive' }}
           </span>
         </p>
       </div>
       
       <div class="mb-4">
-        <h4 class="font-semibold mb-2">Positions ({{ getPositionsForDepartment(selectedDepartment.id).length }})</h4>
-        <div *ngIf="getPositionsForDepartment(selectedDepartment.id).length > 0" class="space-y-2">
-          <div *ngFor="let pos of getPositionsForDepartment(selectedDepartment.id)" class="p-2 bg-gray-50 rounded">
-            <div class="flex justify-between items-center">
+        <h4 class="font-semibold mb-2 text-900">Positions ({{ getPositionsForDepartment(selectedDepartment.id).length }})</h4>
+        <div *ngIf="getPositionsForDepartment(selectedDepartment.id).length > 0" class="flex flex-column gap-2">
+          <p-card *ngFor="let pos of getPositionsForDepartment(selectedDepartment.id)" class="surface-100">
+            <div class="flex justify-content-between align-items-center">
               <span class="font-medium">{{ pos.title }}</span>
-              <span class="text-green-600">{{ formatCurrency(pos.baseSalary) }}</span>
+              <span class="text-green-600 font-semibold">{{ formatCurrency(pos.baseSalary) }}</span>
             </div>
-            <p class="text-sm text-gray-600">{{ pos.description }}</p>
-          </div>
+            <p class="text-sm text-600 mt-1">{{ pos.description }}</p>
+          </p-card>
         </div>
-        <p *ngIf="getPositionsForDepartment(selectedDepartment.id).length === 0" class="text-gray-500 italic">
+        <p *ngIf="getPositionsForDepartment(selectedDepartment.id).length === 0" class="text-500 italic">
           No positions in this department.
         </p>
       </div>
 
       <div class="mb-4">
-        <h4 class="font-semibold mb-2">Employees ({{ departmentEmployees.length }})</h4>
-        <div *ngIf="departmentEmployees.length > 0" class="space-y-2">
-          <div *ngFor="let emp of departmentEmployees" class="p-2 bg-gray-50 rounded">
-            <div class="flex justify-between items-center">
+        <h4 class="font-semibold mb-2 text-900">Employees ({{ departmentEmployees.length }})</h4>
+        <div *ngIf="departmentEmployees.length > 0" class="flex flex-column gap-2">
+          <p-card *ngFor="let emp of departmentEmployees" class="surface-100">
+            <div class="flex justify-content-between align-items-center">
               <span class="font-medium">{{ emp.firstName }} {{ emp.lastName }}</span>
-              <span class="text-sm text-gray-600">{{ emp.position }}</span>
+              <span class="text-sm text-600">{{ emp.position }}</span>
             </div>
-            <p class="text-sm text-gray-600">{{ emp.email }}</p>
-          </div>
+            <p class="text-sm text-600 mt-1">{{ emp.email }}</p>
+          </p-card>
         </div>
-        <p *ngIf="departmentEmployees.length === 0" class="text-gray-500 italic">
+        <p *ngIf="departmentEmployees.length === 0" class="text-500 italic">
           No employees in this department.
         </p>
       </div>
     </div>
-    <div class="flex justify-end gap-2 mt-4 pt-4 border-t">
-      <button type="button" class="btn btn-outline" (click)="closeViewModal()">Close</button>
-    </div>
-  </app-modal>
+    
+    <ng-template pTemplate="footer">
+      <div class="flex justify-content-end">
+        <p-button 
+          label="Close" 
+          icon="pi pi-times" 
+          [text]="true"
+          (onClick)="closeViewModal()">
+        </p-button>
+      </div>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Toast for notifications -->
+  <p-toast></p-toast>
+  
+  <!-- Confirmation dialog -->
+  <p-confirmDialog></p-confirmDialog>
 </div>
