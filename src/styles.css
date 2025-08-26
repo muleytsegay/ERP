@@ -1,8 +1,8 @@
+@import "tailwindcss";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Your global custom styles below */
-body {
-  @apply bg-gray-50 text-gray-900;
-}
+/* ...existing code... */
+@import "primeng/resources/themes/lara-light-indigo/theme.css";
+@import "primeng/resources/primeng.min.css";
+@import "primeicons/primeicons.css";

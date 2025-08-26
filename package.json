@@ -21,6 +21,9 @@
     "@angular/router": "^19.2.0",
     "@angular/ssr": "^19.2.15",
     "express": "^4.18.2",
+    "primeflex": "^3.3.0",
+    "primeicons": "^6.0.1",
+    "primeng": "^17.18.7",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
@@ -41,9 +44,7 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "postcss": "^8.5.6",
-
-    "tailwindcss": "^3.4.14",
-    "typescript": "~5.7.2"
-
+    "tailwindcss": "^4.1.12",
+    "typescript": "^5.8.3"
   }
 }
