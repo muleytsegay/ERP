@@ -1,4 +1,219 @@
-<div class="attendance-container">
-  <h2>Employee Attendance</h2>
-  <!-- Attendance form and list will go here -->
+<div class="component-container">
+  <p-card>
+    <div class="flex justify-content-between align-items-center mb-4">
+      <h2 class="text-2xl font-bold text-900">Employee Attendance</h2>
+      <p-button 
+        label="Mark Attendance" 
+        icon="pi pi-plus" 
+        (onClick)="openAttendanceModal()">
+      </p-button>
+    </div>
+
+    <!-- Date Filter -->
+    <div class="mb-4">
+      <label for="dateFilter" class="block text-900 font-medium mb-2">Filter by Date</label>
+      <input 
+        pInputText
+        type="date"
+        [(ngModel)]="selectedDate"
+        class="w-full md:w-20rem" />
+    </div>
+
+    <!-- Attendance Table -->
+    <p-table 
+      [value]="filteredRecords" 
+      [loading]="loading"
+      [paginator]="true" 
+      [rows]="10"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+      styleClass="p-datatable-striped">
+      
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Employee</th>
+          <th>Department</th>
+          <th>Date</th>
+          <th>Time In</th>
+          <th>Time Out</th>
+          <th>Hours Worked</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+      
+      <ng-template pTemplate="body" let-record>
+        <tr>
+          <td>{{ record.employeeName }}</td>
+          <td>{{ record.department }}</td>
+          <td>{{ record.date | date:'dd/MM/yyyy' }}</td>
+          <td>{{ record.timeIn }}</td>
+          <td>{{ record.timeOut }}</td>
+          <td>{{ record.hoursWorked }}h</td>
+          <td>
+            <p-tag 
+              [value]="record.status" 
+              [severity]="getStatusSeverity(record.status)">
+            </p-tag>
+          </td>
+          <td>
+            <p-button 
+              icon="pi pi-pencil" 
+              [text]="true"
+              [rounded]="true"
+              severity="info" 
+              (onClick)="editAttendance(record)"
+              title="Edit">
+            </p-button>
+            <p-button 
+              icon="pi pi-trash" 
+              [text]="true"
+              [rounded]="true"
+              severity="danger" 
+              (onClick)="deleteAttendance(record.id)"
+              title="Delete">
+            </p-button>
+          </td>
+        </tr>
+      </ng-template>
+      
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="8" class="text-center p-4">
+            <div class="flex flex-column align-items-center gap-2">
+              <i class="pi pi-clock text-4xl text-400"></i>
+              <span class="text-500">No attendance records found</span>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+
+  <!-- Attendance Dialog -->
+  <p-dialog 
+    [(visible)]="showAttendanceModal" 
+    [header]="isEditMode ? 'Edit Attendance' : 'Mark Attendance'"
+    [modal]="true"
+    [style]="{width: '500px'}"
+    [draggable]="false"
+    [resizable]="false"
+    (onHide)="closeAttendanceModal()">
+    
+    <form [formGroup]="attendanceForm" (ngSubmit)="onSubmitAttendance()">
+      <p-message 
+        *ngIf="error" 
+        severity="error" 
+        [text]="error"
+        class="mb-4">
+      </p-message>
+
+      <div class="field mb-4">
+        <label for="employee" class="block text-900 font-medium mb-2">Employee *</label>
+        <select 
+          pInputText
+          formControlName="employeeId"
+          class="w-full">
+          <option value="">-- Select Employee --</option>
+          <option *ngFor="let emp of employeeOptions" [value]="emp.value">
+            {{ emp.label }}
+          </option>
+        </select>
+        <small 
+          *ngIf="af['employeeId'].invalid && af['employeeId'].touched" 
+          class="p-error block">
+          Employee is required
+        </small>
+      </div>
+
+      <div class="field mb-4">
+        <label for="attendanceDate" class="block text-900 font-medium mb-2">Date *</label>
+        <input 
+          pInputText
+          type="date"
+          formControlName="date"
+          class="w-full" />
+        <small 
+          *ngIf="af['date'].invalid && af['date'].touched" 
+          class="p-error block">
+          Date is required
+        </small>
+      </div>
+
+      <div class="grid">
+        <div class="col-6">
+          <div class="field">
+            <label for="timeIn" class="block text-900 font-medium mb-2">Time In *</label>
+            <input 
+              pInputText 
+              type="time"
+              formControlName="timeIn"
+              class="w-full" />
+            <small 
+              *ngIf="af['timeIn'].invalid && af['timeIn'].touched" 
+              class="p-error block">
+              Time In is required
+            </small>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="field">
+            <label for="timeOut" class="block text-900 font-medium mb-2">Time Out *</label>
+            <input 
+              pInputText 
+              type="time"
+              formControlName="timeOut"
+              class="w-full" />
+            <small 
+              *ngIf="af['timeOut'].invalid && af['timeOut'].touched" 
+              class="p-error block">
+              Time Out is required
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <div class="field mb-4">
+        <label for="status" class="block text-900 font-medium mb-2">Status *</label>
+        <select 
+          pInputText
+          formControlName="status"
+          class="w-full">
+          <option value="">-- Select Status --</option>
+          <option *ngFor="let status of statusOptions" [value]="status.value">
+            {{ status.label }}
+          </option>
+        </select>
+        <small 
+          *ngIf="af['status'].invalid && af['status'].touched" 
+          class="p-error block">
+          Status is required
+        </small>
+      </div>
+    </form>
+    
+    <ng-template pTemplate="footer">
+      <div class="flex justify-content-end gap-2">
+        <p-button 
+          label="Cancel" 
+          icon="pi pi-times" 
+          [text]="true"
+          (onClick)="closeAttendanceModal()">
+        </p-button>
+        <p-button 
+          [label]="isEditMode ? 'Update' : 'Save'" 
+          icon="pi pi-check" 
+          (onClick)="onSubmitAttendance()"
+          [loading]="loading"
+          [disabled]="attendanceForm.invalid">
+        </p-button>
+      </div>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Toast for notifications -->
+  <p-toast></p-toast>
+  
+  <!-- Confirmation dialog -->
+  <p-confirmDialog></p-confirmDialog>
 </div>

@@ -6,13 +6,36 @@ import { RouterModule } from '@angular/router';
 import { DepartmentService } from '../services/department.service';
 import { EmployeeService } from '../../employee/services/employee.service';
 import { Department, Position, Employee } from '../../employee/models/employee.model';
-import { TableComponent } from '../../../shared/components/ui/table/table.component';
-import { ModalComponent } from '../../../shared/components/ui/modal/modal.component';
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
+import { CardModule } from 'primeng/card';
+import { ToastModule } from 'primeng/toast';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { MessageModule } from 'primeng/message';
+import { CheckboxModule } from 'primeng/checkbox';
+import { MessageService, ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'app-department',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule, TableComponent, ModalComponent],
+  imports: [
+    CommonModule, 
+    ReactiveFormsModule, 
+    FormsModule, 
+    RouterModule, 
+    TableModule,
+    ButtonModule,
+    DialogModule,
+    InputTextModule,
+    CardModule,
+    ToastModule,
+    ConfirmDialogModule,
+    MessageModule,
+    CheckboxModule
+  ],
+  providers: [MessageService, ConfirmationService],
   templateUrl: './department.component.html',
 })
 export class DepartmentComponent implements OnInit {
@@ -29,6 +52,11 @@ export class DepartmentComponent implements OnInit {
   positionForm: FormGroup;
   searchTerm = '';
   activeTab = 'departments';
+  activeTabIndex = 0; // For PrimeNG TabView
+  
+  // Dropdown options for PrimeNG
+  employeeOptions: any[] = [];
+  departmentOptions: any[] = [];
   
   isDepartmentModalOpen = false;
   isPositionModalOpen = false;
@@ -57,7 +85,9 @@ export class DepartmentComponent implements OnInit {
   constructor(
     private departmentService: DepartmentService,
     private employeeService: EmployeeService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService
   ) {
     this.departmentForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
@@ -79,6 +109,21 @@ export class DepartmentComponent implements OnInit {
     this.loadDepartments();
     this.loadPositions();
     this.loadEmployees();
+    this.setupDropdownOptions();
+  }
+
+  setupDropdownOptions(): void {
+    // Setup employee options for dropdown
+    this.employeeOptions = this.employees.map(emp => ({
+      label: `${emp.firstName} ${emp.lastName}`,
+      value: emp.id
+    }));
+
+    // Setup department options for dropdown
+    this.departmentOptions = this.departments.map(dept => ({
+      label: dept.name,
+      value: dept.id
+    }));
   }
 
   loadDepartments(): void {
@@ -87,6 +132,7 @@ export class DepartmentComponent implements OnInit {
       next: (departments) => {
         this.departments = departments;
         this.filteredDepartments = departments;
+        this.setupDropdownOptions();
         this.updateTransformedDepartments();
         this.loading = false;
       },
@@ -132,6 +178,7 @@ export class DepartmentComponent implements OnInit {
     this.employeeService.getEmployees().subscribe({
       next: (employees) => {
         this.employees = employees;
+        this.setupDropdownOptions();
         this.updateTransformedDepartments();
         this.updateTransformedPositions();
       },
@@ -281,7 +328,11 @@ export class DepartmentComponent implements OnInit {
     this.departmentService.createDepartment(departmentData).subscribe({
       next: (department) => {
         this.loading = false;
-        this.success = 'Department created successfully!';
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Department created successfully!'
+        });
         this.loadDepartments();
         this.closeDepartmentModal();
       },
@@ -301,7 +352,11 @@ export class DepartmentComponent implements OnInit {
     this.departmentService.updateDepartment(this.editingDepartmentId, departmentData).subscribe({
       next: (department) => {
         this.loading = false;
-        this.success = 'Department updated successfully!';
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Department updated successfully!'
+        });
         this.loadDepartments();
         this.closeDepartmentModal();
       },
@@ -331,7 +386,11 @@ export class DepartmentComponent implements OnInit {
     this.departmentService.createPosition(this.positionForm.value).subscribe({
       next: (position) => {
         this.loading = false;
-        this.success = 'Position created successfully!';
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Position created successfully!'
+        });
         this.loadPositions();
         this.closePositionModal();
       },
@@ -346,7 +405,11 @@ export class DepartmentComponent implements OnInit {
     this.departmentService.updatePosition(this.editingPositionId, this.positionForm.value).subscribe({
       next: (position) => {
         this.loading = false;
-        this.success = 'Position updated successfully!';
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Position updated successfully!'
+        });
         this.loadPositions();
         this.closePositionModal();
       },
@@ -357,32 +420,78 @@ export class DepartmentComponent implements OnInit {
     });
   }
 
-  deleteDepartment(department: Department): void {
-    if (confirm(`Are you sure you want to delete the department "${department.name}"?`)) {
-      this.departmentService.deleteDepartment(department.id).subscribe({
-        next: () => {
-          this.success = 'Department deleted successfully!';
-          this.loadDepartments();
-        },
-        error: (error) => {
-          this.error = error.error?.message || 'Failed to delete department';
-        }
-      });
-    }
+  // PrimeNG specific methods
+  editDepartment(department: Department): void {
+    this.openEditDepartmentModal(department);
   }
 
-  deletePosition(position: Position): void {
-    if (confirm(`Are you sure you want to delete the position "${position.title}"?`)) {
-      this.departmentService.deletePosition(position.id).subscribe({
-        next: () => {
-          this.success = 'Position deleted successfully!';
-          this.loadPositions();
-        },
-        error: (error) => {
-          this.error = error.error?.message || 'Failed to delete position';
-        }
-      });
-    }
+  editPosition(position: Position): void {
+    this.openEditPositionModal(position);
+  }
+
+  getDepartmentEmployeeCount(departmentId: string): number {
+    return this.employees.filter(e => e.department === departmentId).length;
+  }
+
+  // Update delete methods to use PrimeNG confirmation dialog
+  deleteDepartment(departmentId: string): void {
+    const department = this.departments.find(d => d.id === departmentId);
+    if (!department) return;
+
+    this.confirmationService.confirm({
+      message: `Are you sure you want to delete the department "${department.name}"?`,
+      header: 'Delete Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.departmentService.deleteDepartment(departmentId).subscribe({
+          next: () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: 'Department deleted successfully!'
+            });
+            this.loadDepartments();
+          },
+          error: (error) => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: error.error?.message || 'Failed to delete department'
+            });
+          }
+        });
+      }
+    });
+  }
+
+  deletePosition(positionId: string): void {
+    const position = this.positions.find(p => p.id === positionId);
+    if (!position) return;
+
+    this.confirmationService.confirm({
+      message: `Are you sure you want to delete the position "${position.title}"?`,
+      header: 'Delete Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.departmentService.deletePosition(positionId).subscribe({
+          next: () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: 'Position deleted successfully!'
+            });
+            this.loadPositions();
+          },
+          error: (error) => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: error.error?.message || 'Failed to delete position'
+            });
+          }
+        });
+      }
+    });
   }
 
   getDepartmentName(departmentId: string): string {
