@@ -7,11 +7,16 @@ import {
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../../../shared/services/auth.service';
-
+import { AuthService } from '../../../core/services/auth.service';
+import { ThemeService } from '../../../shared/services/theme.service';
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+import { InputTextModule } from 'primeng/inputtext';
+import { PasswordModule } from 'primeng/password';
+import { MessageModule } from 'primeng/message';
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, ButtonModule, CardModule, InputTextModule, PasswordModule, MessageModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
@@ -23,7 +28,8 @@ export class LoginComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    public themeService: ThemeService
   ) {
     this.loginForm = this.formBuilder.group({
       email: ['', [Validators.required]],

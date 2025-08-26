@@ -3,6 +3,71 @@
 @tailwind components;
 @tailwind utilities;
 /* ...existing code... */
-@import "primeng/resources/themes/lara-light-indigo/theme.css";
-@import "primeng/resources/primeng.min.css";
+
+/* You can add global styles to this file, and also import other style files */
+
+/* PrimeNG Theme and Core Styles */
+@import "@primeng/themes/lara";
 @import "primeicons/primeicons.css";
+@import "primeflex/primeflex.css";
+
+/* Global styles */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--p-font-family);
+  background-color: #f8f9fa;
+  color: var(--p-text-color);
+}
+
+/* Main content background */
+.main-content {
+  padding: 1rem;
+  background-color: white;
+  min-height: calc(100vh - 60px);
+}
+
+/* Custom menubar styling */
+.custom-menubar {
+  border: none !important;
+  background: white !important;
+  border-radius: 0 !important;
+  padding: 0.5rem 1rem !important;
+}
+
+.custom-menubar .p-menubar-start {
+  margin-right: auto;
+}
+
+.custom-menubar .p-menubar-end {
+  margin-left: auto;
+}
+
+/* Component white backgrounds */
+.p-card {
+  background: white !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+}
+
+.p-datatable {
+  background: white !important;
+}
+
+.p-datatable .p-datatable-header {
+  background: white !important;
+}
+
+.p-dialog {
+  background: white !important;
+}
+
+/* Ensure all components have white backgrounds */
+.component-container {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}

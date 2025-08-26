@@ -31,12 +31,19 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.authService.currentUser$.subscribe((user) => {
       this.currentUser = user;
+      if (user) {
+        this.initializeMenu();
+      }
     });
   }
 
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/auth/login']);
+  }
+
+  navigateToProfile(): void {
+    this.router.navigate(['/auth/profile']);
   }
 
   isAuthenticated(): boolean {

@@ -1,344 +1,345 @@
-<div class="min-h-screen bg-gray-50 py-8">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <!-- Welcome Section -->
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900">
-        {{ getGreeting() }}, {{ currentUser?.firstName }}!
-      </h1>
-      <p class="mt-2 text-gray-600">Welcome to your ERP Dashboard</p>
-    </div>
-
-    <!-- Statistics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <!-- Total Employees -->
-      <div class="bg-white overflow-hidden shadow rounded-lg">
-        <div class="p-5">
-          <div class="flex items-center">
-            <div class="flex-shrink-0">
-              <div class="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                </svg>
-              </div>
-            </div>
-            <div class="ml-5 w-0 flex-1">
-              <dl>
-                <dt class="text-sm font-medium text-gray-500 truncate">Total Employees</dt>
-                <dd class="text-lg font-medium text-gray-900">{{ stats.totalEmployees }}</dd>
-              </dl>
-            </div>
-          </div>
-        </div>
+<div class="component-container">
+  <!-- Welcome Section -->
+  <p-card class="mb-4">
+    <div class="flex align-items-center justify-content-between">
+      <div>
+        <h1 class="text-3xl font-bold text-900 m-0">
+          {{ getGreeting() }}, {{ currentUser?.firstName }}!
+        </h1>
+        <p class="mt-2 text-600 text-lg">Welcome to your ERP Dashboard</p>
       </div>
-
-      <!-- Active Employees -->
-      <div class="bg-white overflow-hidden shadow rounded-lg">
-        <div class="p-5">
-          <div class="flex items-center">
-            <div class="flex-shrink-0">
-              <div class="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-              </div>
-            </div>
-            <div class="ml-5 w-0 flex-1">
-              <dl>
-                <dt class="text-sm font-medium text-gray-500 truncate">Active Employees</dt>
-                <dd class="text-lg font-medium text-gray-900">{{ stats.activeEmployees }}</dd>
-              </dl>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- New Hires This Month -->
-      <div class="bg-white overflow-hidden shadow rounded-lg">
-        <div class="p-5">
-          <div class="flex items-center">
-            <div class="flex-shrink-0">
-              <div class="w-8 h-8 bg-indigo-500 rounded-md flex items-center justify-center">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
-                </svg>
-              </div>
-            </div>
-            <div class="ml-5 w-0 flex-1">
-              <dl>
-                <dt class="text-sm font-medium text-gray-500 truncate">New Hires This Month</dt>
-                <dd class="text-lg font-medium text-gray-900">{{ stats.newHiresThisMonth }}</dd>
-              </dl>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Average Salary -->
-      <div class="bg-white overflow-hidden shadow rounded-lg">
-        <div class="p-5">
-          <div class="flex items-center">
-            <div class="flex-shrink-0">
-              <div class="w-8 h-8 bg-yellow-500 rounded-md flex items-center justify-center">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-              </div>
-            </div>
-            <div class="ml-5 w-0 flex-1">
-              <dl>
-                <dt class="text-sm font-medium text-gray-500 truncate">Average Salary</dt>
-                <dd class="text-lg font-medium text-gray-900">{{ formatCurrency(stats.averageSalary) }}</dd>
-              </dl>
-            </div>
-          </div>
-        </div>
+      <div class="flex align-items-center gap-2">
+        <p-avatar 
+          [label]="(currentUser?.firstName || 'U') + (currentUser?.lastName?.charAt(0) || '')" 
+          size="large" 
+          shape="circle" 
+          styleClass="bg-primary">
+        </p-avatar>
       </div>
     </div>
+  </p-card>
 
-    <!-- Additional Statistics Row -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <!-- Total Departments -->
-      <div class="bg-white overflow-hidden shadow rounded-lg">
-        <div class="p-5">
-          <div class="flex items-center">
-            <div class="flex-shrink-0">
-              <div class="w-8 h-8 bg-teal-500 rounded-md flex items-center justify-center">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                </svg>
-              </div>
-            </div>
-            <div class="ml-5 w-0 flex-1">
-              <dl>
-                <dt class="text-sm font-medium text-gray-500 truncate">Total Departments</dt>
-                <dd class="text-lg font-medium text-gray-900">{{ stats.totalDepartments }}</dd>
-              </dl>
-            </div>
+  <!-- Statistics Cards -->
+  <div class="grid mb-4">
+    <!-- Total Employees -->
+    <div class="col-12 md:col-6 lg:col-3">
+      <p-card>
+        <div class="flex align-items-center">
+          <div class="flex align-items-center justify-content-center bg-blue-500 border-round" 
+               style="width: 4rem; height: 4rem;">
+            <i class="pi pi-users text-white text-2xl"></i>
+          </div>
+          <div class="ml-3">
+            <div class="text-500 font-medium mb-1">Total Employees</div>
+            <div class="text-900 font-bold text-2xl">{{ stats.totalEmployees }}</div>
           </div>
         </div>
-      </div>
-
-      <!-- Inactive Employees -->
-      <div class="bg-white overflow-hidden shadow rounded-lg">
-        <div class="p-5">
-          <div class="flex items-center">
-            <div class="flex-shrink-0">
-              <div class="w-8 h-8 bg-red-500 rounded-md flex items-center justify-center">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-              </div>
-            </div>
-            <div class="ml-5 w-0 flex-1">
-              <dl>
-                <dt class="text-sm font-medium text-gray-500 truncate">Inactive Employees</dt>
-                <dd class="text-lg font-medium text-gray-900">{{ stats.inactiveEmployees }}</dd>
-              </dl>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Total Payrolls -->
-      <div class="bg-white overflow-hidden shadow rounded-lg">
-        <div class="p-5">
-          <div class="flex items-center">
-            <div class="flex-shrink-0">
-              <div class="w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
-              </div>
-            </div>
-            <div class="ml-5 w-0 flex-1">
-              <dl>
-                <dt class="text-sm font-medium text-gray-500 truncate">Total Payrolls</dt>
-                <dd class="text-lg font-medium text-gray-900">{{ stats.totalPayrolls }}</dd>
-              </dl>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Monthly Payroll -->
-      <div class="bg-white overflow-hidden shadow rounded-lg">
-        <div class="p-5">
-          <div class="flex items-center">
-            <div class="flex-shrink-0">
-              <div class="w-8 h-8 bg-orange-500 rounded-md flex items-center justify-center">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-              </div>
-            </div>
-            <div class="ml-5 w-0 flex-1">
-              <dl>
-                <dt class="text-sm font-medium text-gray-500 truncate">Monthly Payroll</dt>
-                <dd class="text-lg font-medium text-gray-900">{{ formatCurrency(stats.monthlyPayroll) }}</dd>
-              </dl>
-            </div>
-          </div>
-        </div>
-      </div>
+      </p-card>
     </div>
 
-    <!-- Employee Reports Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-      <!-- Recent Hires -->
-      <div class="bg-white shadow rounded-lg p-6">
-        <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
-          <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
-          </svg>
-          Recent Hires
-        </h3>
-        <div class="space-y-3">
-          <div *ngFor="let employee of recentEmployees" class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-            <div class="flex-1">
-              <div class="text-sm font-medium text-gray-900">{{ employee.firstName }} {{ employee.lastName }}</div>
-              <div class="text-xs text-gray-500">{{ employee.position }} - {{ employee.department }}</div>
-              <div class="text-xs text-gray-400">Hired: {{ employee.hireDate | date:'MMM d, y' }}</div>
-            </div>
-            <div class="flex-shrink-0">
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                    [ngClass]="employee.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
-                {{ employee.isActive ? 'Active' : 'Inactive' }}
-              </span>
-            </div>
+    <!-- Active Employees -->
+    <div class="col-12 md:col-6 lg:col-3">
+      <p-card>
+        <div class="flex align-items-center">
+          <div class="flex align-items-center justify-content-center bg-green-500 border-round" 
+               style="width: 4rem; height: 4rem;">
+            <i class="pi pi-check-circle text-white text-2xl"></i>
           </div>
-          <div *ngIf="recentEmployees.length === 0" class="text-center py-4 text-gray-500 text-sm">
-            No recent hires found
+          <div class="ml-3">
+            <div class="text-500 font-medium mb-1">Active Employees</div>
+            <div class="text-900 font-bold text-2xl">{{ stats.activeEmployees }}</div>
           </div>
         </div>
-      </div>
-
-      <!-- Department Distribution -->
-      <div class="bg-white shadow rounded-lg p-6">
-        <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
-          <svg class="w-5 h-5 mr-2 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-          </svg>
-          Department Distribution
-        </h3>
-        <div class="space-y-3">
-          <div *ngFor="let dept of departmentStats; let i = index" class="flex items-center justify-between">
-            <div class="flex-1">
-              <div class="flex items-center justify-between">
-                <span class="text-sm font-medium text-gray-900">{{ dept.name }}</span>
-                <span class="text-sm text-gray-600">{{ dept.count }} employees</span>
-              </div>
-              <div class="mt-1 w-full bg-gray-200 rounded-full h-2">
-                <div class="bg-gradient-to-r from-blue-500 to-teal-500 h-2 rounded-full transition-all duration-300"
-                     [style.width.%]="(dept.count / stats.totalEmployees) * 100"></div>
-              </div>
-            </div>
-          </div>
-          <div *ngIf="departmentStats.length === 0" class="text-center py-4 text-gray-500 text-sm">
-            No departments found
-          </div>
-        </div>
-      </div>
+      </p-card>
     </div>
 
-    <!-- Quick Actions -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-      <div class="bg-white shadow rounded-lg p-6">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
-        <div class="space-y-3">
-          <a routerLink="/payroll/employees" class="block w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-center transition-colors">
-            Manage Employees
-          </a>
-          <a routerLink="/payroll/salary-calculation" class="block w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 text-center transition-colors">
-            Calculate Salary
-          </a>
-          <a routerLink="/payroll/payslips" class="block w-full bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 text-center transition-colors">
-            View Payslips
-          </a>
-        </div>
-      </div>
-
-      <div class="bg-white shadow rounded-lg p-6">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">Recent Activity</h3>
-        <div class="space-y-3">
-          <div class="flex items-center p-3 bg-gray-50 rounded-md">
-            <div class="flex-shrink-0">
-              <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                </svg>
-              </div>
-            </div>
-            <div class="ml-3">
-              <p class="text-sm font-medium text-gray-900">System initialized</p>
-              <p class="text-sm text-gray-500">Welcome to the ERP system</p>
-            </div>
+    <!-- New Hires This Month -->
+    <div class="col-12 md:col-6 lg:col-3">
+      <p-card>
+        <div class="flex align-items-center">
+          <div class="flex align-items-center justify-content-center bg-orange-500 border-round" 
+               style="width: 4rem; height: 4rem;">
+            <i class="pi pi-user-plus text-white text-2xl"></i>
           </div>
+          <div class="ml-3">
+            <div class="text-500 font-medium mb-1">New Hires This Month</div>
+            <div class="text-900 font-bold text-2xl">{{ stats.newHiresThisMonth }}</div>
+          </div>
+        </div>
+      </p-card>
+    </div>
+
+    <!-- Total Departments -->
+    <div class="col-12 md:col-6 lg:col-3">
+      <p-card>
+        <div class="flex align-items-center">
+          <div class="flex align-items-center justify-content-center bg-purple-500 border-round" 
+               style="width: 4rem; height: 4rem;">
+            <i class="pi pi-building text-white text-2xl"></i>
+          </div>
+          <div class="ml-3">
+            <div class="text-500 font-medium mb-1">Total Departments</div>
+            <div class="text-900 font-bold text-2xl">{{ stats.totalDepartments }}</div>
+          </div>
+        </div>
+      </p-card>
+    </div>
+
+    <!-- Average Salary -->
+    <div class="col-12 md:col-6 lg:col-3">
+      <p-card>
+        <div class="flex align-items-center">
+          <div class="flex align-items-center justify-content-center bg-teal-500 border-round" 
+               style="width: 4rem; height: 4rem;">
+            <i class="pi pi-dollar text-white text-2xl"></i>
+          </div>
+          <div class="ml-3">
+            <div class="text-500 font-medium mb-1">Average Salary</div>
+            <div class="text-900 font-bold text-2xl">{{ formatCurrency(stats.averageSalary) }}</div>
+          </div>
+        </div>
+      </p-card>
+    </div>
+
+    <!-- Monthly Payroll -->
+    <div class="col-12 md:col-6 lg:col-3">
+      <p-card>
+        <div class="flex align-items-center">
+          <div class="flex align-items-center justify-content-center bg-pink-500 border-round" 
+               style="width: 4rem; height: 4rem;">
+            <i class="pi pi-credit-card text-white text-2xl"></i>
+          </div>
+          <div class="ml-3">
+            <div class="text-500 font-medium mb-1">Monthly Payroll</div>
+            <div class="text-900 font-bold text-2xl">{{ formatCurrency(stats.monthlyPayroll) }}</div>
+          </div>
+        </div>
+      </p-card>
+    </div>
+
+    <!-- Total Payrolls -->
+    <div class="col-12 md:col-6 lg:col-3">
+      <p-card>
+        <div class="flex align-items-center">
+          <div class="flex align-items-center justify-content-center bg-indigo-500 border-round" 
+               style="width: 4rem; height: 4rem;">
+            <i class="pi pi-file text-white text-2xl"></i>
+          </div>
+          <div class="ml-3">
+            <div class="text-500 font-medium mb-1">Total Payrolls</div>
+            <div class="text-900 font-bold text-2xl">{{ stats.totalPayrolls }}</div>
+          </div>
+        </div>
+      </p-card>
+    </div>
+
+    <!-- Inactive Employees -->
+    <div class="col-12 md:col-6 lg:col-3">
+      <p-card>
+        <div class="flex align-items-center">
+          <div class="flex align-items-center justify-content-center bg-red-500 border-round" 
+               style="width: 4rem; height: 4rem;">
+            <i class="pi pi-times-circle text-white text-2xl"></i>
+          </div>
+          <div class="ml-3">
+            <div class="text-500 font-medium mb-1">Inactive Employees</div>
+            <div class="text-900 font-bold text-2xl">{{ stats.inactiveEmployees }}</div>
+          </div>
+        </div>
+      </p-card>
+    </div>
+  </div>
+
+  <!-- Charts and Reports Section -->
+  <div class="grid mb-4">
+    <!-- Recent Hires -->
+    <div class="col-12 lg:col-6">
+      <p-card>
+        <ng-template pTemplate="header">
+          <div class="flex align-items-center p-4">
+            <i class="pi pi-user-plus text-primary mr-2"></i>
+            <h3 class="text-xl font-medium text-900 m-0">Recent Hires</h3>
+          </div>
+        </ng-template>
+        
+        <p-table 
+          [value]="recentEmployees" 
+          [loading]="loading"
+          styleClass="p-datatable-sm">
           
-          <div class="flex items-center p-3 bg-gray-50 rounded-md">
-            <div class="flex-shrink-0">
-              <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-              </div>
-            </div>
-            <div class="ml-3">
-              <p class="text-sm font-medium text-gray-900">Profile updated</p>
-              <p class="text-sm text-gray-500">Your profile information has been updated</p>
-            </div>
-          </div>
-
-          <div class="flex items-center p-3 bg-gray-50 rounded-md">
-            <div class="flex-shrink-0">
-              <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
-              </div>
-            </div>
-            <div class="ml-3">
-              <p class="text-sm font-medium text-gray-900">Payroll components ready</p>
-              <p class="text-sm text-gray-500">All payroll components are now available</p>
-            </div>
-          </div>
-        </div>
-      </div>
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Employee</th>
+              <th>Position</th>
+              <th>Department</th>
+              <th>Hire Date</th>
+              <th>Status</th>
+            </tr>
+          </ng-template>
+          
+          <ng-template pTemplate="body" let-employee>
+            <tr>
+              <td>
+                <div class="flex align-items-center">
+                  <p-avatar 
+                    [label]="(employee.firstName?.charAt(0) || 'E') + (employee.lastName?.charAt(0) || '')" 
+                    styleClass="mr-2">
+                  </p-avatar>
+                  <span class="font-medium">{{ employee.firstName }} {{ employee.lastName }}</span>
+                </div>
+              </td>
+              <td>{{ employee.position }}</td>
+              <td>{{ employee.department }}</td>
+              <td>{{ employee.hireDate | date:'MMM d, y' }}</td>
+              <td>
+                <p-tag 
+                  [value]="getStatusLabel(employee.isActive)" 
+                  [severity]="getStatusSeverity(employee.isActive)">
+                </p-tag>
+              </td>
+            </tr>
+          </ng-template>
+          
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="5" class="text-center p-4">
+                <div class="flex flex-column align-items-center gap-2">
+                  <i class="pi pi-user-plus text-4xl text-400"></i>
+                  <span class="text-500">No recent hires found</span>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-card>
     </div>
 
-    <!-- Features Overview -->
-    <div class="bg-white shadow rounded-lg p-6">
-      <h3 class="text-lg font-medium text-gray-900 mb-4">System Features</h3>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="text-center">
-          <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-            </svg>
+    <!-- Department Distribution Chart -->
+    <div class="col-12 lg:col-6">
+      <p-card>
+        <ng-template pTemplate="header">
+          <div class="flex align-items-center p-4">
+            <i class="pi pi-chart-pie text-primary mr-2"></i>
+            <h3 class="text-xl font-medium text-900 m-0">Department Distribution</h3>
           </div>
-          <h4 class="text-lg font-medium text-gray-900">Employee Management</h4>
-          <p class="text-sm text-gray-500">Comprehensive employee information management system</p>
+        </ng-template>
+        
+        <div *ngIf="departmentChartData; else noDepartmentData">
+          <p-chart 
+            type="doughnut" 
+            [data]="departmentChartData" 
+            [options]="chartOptions"
+            width="300"
+            height="300">
+          </p-chart>
         </div>
+        
+        <ng-template #noDepartmentData>
+          <div class="text-center p-4">
+            <i class="pi pi-chart-pie text-4xl text-400 mb-3"></i>
+            <p class="text-500">No department data available</p>
+          </div>
+        </ng-template>
+      </p-card>
+    </div>
+  </div>
 
-        <div class="text-center">
-          <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-            </svg>
+  <!-- Department Statistics Table -->
+  <div class="grid mb-4">
+    <div class="col-12">
+      <p-card>
+        <ng-template pTemplate="header">
+          <div class="flex align-items-center p-4">
+            <i class="pi pi-building text-primary mr-2"></i>
+            <h3 class="text-xl font-medium text-900 m-0">Department Statistics</h3>
           </div>
-          <h4 class="text-lg font-medium text-gray-900">Payroll Calculation</h4>
-          <p class="text-sm text-gray-500">Automated salary calculation with allowances and deductions</p>
-        </div>
+        </ng-template>
+        
+        <p-table 
+          [value]="departmentStats" 
+          [loading]="loading"
+          styleClass="p-datatable-striped">
+          
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Department</th>
+              <th>Employee Count</th>
+              <th>Percentage</th>
+              <th>Distribution</th>
+            </tr>
+          </ng-template>
+          
+          <ng-template pTemplate="body" let-dept>
+            <tr>
+              <td class="font-medium">{{ dept.name }}</td>
+              <td>{{ dept.count }}</td>
+              <td>{{ ((dept.count / stats.totalEmployees) * 100).toFixed(1) }}%</td>
+              <td>
+                <p-progressBar 
+                  [value]="(dept.count / stats.totalEmployees) * 100"
+                  [style]="{ height: '1rem' }"
+                  [showValue]="false">
+                </p-progressBar>
+              </td>
+            </tr>
+          </ng-template>
+          
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="4" class="text-center p-4">
+                <div class="flex flex-column align-items-center gap-2">
+                  <i class="pi pi-building text-4xl text-400"></i>
+                  <span class="text-500">No departments found</span>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-card>
+    </div>
+  </div>
 
-        <div class="text-center">
-          <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-            </svg>
+  <!-- Quick Actions -->
+  <div class="grid">
+    <div class="col-12">
+      <p-card>
+        <ng-template pTemplate="header">
+          <div class="flex align-items-center p-4">
+            <i class="pi pi-bolt text-primary mr-2"></i>
+            <h3 class="text-xl font-medium text-900 m-0">Quick Actions</h3>
           </div>
-          <h4 class="text-lg font-medium text-gray-900">Payslip Generation</h4>
-          <p class="text-sm text-gray-500">Generate and download detailed payslips for employees</p>
+        </ng-template>
+        
+        <div class="flex flex-wrap gap-3">
+          <p-button 
+            label="Add Employee" 
+            icon="pi pi-user-plus" 
+            routerLink="/employee"
+            styleClass="p-button-outlined">
+          </p-button>
+          
+          <p-button 
+            label="Manage Departments" 
+            icon="pi pi-building" 
+            routerLink="/department"
+            styleClass="p-button-outlined">
+          </p-button>
+          
+          <p-button 
+            label="View Attendance" 
+            icon="pi pi-clock" 
+            routerLink="/attendance"
+            styleClass="p-button-outlined">
+          </p-button>
+          
+          <p-button 
+            label="Payroll Management" 
+            icon="pi pi-credit-card" 
+            routerLink="/payroll"
+            styleClass="p-button-outlined">
+          </p-button>
         </div>
-      </div>
+      </p-card>
     </div>
   </div>
 </div>
