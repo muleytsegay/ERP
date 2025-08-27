@@ -1,212 +1,227 @@
-<div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-  <div class="bg-white shadow rounded-lg">
-    <!-- Header -->
-    <div class="px-6 py-4 border-b border-gray-200">
-      <h1 class="text-2xl font-bold text-gray-900">Profile Settings</h1>
-      <p class="mt-1 text-sm text-gray-600">Manage your account settings and preferences</p>
-    </div>
+<div class="component-container">
+  <p-card>
+    <ng-template pTemplate="header">
+      <div class="flex align-items-center justify-content-between p-4">
+        <div>
+          <h1 class="text-2xl font-bold text-900 m-0">Profile Settings</h1>
+          <p class="mt-1 text-600">Manage your account settings and preferences</p>
+        </div>
+        <!-- <i class="pi pi-user text-4xl text-primary"></i> -->
+      </div>
+    </ng-template>
 
     <!-- Tab Navigation -->
-    <div class="border-b border-gray-200">
-      <nav class="-mb-px flex space-x-8 px-6">
+    <div class="border-bottom-1 surface-border mb-4">
+      <div class="flex gap-4">
         <button
+          pButton
+          [class]="activeTab === 'profile' ? 'p-button-text p-button-primary border-bottom-2 border-primary-500' : 'p-button-text p-button-secondary'"
           (click)="setActiveTab('profile')"
-          [class]="activeTab === 'profile' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
-          class="whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm"
-        >
-          Profile Information
+          label="Profile Information"
+          icon="pi pi-user">
         </button>
         <button
+          pButton
+          [class]="activeTab === 'password' ? 'p-button-text p-button-primary border-bottom-2 border-primary-500' : 'p-button-text p-button-secondary'"
           (click)="setActiveTab('password')"
-          [class]="activeTab === 'password' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
-          class="whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm"
-        >
-          Change Password
+          label="Change Password"
+          icon="pi pi-lock">
         </button>
-      </nav>
+      </div>
     </div>
 
-    <!-- Content -->
-    <div class="p-6">
-      <!-- Success/Error Messages -->
-      <div *ngIf="success" class="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
-        {{ success }}
-      </div>
-      <div *ngIf="error" class="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-        {{ error }}
-      </div>
+    <!-- Success/Error Messages -->
+    <p-message *ngIf="success" severity="success" [text]="success" class="mb-4"></p-message>
+    <p-message *ngIf="error" severity="error" [text]="error" class="mb-4"></p-message>
 
-      <!-- Profile Information Tab -->
-      <div *ngIf="activeTab === 'profile'">
-        <form [formGroup]="profileForm" (ngSubmit)="onUpdateProfile()">
-          <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            <div>
-              <label for="firstName" class="block text-sm font-medium text-gray-700">First Name</label>
-              <input
-                type="text"
-                id="firstName"
+    <!-- Profile Information Tab -->
+    <div *ngIf="activeTab === 'profile'">
+      <form [formGroup]="profileForm" (ngSubmit)="onUpdateProfile()">
+        <div class="grid">
+          <div class="col-12 md:col-6">
+            <p-floatlabel>
+              <input 
+                pInputText 
+                id="firstName" 
                 formControlName="firstName"
-                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                class="w-full"
+                [class.ng-invalid]="pf['firstName'].invalid && pf['firstName'].touched"
               />
-              <div *ngIf="pf['firstName'].invalid && pf['firstName'].touched" class="text-red-600 text-sm mt-1">
-                First name is required
-              </div>
-            </div>
+              <label for="firstName">First Name</label>
+            </p-floatlabel>
+            <small *ngIf="pf['firstName'].invalid && pf['firstName'].touched" class="p-error">
+              First name is required
+            </small>
+          </div>
 
-            <div>
-              <label for="lastName" class="block text-sm font-medium text-gray-700">Last Name</label>
-              <input
-                type="text"
-                id="lastName"
+          <div class="col-12 md:col-6">
+            <p-floatlabel>
+              <input 
+                pInputText 
+                id="lastName" 
                 formControlName="lastName"
-                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                class="w-full"
+                [class.ng-invalid]="pf['lastName'].invalid && pf['lastName'].touched"
               />
-              <div *ngIf="pf['lastName'].invalid && pf['lastName'].touched" class="text-red-600 text-sm mt-1">
-                Last name is required
-              </div>
-            </div>
+              <label for="lastName">Last Name</label>
+            </p-floatlabel>
+            <small *ngIf="pf['lastName'].invalid && pf['lastName'].touched" class="p-error">
+              Last name is required
+            </small>
+          </div>
 
-            <div>
-              <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
-              <input
-                type="text"
-                id="username"
+          <div class="col-12 md:col-6">
+            <p-floatlabel>
+              <input 
+                pInputText 
+                id="username" 
                 formControlName="username"
-                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                class="w-full"
+                [class.ng-invalid]="pf['username'].invalid && pf['username'].touched"
               />
-              <div *ngIf="pf['username'].invalid && pf['username'].touched" class="text-red-600 text-sm mt-1">
-                Username is required
-              </div>
-            </div>
+              <label for="username">Username</label>
+            </p-floatlabel>
+            <small *ngIf="pf['username'].invalid && pf['username'].touched" class="p-error">
+              Username is required
+            </small>
+          </div>
 
-            <div>
-              <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-              <input
-                type="email"
-                id="email"
+          <div class="col-12 md:col-6">
+            <p-floatlabel>
+              <input 
+                pInputText 
+                id="email" 
                 formControlName="email"
-                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                type="email"
+                class="w-full"
+                [class.ng-invalid]="pf['email'].invalid && pf['email'].touched"
               />
-              <div *ngIf="pf['email'].invalid && pf['email'].touched" class="text-red-600 text-sm mt-1">
-                <div *ngIf="pf['email'].errors?.['required']">Email is required</div>
-                <div *ngIf="pf['email'].errors?.['email']">Please enter a valid email</div>
-              </div>
+              <label for="email">Email</label>
+            </p-floatlabel>
+            <small *ngIf="pf['email'].invalid && pf['email'].touched" class="p-error">
+              <div *ngIf="pf['email'].errors?.['required']">Email is required</div>
+              <div *ngIf="pf['email'].errors?.['email']">Please enter a valid email</div>
+            </small>
+          </div>
+        </div>
+
+        <div *ngIf="user" class="grid mt-4">
+          <div class="col-12 md:col-6">
+            <label class="block text-900 font-medium mb-2">Role</label>
+            <div class="p-3 surface-100 border-round text-900">
+              {{ user.role | titlecase }}
             </div>
           </div>
 
-          <div *ngIf="user" class="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Role</label>
-              <div class="mt-1 text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-md">
-                {{ user.role | titlecase }}
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Account Created</label>
-              <div class="mt-1 text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-md">
-                {{ user.createdAt | date: 'mediumDate' }}
-              </div>
+          <div class="col-12 md:col-6">
+            <label class="block text-900 font-medium mb-2">Account Created</label>
+            <div class="p-3 surface-100 border-round text-900">
+              {{ user.createdAt | date: 'mediumDate' }}
             </div>
           </div>
+        </div>
 
-          <div class="mt-6 flex justify-end">
-            <button
-              type="submit"
-              [disabled]="loading || profileForm.invalid"
-              class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-            >
-              <span *ngIf="loading" class="mr-2">
-                <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-              </span>
-              {{ loading ? 'Saving...' : 'Save Changes' }}
-            </button>
-          </div>
-        </form>
-      </div>
+        <div class="flex justify-content-end mt-4">
+          <p-button 
+            type="submit"
+            label="Save Changes"
+            icon="pi pi-check"
+            [loading]="loading"
+            [disabled]="profileForm.invalid">
+          </p-button>
+        </div>
+      </form>
+    </div>
 
-      <!-- Change Password Tab -->
-      <div *ngIf="activeTab === 'password'">
-        <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()">
-          <div class="space-y-6">
-            <div>
-              <label for="oldPassword" class="block text-sm font-medium text-gray-700">Current Password</label>
-              <input
-                type="password"
+    <!-- Change Password Tab -->
+    <div *ngIf="activeTab === 'password'">
+      <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()">
+        <div class="grid">
+          <div class="col-12">
+            <p-floatlabel>
+              <p-password 
                 id="oldPassword"
                 formControlName="oldPassword"
-                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-              <div *ngIf="pwf['oldPassword'].invalid && pwf['oldPassword'].touched" class="text-red-600 text-sm mt-1">
-                Current password is required
-              </div>
-            </div>
+                [feedback]="false"
+                [toggleMask]="true"
+                styleClass="w-full"
+                inputStyleClass="w-full"
+                [class.ng-invalid]="pwf['oldPassword'].invalid && pwf['oldPassword'].touched">
+              </p-password>
+              <label for="oldPassword">Current Password</label>
+            </p-floatlabel>
+            <small *ngIf="pwf['oldPassword'].invalid && pwf['oldPassword'].touched" class="p-error">
+              Current password is required
+            </small>
+          </div>
 
-            <div>
-              <label for="newPassword" class="block text-sm font-medium text-gray-700">New Password</label>
-              <input
-                type="password"
+          <div class="col-12">
+            <p-floatlabel>
+              <p-password 
                 id="newPassword"
                 formControlName="newPassword"
-                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-              <div *ngIf="pwf['newPassword'].invalid && pwf['newPassword'].touched" class="text-red-600 text-sm mt-1">
-                <div *ngIf="pwf['newPassword'].errors?.['required']">New password is required</div>
-                <div *ngIf="pwf['newPassword'].errors?.['minlength']">Password must be at least 6 characters</div>
-              </div>
-            </div>
+                [feedback]="true"
+                [toggleMask]="true"
+                styleClass="w-full"
+                inputStyleClass="w-full"
+                [class.ng-invalid]="pwf['newPassword'].invalid && pwf['newPassword'].touched">
+              </p-password>
+              <label for="newPassword">New Password</label>
+            </p-floatlabel>
+            <small *ngIf="pwf['newPassword'].invalid && pwf['newPassword'].touched" class="p-error">
+              <div *ngIf="pwf['newPassword'].errors?.['required']">New password is required</div>
+              <div *ngIf="pwf['newPassword'].errors?.['minlength']">Password must be at least 6 characters</div>
+            </small>
+          </div>
 
-            <div>
-              <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirm New Password</label>
-              <input
-                type="password"
+          <div class="col-12">
+            <p-floatlabel>
+              <p-password 
                 id="confirmPassword"
                 formControlName="confirmPassword"
-                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-              <div *ngIf="pwf['confirmPassword'].invalid && pwf['confirmPassword'].touched" class="text-red-600 text-sm mt-1">
-                <div *ngIf="pwf['confirmPassword'].errors?.['required']">Please confirm your new password</div>
-                <div *ngIf="pwf['confirmPassword'].errors?.['passwordMismatch']">Passwords do not match</div>
-              </div>
-            </div>
+                [feedback]="false"
+                [toggleMask]="true"
+                styleClass="w-full"
+                inputStyleClass="w-full"
+                [class.ng-invalid]="pwf['confirmPassword'].invalid && pwf['confirmPassword'].touched">
+              </p-password>
+              <label for="confirmPassword">Confirm New Password</label>
+            </p-floatlabel>
+            <small *ngIf="pwf['confirmPassword'].invalid && pwf['confirmPassword'].touched" class="p-error">
+              <div *ngIf="pwf['confirmPassword'].errors?.['required']">Please confirm your new password</div>
+              <div *ngIf="pwf['confirmPassword'].errors?.['passwordMismatch']">Passwords do not match</div>
+            </small>
           </div>
+        </div>
 
-          <div class="mt-6 flex justify-end">
-            <button
-              type="submit"
-              [disabled]="loading || passwordForm.invalid"
-              class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-            >
-              <span *ngIf="loading" class="mr-2">
-                <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-              </span>
-              {{ loading ? 'Changing...' : 'Change Password' }}
-            </button>
-          </div>
-        </form>
-      </div>
+        <div class="flex justify-content-end mt-4">
+          <p-button 
+            type="submit"
+            label="Change Password"
+            icon="pi pi-lock"
+            [loading]="loading"
+            [disabled]="passwordForm.invalid">
+          </p-button>
+        </div>
+      </form>
     </div>
+
+    <p-divider></p-divider>
 
     <!-- Logout Section -->
-    <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
-      <div class="flex justify-between items-center">
+    <ng-template pTemplate="footer">
+      <div class="flex align-items-center justify-content-between">
         <div>
-          <h3 class="text-lg font-medium text-gray-900">Account Actions</h3>
-          <p class="text-sm text-gray-600">Manage your account session</p>
+          <h3 class="text-lg font-medium text-900 m-0">Account Actions</h3>
+          <p class="text-600 mt-1">Manage your account session</p>
         </div>
-        <button
-          (click)="logout()"
-          class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-        >
-          Logout
-        </button>
+        <!-- <p-button 
+          label="Logout"
+          icon="pi pi-sign-out"
+          severity="danger"
+          (onClick)="logout()">
+        </p-button> -->
       </div>
-    </div>
-  </div>
+    </ng-template>
+  </p-card>
 </div>
