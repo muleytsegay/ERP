@@ -1,0 +1,8 @@
+.active-route {
+  background-color: #f3f4f6; /* bg-gray-800 */
+  color: #3b82f6; /* text-blue-500 */
+}
+
+.active-route i {
+  color: #3b82f6; /* Make the icon blue too */
+}

@@ -1,41 +1,13 @@
-
-<!-- Navigation Bar -->
-<nav *ngIf="isAuthenticated()" class="bg-white shadow-sm border-b">
-  <p-menubar [model]="menuItems" class="custom-menubar">
-    <ng-template pTemplate="start">
-      <div class="flex align-items-center">
-        <i class="pi pi-building text-2xl text-primary mr-2"></i>
-        <span class="text-xl font-bold text-primary">ERP System</span>
-      </div>
-    </ng-template>
-    
-    <ng-template pTemplate="end">
-      <div class="flex align-items-center gap-2">
-        <span class="text-sm text-600">Welcome, {{ currentUser?.firstName || 'User' }}</span>
-        <p-button 
-          icon="pi pi-user" 
-          [text]="true" 
-          [rounded]="true"
-          severity="secondary"
-          (onClick)="navigateToProfile()"
-          pTooltip="Profile">
-        </p-button>
-        <p-button 
-          icon="pi pi-sign-out" 
-          [text]="true" 
-          [rounded]="true"
-          severity="danger"
-          (onClick)="logout()"
-          pTooltip="Logout">
-        </p-button>
-      </div>
-    </ng-template>
-  </p-menubar>
-</nav>
-
-<!-- Main Content -->
-<div [class]="isAuthenticated() ? 'min-h-screen bg-gray-50' : ''">
-  <div class="main-content">
-    <router-outlet></router-outlet>
+<div *ngIf="isAuthenticated()" class="flex flex-col h-screen">
+  <app-topbar></app-topbar>
+  <div class="flex flex-1 pt-16">
+    <app-sidebar class="hidden md:block"></app-sidebar>
+    <main class="flex-1 overflow-auto p-0 bg-gray-100 ml-0 md:ml-64">
+      <router-outlet></router-outlet>
+    </main>
   </div>
+</div>
+
+<div *ngIf="!isAuthenticated()" class="h-screen">
+  <router-outlet></router-outlet>
 </div>

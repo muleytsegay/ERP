@@ -19,7 +19,7 @@ import { DividerModule } from 'primeng/divider';
   selector: 'app-dashboard',
   standalone: true,
   imports: [
-    CommonModule, 
+    CommonModule,
     RouterModule,
     CardModule,
     ButtonModule,
@@ -28,7 +28,7 @@ import { DividerModule } from 'primeng/divider';
     TagModule,
     ProgressBarModule,
     AvatarModule,
-    DividerModule
+    DividerModule,
   ],
   templateUrl: './dashboard.component.html',
 })
@@ -42,23 +42,23 @@ export class DashboardComponent implements OnInit {
     totalPayrolls: 0,
     monthlyPayroll: 0,
     averageSalary: 0,
-    totalDepartments: 0
+    totalDepartments: 0,
   };
 
   recentEmployees: Employee[] = [];
   departmentStats: { name: string; count: number }[] = [];
-  
+
   // Chart data for PrimeNG Charts
   departmentChartData: any;
   employeeStatusChartData: any;
   chartOptions: any;
-  
+
   loading = false;
 
   constructor(
     private authService: AuthService,
     private employeeService: EmployeeService,
-    private payrollService: PayrollService
+    private PayrollService: PayrollService
   ) {}
 
   ngOnInit(): void {
@@ -74,28 +74,28 @@ export class DashboardComponent implements OnInit {
       plugins: {
         legend: {
           position: 'bottom',
-        }
-      }
+        },
+      },
     };
   }
 
   updateChartData(): void {
     // Department distribution chart
     this.departmentChartData = {
-      labels: this.departmentStats.map(d => d.name),
+      labels: this.departmentStats.map((d) => d.name),
       datasets: [
         {
-          data: this.departmentStats.map(d => d.count),
+          data: this.departmentStats.map((d) => d.count),
           backgroundColor: [
             '#FF6384',
             '#36A2EB',
             '#FFCE56',
             '#4BC0C0',
             '#9966FF',
-            '#FF9F40'
-          ]
-        }
-      ]
+            '#FF9F40',
+          ],
+        },
+      ],
     };
 
     // Employee status chart
@@ -104,68 +104,76 @@ export class DashboardComponent implements OnInit {
       datasets: [
         {
           data: [this.stats.activeEmployees, this.stats.inactiveEmployees],
-          backgroundColor: ['#4CAF50', '#F44336']
-        }
-      ]
+          backgroundColor: ['#4CAF50', '#F44336'],
+        },
+      ],
     };
   }
 
   loadCurrentUser(): void {
-    this.authService.currentUser$.subscribe(user => {
+    this.authService.currentUser$.subscribe((user) => {
       this.currentUser = user;
     });
   }
 
   loadDashboardStats(): void {
     this.loading = true;
-    
-    // Load employee stats
+
     this.employeeService.getEmployees().subscribe({
       next: (response) => {
-        console.log('Dashboard received employees:', response);
-        
-        // Handle API response format - extract employees array from data property
         const employees = (response as any)?.data || response;
-        console.log('Employees length:', employees?.length);
-        
+
         if (!Array.isArray(employees)) {
           console.error('Employees data is not an array:', employees);
+          this.loading = false;
           return;
         }
-        
+
+        // Total employees count
         this.stats.totalEmployees = employees.length;
-        // Since the backend doesn't have isActive field yet, assume all employees are active
-        this.stats.activeEmployees = employees.filter(emp => emp.isActive !== false).length;
-        this.stats.inactiveEmployees = employees.filter(emp => emp.isActive === false).length;
-        
-        console.log('Updated stats:', this.stats);
-        
-        // Calculate new hires this month
+
+        // Active vs inactive employees
+        this.stats.activeEmployees = employees.filter(
+          (emp) => emp.isActive !== false
+        ).length;
+        this.stats.inactiveEmployees = employees.filter(
+          (emp) => emp.isActive === false
+        ).length;
+
+        // New hires this month
         const currentMonth = new Date().getMonth();
         const currentYear = new Date().getFullYear();
-        this.stats.newHiresThisMonth = employees.filter(emp => {
+        this.stats.newHiresThisMonth = employees.filter((emp) => {
           if (emp.hireDate) {
             const hireDate = new Date(emp.hireDate);
-            return hireDate.getMonth() === currentMonth && hireDate.getFullYear() === currentYear;
+            return (
+              hireDate.getMonth() === currentMonth &&
+              hireDate.getFullYear() === currentYear
+            );
           }
           return false;
         }).length;
 
-        // Calculate average salary
+        // Average salary
         const activeSalaries = employees
-          .filter(emp => emp.isActive && emp.salary)
-          .map(emp => emp.salary || 0);
-        this.stats.averageSalary = activeSalaries.length > 0 
-          ? activeSalaries.reduce((sum, salary) => sum + salary, 0) / activeSalaries.length
-          : 0;
+          .filter((emp) => emp.isActive && emp.salary)
+          .map((emp) => emp.salary || 0);
+        this.stats.averageSalary =
+          activeSalaries.length > 0
+            ? activeSalaries.reduce((sum, salary) => sum + salary, 0) /
+              activeSalaries.length
+            : 0;
 
-        // Get recent employees (last 5 hired)
+        // Recent employees (latest 5 hired)
         this.recentEmployees = employees
-          .filter(emp => emp.hireDate)
-          .sort((a, b) => new Date(b.hireDate!).getTime() - new Date(a.hireDate!).getTime())
+          .filter((emp) => emp.hireDate)
+          .sort(
+            (a, b) =>
+              new Date(b.hireDate!).getTime() - new Date(a.hireDate!).getTime()
+          )
           .slice(0, 5);
 
-        // Calculate department statistics
+        // Department statistics
         const departmentCounts = employees.reduce((acc, emp) => {
           if (emp.department) {
             acc[emp.department] = (acc[emp.department] || 0) + 1;
@@ -173,19 +181,19 @@ export class DashboardComponent implements OnInit {
           return acc;
         }, {} as Record<string, number>);
 
-        this.departmentStats = Object.entries(departmentCounts)
-          .map(([name, count]) => ({ name, count: count as number }))
-          .sort((a, b) => b.count - a.count);
-
+        this.departmentStats = Object.keys(departmentCounts).map((dept) => ({
+          name: dept,
+          count: departmentCounts[dept],
+        }));
         this.stats.totalDepartments = this.departmentStats.length;
-        
+
         // Update chart data
         this.updateChartData();
       },
       error: (error) => {
         console.error('Failed to load employee stats', error);
         this.loading = false;
-      }
+      },
     });
 
     // Load payroll stats (optional - might not be available yet)
@@ -195,30 +203,34 @@ export class DashboardComponent implements OnInit {
         this.stats.totalPayrolls = payrolls.length;
         if (Array.isArray(payrolls)) {
           this.stats.monthlyPayroll = payrolls
-            .filter(p => p.payPeriodStart && this.isCurrentMonth(new Date(p.payPeriodStart)))
+            .filter(
+              (p) =>
+                p.payPeriodStart &&
+                this.isCurrentMonth(new Date(p.payPeriodStart))
+            )
             .reduce((sum, p) => sum + (p.netSalary || 0), 0);
         }
         this.loading = false;
       },
-      error: (error) => {
-        console.warn('Payroll stats not available:', error.message);
-        // Set default values for payroll stats
-        this.stats.totalPayrolls = 0;
-        this.stats.monthlyPayroll = 0;
+      error: (err) => {
+        console.error('Error fetching employees:', err);
         this.loading = false;
-      }
+      },
     });
   }
 
   private isCurrentMonth(date: Date): boolean {
     const now = new Date();
-    return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+    return (
+      date.getMonth() === now.getMonth() &&
+      date.getFullYear() === now.getFullYear()
+    );
   }
 
   formatCurrency(amount: number): string {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'USD',
     }).format(amount);
   }
 

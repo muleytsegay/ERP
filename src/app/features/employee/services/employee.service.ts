@@ -1,15 +1,18 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { Employee, Department, Position, CreateEmployeeRequest } from '../models/employee.model';
+import {
+  Employee,
+  Department,
+  Position,
+  CreateEmployeeRequest,
+} from '../models/employee.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class EmployeeService {
   private apiUrl = 'http://localhost:5141/api/v1';
-
-  
 
   constructor(private http: HttpClient) {}
 
@@ -26,7 +29,10 @@ export class EmployeeService {
     return this.http.post<Employee>(`${this.apiUrl}/employees`, employee);
   }
 
-  updateEmployee(id: string, employee: Partial<Employee>): Observable<Employee> {
+  updateEmployee(
+    id: string,
+    employee: Partial<Employee>
+  ): Observable<Employee> {
     return this.http.put<Employee>(`${this.apiUrl}/employees/${id}`, employee);
   }
 
@@ -43,12 +49,20 @@ export class EmployeeService {
     return this.http.get<Department>(`${this.apiUrl}/departments/${id}`);
   }
 
-  createDepartment(department: Omit<Department, 'id' | 'createdAt' | 'updatedAt'>): Observable<Department> {
+  createDepartment(
+    department: Omit<Department, 'id' | 'createdAt' | 'updatedAt'>
+  ): Observable<Department> {
     return this.http.post<Department>(`${this.apiUrl}/departments`, department);
   }
 
-  updateDepartment(id: string, department: Partial<Department>): Observable<Department> {
-    return this.http.put<Department>(`${this.apiUrl}/departments/${id}`, department);
+  updateDepartment(
+    id: string,
+    department: Partial<Department>
+  ): Observable<Department> {
+    return this.http.put<Department>(
+      `${this.apiUrl}/departments/${id}`,
+      department
+    );
   }
 
   // Position operations
@@ -57,23 +71,32 @@ export class EmployeeService {
   }
 
   getPositionsByDepartment(departmentId: string): Observable<Position[]> {
-    return this.http.get<Position[]>(`${this.apiUrl}/positions/department/${departmentId}`);
+    return this.http.get<Position[]>(
+      `${this.apiUrl}/positions/department/${departmentId}`
+    );
   }
 
   createPosition(position: Omit<Position, 'id'>): Observable<Position> {
     return this.http.post<Position>(`${this.apiUrl}/positions`, position);
   }
 
-  updatePosition(id: string, position: Partial<Position>): Observable<Position> {
+  updatePosition(
+    id: string,
+    position: Partial<Position>
+  ): Observable<Position> {
     return this.http.put<Position>(`${this.apiUrl}/positions/${id}`, position);
   }
 
   // Search and filter operations
   searchEmployees(query: string): Observable<Employee[]> {
-    return this.http.get<Employee[]>(`${this.apiUrl}/employees/search?q=${query}`);
+    return this.http.get<Employee[]>(
+      `${this.apiUrl}/employees/search?q=${query}`
+    );
   }
 
   getEmployeesByDepartment(departmentId: string): Observable<Employee[]> {
-    return this.http.get<Employee[]>(`${this.apiUrl}/employees/department/${departmentId}`);
+    return this.http.get<Employee[]>(
+      `${this.apiUrl}/employees/department/${departmentId}`
+    );
   }
 }

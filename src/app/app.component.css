@@ -1,1 +1,29 @@
 /* Placeholder for app component styles */
+.app-container {
+  display: block;
+  height: 100vh;
+}
+
+/* Styles when user is authenticated (with topbar/sidebar) */
+.main-content-auth {
+  margin-top: 64px; /* Topbar height */
+  margin-left: 0;
+  height: calc(100vh - 64px);
+  overflow: auto;
+  padding: 1.5rem;
+  background-color: #f3f4f6;
+}
+
+@media (min-width: 768px) {
+  .main-content-auth {
+    margin-left: 256px; /* Sidebar width */
+  }
+}
+
+/* Styles when user is not authenticated (full page) */
+.main-content-guest {
+  margin: 0;
+  height: 100vh;
+  overflow: auto;
+  padding: 0;
+}

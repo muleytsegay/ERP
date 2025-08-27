@@ -1,0 +1,99 @@
+<header
+  class="topbar bg-white right-0 z-50 h-16 fixed top-0 left-64 flex items-center justify-between px-6 border-b border-gray-300"
+>
+  <!-- Left Side: Search Bar -->
+  <div class="search-container flex-1 max-w-md">
+    <div class="relative">
+      <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+        <i class="fas fa-search text-gray-400"></i>
+      </span>
+      <input
+        type="text"
+        placeholder="Search employees, documents.."
+        class="w-full pl-10 pr-4 py-2 text-gray-500 bg-gray-200 border border-gray-300 rounded-lg focus:ring-3 focus:ring-gray-300 focus:border-transparent outline-none"
+      />
+    </div>
+  </div>
+
+  <!-- Right Side: User Profile Dropdown -->
+  <div class="user-profile flex items-center space-x-6">
+    <!-- Notifications Bell -->
+    <button class="relative p-2 text-gray-600 hover:text-blue-600">
+      <i class="fas fa-bell"></i>
+      <span
+        class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center"
+      >
+        3
+      </span>
+    </button>
+
+    <div class="relative">
+      <!-- Clickable username that triggers dropdown -->
+      <button
+        (click)="toggleMenu($event)"
+        class="user-menu-button flex items-center focus:outline-none space-x-2"
+      >
+        <!-- User Info -->
+        <div class="text-right hidden md:block">
+          <div class="text-sm font-medium text-gray-800">
+            {{ getUserName() }}
+          </div>
+          <div class="text-xs text-gray-500">Admin</div>
+        </div>
+
+        <!-- Avatar -->
+        <div
+          class="avatar w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold"
+        >
+          {{ getUserInitials() }}
+        </div>
+
+        <!-- Dropdown arrow -->
+        <i
+          class="fas fa-chevron-down text-gray-600 text-sm transition-transform duration-200"
+          [class.rotate-180]="isMenuOpen"
+        ></i>
+      </button>
+
+      <!-- Dropdown Menu -->
+      <div
+        *ngIf="isMenuOpen"
+        (click)="$event.stopPropagation()"
+        class="absolute right-0 mt-3 w-48 bg-white rounded-md shadow-lg py-2 z-50 border border-gray-200"
+      >
+        <!-- Show these menu items when user is authenticated -->
+        <div *ngIf="isAuthenticated">
+          <a
+            (click)="onProfile()"
+            class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 cursor-pointer transition-colors"
+          >
+            <i class="fas fa-user-circle mr-3 w-4 text-center"></i>My Profile
+          </a>
+          <a
+            (click)="onSettings()"
+            class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 cursor-pointer transition-colors"
+          >
+            <i class="fas fa-cog mr-3 w-4 text-center"></i>Settings
+          </a>
+          <div class="border-t border-gray-100 my-1"></div>
+          <a
+            (click)="onLogout()"
+            class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-red-700 cursor-pointer transition-colors"
+          >
+            <i class="fas fa-sign-out-alt mr-3 w-4 text-center"></i>Logout
+          </a>
+        </div>
+
+        <!-- Show these menu items when user is NOT authenticated -->
+        <div *ngIf="!isAuthenticated">
+          <a
+            (click)="onLogin()"
+            class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 cursor-pointer transition-colors"
+          >
+            <i class="fas fa-sign-in-alt mr-3 w-4 text-center"></i>Login
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
