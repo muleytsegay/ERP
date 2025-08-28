@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -29,21 +28,22 @@ interface AttendanceRecord {
   selector: 'app-attendance',
   standalone: true,
   imports: [
-    CommonModule,
-    ReactiveFormsModule,
+    CommonModule, 
+    ReactiveFormsModule, 
     FormsModule,
-    TableModule,
-    ButtonModule,
-    DialogModule,
-    InputTextModule,
-    CardModule,
-    ToastModule,
-    ConfirmDialogModule,
-    MessageModule,
+    TableModule, 
+    ButtonModule, 
+    DialogModule, 
+    InputTextModule, 
+    CardModule, 
+    ToastModule, 
+    ConfirmDialogModule, 
+    MessageModule, 
     TagModule
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './attendance.component.html',
+  styleUrls: ['./attendance.component.css']
 })
 export class AttendanceComponent implements OnInit {
   attendanceRecords: AttendanceRecord[] = [];

@@ -6,11 +6,37 @@ import { PayrollService } from '../../services/payroll.service';
 import { EmployeeService } from '../../../employee/services/employee.service';
 import { Employee } from '../../../employee/models/employee.model';
 import { Payslip } from '../../models/payroll.model';
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
+import { CardModule } from 'primeng/card';
+import { ToastModule } from 'primeng/toast';
+import { DropdownModule } from 'primeng/dropdown';
+import { CalendarModule } from 'primeng/calendar';
+import { DividerModule } from 'primeng/divider';
+import { TagModule } from 'primeng/tag';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-payslip',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [
+    CommonModule, 
+    ReactiveFormsModule, 
+    FormsModule,
+    TableModule,
+    ButtonModule,
+    DialogModule,
+    InputTextModule,
+    CardModule,
+    ToastModule,
+    DropdownModule,
+    CalendarModule,
+    DividerModule,
+    TagModule
+  ],
+  providers: [MessageService],
   templateUrl: './payslip.component.html',
   styleUrls: ['./payslip.component.css']
 })

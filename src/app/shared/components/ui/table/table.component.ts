@@ -22,7 +22,7 @@ export interface TableAction {
   standalone: true,
   imports: [CommonModule],
   templateUrl: './table.component.html',
-  styleUrl: './table.component.css'
+  styleUrls: ['./table.component.css']
 })
 export class TableComponent {
   shouldShowAction(action: TableAction, row: any): boolean {

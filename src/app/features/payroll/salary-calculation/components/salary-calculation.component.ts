@@ -5,11 +5,36 @@ import { PayrollService } from '../../services/payroll.service';
 import { EmployeeService } from '../../../employee/services/employee.service';
 import { Employee } from '../../../employee/models/employee.model';
 import { Payroll, SalaryCalculationRequest, Allowance, Deduction, AllowanceType, DeductionType } from '../../models/payroll.model';
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { CardModule } from 'primeng/card';
+import { ToastModule } from 'primeng/toast';
+import { DropdownModule } from 'primeng/dropdown';
+import { DividerModule } from 'primeng/divider';
+import { FieldsetModule } from 'primeng/fieldset';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-salary-calculation',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    CommonModule, 
+    ReactiveFormsModule,
+    TableModule,
+    ButtonModule,
+    DialogModule,
+    InputTextModule,
+    InputNumberModule,
+    CardModule,
+    ToastModule,
+    DropdownModule,
+    DividerModule,
+    FieldsetModule
+  ],
+  providers: [MessageService],
   templateUrl: './salary-calculation.component.html',
   styleUrls: ['./salary-calculation.component.css']
 })

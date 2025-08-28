@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms';
 import { DepartmentService } from '../services/department.service';
 import { EmployeeService } from '../../employee/services/employee.service';
 import { Department, Position, Employee } from '../../employee/models/employee.model';
@@ -23,16 +21,15 @@ import { MessageService, ConfirmationService } from 'primeng/api';
   imports: [
     CommonModule, 
     ReactiveFormsModule, 
-    FormsModule, 
-    RouterModule, 
-    TableModule,
-    ButtonModule,
-    DialogModule,
-    InputTextModule,
-    CardModule,
-    ToastModule,
-    ConfirmDialogModule,
-    MessageModule,
+    FormsModule,
+    TableModule, 
+    ButtonModule, 
+    DialogModule, 
+    InputTextModule, 
+    CardModule, 
+    ToastModule, 
+    ConfirmDialogModule, 
+    MessageModule, 
     CheckboxModule
   ],
   providers: [MessageService, ConfirmationService],

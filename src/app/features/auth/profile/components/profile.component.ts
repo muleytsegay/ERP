@@ -9,11 +9,22 @@ import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
-import { FloatLabelModule } from 'primeng/floatlabel';
 import { DividerModule } from 'primeng/divider';
-
+import {FloatLabelModule } from 'primeng/floatlabel';
 @Component({
   selector: 'app-profile',
+  standalone: true,
+  imports: [
+    CommonModule, 
+    ReactiveFormsModule,
+    CardModule, 
+    InputTextModule, 
+    PasswordModule, 
+    ButtonModule, 
+    MessageModule,
+    FloatLabelModule,
+    DividerModule
+  ],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']
 })
