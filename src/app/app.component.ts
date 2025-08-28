@@ -10,6 +10,8 @@ import { MenuItem } from 'primeng/api';
 
 @Component({
   selector: 'app-root',
+  standalone: true,
+  imports: [CommonModule, RouterOutlet, RouterModule, MenubarModule, ButtonModule, TooltipModule],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })

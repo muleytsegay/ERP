@@ -7,6 +7,10 @@ import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
+import { TextareaModule } from 'primeng/textarea';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { DropdownModule } from 'primeng/dropdown';
+import { CalendarModule } from 'primeng/calendar';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { CardModule } from 'primeng/card';
@@ -16,22 +20,26 @@ import { MessageService, ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'app-employee',
-  templateUrl: './employee.component.html',
-  styleUrls: ['./employee.component.css'],
   standalone: true,
   imports: [
     CommonModule, 
     ReactiveFormsModule, 
-    TableModule,
-    ButtonModule,
-    DialogModule,
+    TableModule, 
+    ButtonModule, 
+    DialogModule, 
     InputTextModule,
-    ToastModule,
-    ConfirmDialogModule,
-    CardModule,
-    TooltipModule,
+    TextareaModule,
+    InputNumberModule,
+    DropdownModule,
+    CalendarModule,
+    ToastModule, 
+    ConfirmDialogModule, 
+    CardModule, 
+    TooltipModule, 
     MessageModule
   ],
+  templateUrl: './employee.component.html',
+  styleUrls: ['./employee.component.css'],
   providers: [MessageService, ConfirmationService]
 })
 export class EmployeeComponent implements OnInit {

@@ -3,7 +3,7 @@ import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptorsFromDi, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
-import Aura from '@primeng/themes/aura';
+import Lara from '@primeng/themes/lara';
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
@@ -13,7 +13,7 @@ export const appConfig: ApplicationConfig = {
       provideAnimationsAsync(),
     providePrimeNG({
       theme: {
-        preset: Aura
+        preset: Lara
       }
     }),
     provideZoneChangeDetection({ eventCoalescing: true }), 

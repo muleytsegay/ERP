@@ -12,11 +12,13 @@
     <!-- Date Filter -->
     <div class="mb-4">
       <label for="dateFilter" class="block text-900 font-medium mb-2">Filter by Date</label>
-      <input 
-        pInputText
-        type="date"
+      <p-calendar
+        id="dateFilter"
         [(ngModel)]="selectedDate"
-        class="w-full md:w-20rem" />
+        placeholder="Select date"
+        dateFormat="dd/mm/yy"
+        class="w-full md:w-20rem">
+      </p-calendar>
     </div>
 
     <!-- Attendance Table -->

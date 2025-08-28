@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { EmployeeService } from '../../employee/services/employee.service';
 import { PayrollService } from '../../payroll/services/payroll.service';
@@ -20,17 +19,17 @@ import { DividerModule } from 'primeng/divider';
   standalone: true,
   imports: [
     CommonModule, 
-    RouterModule,
-    CardModule,
-    ButtonModule,
-    TableModule,
-    ChartModule,
-    TagModule,
-    ProgressBarModule,
-    AvatarModule,
+    CardModule, 
+    ButtonModule, 
+    TableModule, 
+    ChartModule, 
+    TagModule, 
+    ProgressBarModule, 
+    AvatarModule, 
     DividerModule
   ],
   templateUrl: './dashboard.component.html',
+  // styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
   currentUser: User | null = null;
