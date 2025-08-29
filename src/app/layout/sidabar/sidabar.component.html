@@ -1,0 +1,19 @@
+<aside class="sidebar-container">
+  <!-- <div class="sidebar-header flex align-items-center gap-2 mb-4 px-3 py-3">
+    <i class="pi pi-building text-2xl text-primary"></i>
+    <span class="text-xl font-bold text-900">ERP System</span>
+  </div> -->
+  
+  <div class="navigation-menu">
+    <ul class="nav-list">
+      <li *ngFor="let item of menuItems" class="nav-item">
+        <a [routerLink]="item.routerLink" 
+           routerLinkActive="active"
+           class="nav-link flex align-items-center gap-3 p-3 text-decoration-none border-round transition-colors transition-duration-150">
+          <i [class]="item.icon" class="text-lg"></i>
+          <span class="font-medium">{{ item.label }}</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</aside>

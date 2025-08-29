@@ -4,12 +4,14 @@ import { provideHttpClient, withInterceptorsFromDi, HTTP_INTERCEPTORS } from '@a
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
 import Lara from '@primeng/themes/lara';
+import {HttpClientModule} from '@angular/common/http';
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+ 
       provideAnimationsAsync(),
     providePrimeNG({
       theme: {
@@ -18,8 +20,10 @@ export const appConfig: ApplicationConfig = {
     }),
     provideZoneChangeDetection({ eventCoalescing: true }), 
     provideRouter(routes), 
+    HttpClientModule,
     provideClientHydration(withEventReplay()),
     provideHttpClient(withInterceptorsFromDi()),
+
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
