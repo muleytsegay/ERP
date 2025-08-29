@@ -5,11 +5,13 @@ import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
+import { CalendarModule } from 'primeng/calendar';
 import { CardModule } from 'primeng/card';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { MessageModule } from 'primeng/message';
 import { TagModule } from 'primeng/tag';
+import { DropdownModule } from 'primeng/dropdown';
 import { MessageService, ConfirmationService } from 'primeng/api';
 
 interface AttendanceRecord {
@@ -34,12 +36,14 @@ interface AttendanceRecord {
     TableModule, 
     ButtonModule, 
     DialogModule, 
-    InputTextModule, 
+    InputTextModule,
+    CalendarModule,
     CardModule, 
     ToastModule, 
     ConfirmDialogModule, 
     MessageModule, 
-    TagModule
+    TagModule,
+    DropdownModule
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './attendance.component.html',
@@ -50,7 +54,7 @@ export class AttendanceComponent implements OnInit {
   filteredRecords: AttendanceRecord[] = [];
   
   attendanceForm: FormGroup;
-  selectedDate: string = new Date().toISOString().split('T')[0]; // Format for HTML date input
+  selectedDate: Date = new Date();
   showAttendanceModal = false;
   isEditMode = false;
   editingRecordId = '';
@@ -68,7 +72,9 @@ export class AttendanceComponent implements OnInit {
   employeeOptions = [
     { label: 'John Doe', value: '1' },
     { label: 'Jane Smith', value: '2' },
-    { label: 'Mike Johnson', value: '3' }
+    { label: 'Mike Johnson', value: '3' },
+    { label: 'Sarah Wilson', value: '4' },
+    { label: 'Tom Brown', value: '5' }
   ];
 
   constructor(
@@ -78,7 +84,7 @@ export class AttendanceComponent implements OnInit {
   ) {
     this.attendanceForm = this.formBuilder.group({
       employeeId: ['', Validators.required],
-      date: [new Date().toISOString().split('T')[0], Validators.required],
+      date: [new Date(), Validators.required],
       timeIn: ['09:00', Validators.required],
       timeOut: ['17:00', Validators.required],
       status: ['Present', Validators.required]
@@ -87,11 +93,12 @@ export class AttendanceComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadAttendanceRecords();
+    this.filterRecords();
   }
 
   loadAttendanceRecords(): void {
     this.loading = true;
-    // Mock data for demonstration
+    // Mock data for demonstration - replace with actual service call
     setTimeout(() => {
       this.attendanceRecords = [
         {
@@ -115,18 +122,55 @@ export class AttendanceComponent implements OnInit {
           timeOut: '17:00',
           status: 'Late',
           hoursWorked: 7.75
+        },
+        {
+          id: '3',
+          employeeId: '3',
+          employeeName: 'Mike Johnson',
+          department: 'Sales',
+          date: new Date(Date.now() - 86400000), // Yesterday
+          timeIn: '09:00',
+          timeOut: '17:00',
+          status: 'Present',
+          hoursWorked: 8
+        },
+        {
+          id: '4',
+          employeeId: '4',
+          employeeName: 'Sarah Wilson',
+          department: 'Marketing',
+          date: new Date(),
+          timeIn: '',
+          timeOut: '',
+          status: 'Absent',
+          hoursWorked: 0
         }
       ];
-      this.filteredRecords = [...this.attendanceRecords];
+      this.filterRecords();
       this.loading = false;
     }, 1000);
+  }
+
+  filterRecords(): void {
+    if (this.selectedDate) {
+      const selectedDateStr = this.selectedDate.toDateString();
+      this.filteredRecords = this.attendanceRecords.filter(record => 
+        new Date(record.date).toDateString() === selectedDateStr
+      );
+    } else {
+      this.filteredRecords = [...this.attendanceRecords];
+    }
+  }
+
+  onDateChange(): void {
+    this.filterRecords();
   }
 
   openAttendanceModal(): void {
     this.showAttendanceModal = true;
     this.isEditMode = false;
     this.attendanceForm.reset({
-      date: new Date().toISOString().split('T')[0],
+      date: new Date(),
       timeIn: '09:00',
       timeOut: '17:00',
       status: 'Present'
@@ -140,7 +184,7 @@ export class AttendanceComponent implements OnInit {
     
     this.attendanceForm.patchValue({
       employeeId: record.employeeId,
-      date: new Date(record.date).toISOString().split('T')[0],
+      date: new Date(record.date),
       timeIn: record.timeIn,
       timeOut: record.timeOut,
       status: record.status
@@ -156,22 +200,50 @@ export class AttendanceComponent implements OnInit {
 
   onSubmitAttendance(): void {
     if (this.attendanceForm.invalid) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Warning',
+        detail: 'Please fill all required fields'
+      });
       return;
     }
 
     this.loading = true;
+    const formData = this.attendanceForm.value;
+    
+    // Calculate hours worked
+    const timeIn = formData.timeIn;
+    const timeOut = formData.timeOut;
+    const hoursWorked = this.calculateHoursWorked(timeIn, timeOut);
+    
+    const attendanceData: AttendanceRecord = {
+      id: this.isEditMode ? this.editingRecordId : this.generateId(),
+      employeeId: formData.employeeId,
+      employeeName: this.getEmployeeName(formData.employeeId),
+      department: this.getDepartmentForEmployee(formData.employeeId),
+      date: formData.date,
+      timeIn: formData.timeIn,
+      timeOut: formData.timeOut,
+      status: formData.status,
+      hoursWorked: hoursWorked
+    };
     
     // Mock API call
     setTimeout(() => {
       this.loading = false;
       
       if (this.isEditMode) {
+        const index = this.attendanceRecords.findIndex(r => r.id === this.editingRecordId);
+        if (index !== -1) {
+          this.attendanceRecords[index] = attendanceData;
+        }
         this.messageService.add({
           severity: 'success',
           summary: 'Success',
           detail: 'Attendance record updated successfully!'
         });
       } else {
+        this.attendanceRecords.push(attendanceData);
         this.messageService.add({
           severity: 'success',
           summary: 'Success',
@@ -179,41 +251,110 @@ export class AttendanceComponent implements OnInit {
         });
       }
       
+      this.filterRecords();
       this.closeAttendanceModal();
-      this.loadAttendanceRecords();
     }, 1000);
   }
 
-  deleteAttendance(recordId: string): void {
-    const record = this.attendanceRecords.find(r => r.id === recordId);
-    if (!record) return;
-
+  deleteAttendance(id: string): void {
     this.confirmationService.confirm({
-      message: `Are you sure you want to delete the attendance record for ${record.employeeName}?`,
-      header: 'Delete Confirmation',
+      message: 'Are you sure you want to delete this attendance record?',
+      header: 'Confirm Delete',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
+        this.attendanceRecords = this.attendanceRecords.filter(record => record.id !== id);
+        this.filterRecords();
         this.messageService.add({
           severity: 'success',
           summary: 'Success',
-          detail: 'Attendance record deleted successfully!'
+          detail: 'Attendance record deleted successfully'
         });
-        this.loadAttendanceRecords();
       }
     });
   }
 
-  getStatusSeverity(status: string): string {
-    switch (status) {
-      case 'Present': return 'success';
-      case 'Late': return 'warning';
-      case 'Absent': return 'danger';
-      case 'Half Day': return 'info';
-      default: return 'secondary';
-    }
+  calculateHoursWorked(timeIn: string, timeOut: string): number {
+    if (!timeIn || !timeOut) return 0;
+    
+    const [inHour, inMinute] = timeIn.split(':').map(Number);
+    const [outHour, outMinute] = timeOut.split(':').map(Number);
+    
+    const inMinutes = inHour * 60 + inMinute;
+    const outMinutes = outHour * 60 + outMinute;
+    
+    const diffMinutes = outMinutes - inMinutes;
+    return Math.max(0, diffMinutes / 60);
   }
 
-  get af() {
-    return this.attendanceForm.controls;
+  getEmployeeName(employeeId: string): string {
+    const employee = this.employeeOptions.find(emp => emp.value === employeeId);
+    return employee ? employee.label : 'Unknown Employee';
   }
+
+  getDepartmentForEmployee(employeeId: string): string {
+    // Mock department mapping
+    const departmentMap: { [key: string]: string } = {
+      '1': 'Engineering',
+      '2': 'HR',
+      '3': 'Sales',
+      '4': 'Marketing',
+      '5': 'Finance'
+    };
+    return departmentMap[employeeId] || 'Unknown';
+  }
+
+  generateId(): string {
+  // Return statement should not be followed by other code.
+  return Date.now().toString() + Math.random().toString(36).substr(2, 9);
+}
+
+// This is a separate method that could be called elsewhere,
+// for example, in a component's lifecycle hook.
+loadAndSetInterval() {
+  this.loadAttendanceRecords();
+  setInterval(() => {
+    this.loadAttendanceRecords();
+  }, 1000);
+}
+
+// deleteAttendance(recordId: string): void {
+//   const record = this.attendanceRecords.find(r => r.id === recordId);
+//   if (!record) {
+//     return;
+//   }
+  
+//   this.confirmationService.confirm({
+//     message: `Are you sure you want to delete the attendance record for ${record.employeeName}?`,
+//     header: 'Delete Confirmation',
+//     icon: 'pi pi-exclamation-triangle',
+//     accept: () => {
+
+//       this.messageService.add({
+//         severity: 'success',
+//         summary: 'Success',
+//         detail: 'Attendance record deleted successfully!'
+//       });
+//       this.loadAttendanceRecords();
+//     }
+//   }); // Removed the trailing comma from here.
+// }
+
+getStatusSeverity(status: string): string {
+  switch (status) {
+    case 'Present':
+      return 'success';
+    case 'Late':
+      return 'warning';
+    case 'Absent':
+      return 'danger';
+    case 'Half Day':
+      return 'info';
+    default:
+      return 'secondary';
+  }
+}
+
+get af() {
+  return this.attendanceForm.controls;
+}
 }

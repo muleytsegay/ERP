@@ -7,11 +7,12 @@ import { MenubarModule } from 'primeng/menubar';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { MenuItem } from 'primeng/api';
+import { SidabarComponent } from './layout/sidabar/sidabar.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterModule, MenubarModule, ButtonModule, TooltipModule],
+  imports: [CommonModule, RouterOutlet, RouterModule, MenubarModule, ButtonModule, TooltipModule, SidabarComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })

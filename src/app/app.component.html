@@ -33,9 +33,12 @@
   </p-menubar>
 </nav>
 
-<!-- Main Content -->
-<div [class]="isAuthenticated() ? 'min-h-screen bg-gray-50' : ''">
-  <div class="main-content">
+<!-- Main Content with Sidebar -->
+<div [class]="isAuthenticated() ? 'min-h-screen bg-gray-50 flex' : ''">
+  <ng-container *ngIf="isAuthenticated()">
+    <app-sidabar></app-sidabar>
+  </ng-container>
+  <div class="main-content" style="flex:1">
     <router-outlet></router-outlet>
   </div>
 </div>
