@@ -1,6 +1,5 @@
-
 <!-- Navigation Bar -->
-<nav *ngIf="isAuthenticated()" class="bg-white shadow-sm border-b">
+<!-- <nav *ngIf="isAuthenticated()" class="bg-white shadow-sm border-b">
   <p-menubar [model]="menuItems" class="custom-menubar">
     <ng-template pTemplate="start">
       <div class="flex align-items-center">
@@ -31,14 +30,35 @@
       </div>
     </ng-template>
   </p-menubar>
-</nav>
+</nav> -->
 
 <!-- Main Content with Sidebar -->
-<div [class]="isAuthenticated() ? 'min-h-screen bg-gray-50 flex' : ''">
+<!-- <div [class]="isAuthenticated() ? 'min-h-screen bg-gray-50 flex' : ''">
   <ng-container *ngIf="isAuthenticated()">
     <app-sidabar></app-sidabar>
   </ng-container>
   <div class="main-content" style="flex:1">
     <router-outlet></router-outlet>
   </div>
+</div> -->
+
+<!-- Authenticated layout -->
+<div *ngIf="isAuthenticated()" class="app-container">
+  <!-- Topbar -->
+  <app-topbar></app-topbar>
+
+  <div class="layout-body">
+    <!-- Sidebar -->
+    <app-sidabar></app-sidabar>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>
+
+<!-- Unauthenticated layout -->
+<div *ngIf="!isAuthenticated()" class="unauth-container">
+  <router-outlet></router-outlet>
 </div>
