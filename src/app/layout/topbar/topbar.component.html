@@ -1,0 +1,32 @@
+<header class="topbar">
+  <div class="topbar-left">
+    <i class="pi pi-building topbar-icon"></i>
+    <span class="topbar-title">ERP System </span>
+  </div>
+
+  <div class="topbar-spacer"></div>
+
+  <div class="topbar-right">
+    <span class="topbar-welcome">
+      Welcome, {{ currentUser?.firstName || "User" }}
+    </span>
+    <p-button
+      icon="pi pi-user"
+      [text]="true"
+      [rounded]="true"
+      severity="secondary"
+      (onClick)="navigateToProfile()"
+      pTooltip="Profile"
+    >
+    </p-button>
+    <p-button
+      icon="pi pi-sign-out"
+      [text]="true"
+      [rounded]="true"
+      severity="danger"
+      (onClick)="logout()"
+      pTooltip="Logout"
+    >
+    </p-button>
+  </div>
+</header>

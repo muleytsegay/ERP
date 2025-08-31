@@ -1,101 +1,84 @@
 import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { EmployeePayroll, PayrollSummary } from '../models/payroll.model';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { Payroll, Payslip, SalaryCalculationRequest } from '../models/payroll.model';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class PayrollService {
-  private apiUrl = 'http://localhost:3000/api';
+  // Replace with your actual API base when ready
+  private apiBase = ''; // e.g. 'https://api.example.com/payroll'
 
   constructor(private http: HttpClient) {}
 
-  // Payroll operations
-  getPayrolls(): Observable<Payroll[]> {
-    return this.http.get<Payroll[]>(`${this.apiUrl}/payroll`);
-  }
-
-  getPayroll(id: string): Observable<Payroll> {
-    return this.http.get<Payroll>(`${this.apiUrl}/payroll/${id}`);
-  }
-
-  getPayrollsByEmployee(employeeId: string): Observable<Payroll[]> {
-    return this.http.get<Payroll[]>(`${this.apiUrl}/payroll/employee/${employeeId}`);
-  }
-
-  calculateSalary(request: SalaryCalculationRequest): Observable<Payroll> {
-    return this.http.post<Payroll>(`${this.apiUrl}/payroll/calculate`, request);
-  }
-
-  processPayroll(id: string): Observable<Payroll> {
-    return this.http.post<Payroll>(`${this.apiUrl}/payroll/${id}/process`, {});
-  }
-
-  approvePayroll(id: string): Observable<Payroll> {
-    return this.http.post<Payroll>(`${this.apiUrl}/payroll/${id}/approve`, {});
-  }
-
-  rejectPayroll(id: string, reason: string): Observable<Payroll> {
-    return this.http.post<Payroll>(`${this.apiUrl}/payroll/${id}/reject`, { reason });
-  }
-
-  updatePayroll(id: string, payroll: Partial<Payroll>): Observable<Payroll> {
-    return this.http.put<Payroll>(`${this.apiUrl}/payroll/${id}`, payroll);
-  }
-
-  deletePayroll(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/payroll/${id}`);
-  }
-
-  // Payslip operations
-  generatePayslip(payrollId: string): Observable<Payslip> {
-    return this.http.post<Payslip>(`${this.apiUrl}/payroll/${payrollId}/payslip`, {});
-  }
-
-  getPayslip(id: string): Observable<Payslip> {
-    return this.http.get<Payslip>(`${this.apiUrl}/payslips/${id}`);
-  }
-
-  getPayslipsByEmployee(employeeId: string): Observable<Payslip[]> {
-    return this.http.get<Payslip[]>(`${this.apiUrl}/payslips/employee/${employeeId}`);
-  }
-
-  downloadPayslip(id: string): Observable<Blob> {
-    return this.http.get(`${this.apiUrl}/payslips/${id}/download`, {
-      responseType: 'blob'
-    });
-  }
-
-  // Bulk operations
-  processBulkPayroll(employeeIds: string[], payPeriodStart: Date, payPeriodEnd: Date): Observable<Payroll[]> {
-    return this.http.post<Payroll[]>(`${this.apiUrl}/payroll/bulk-process`, {
-      employeeIds,
-      payPeriodStart,
-      payPeriodEnd
-    });
-  }
-
-  // Reports
-  getPayrollSummary(startDate: Date, endDate: Date): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/payroll/summary`, {
-      params: {
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString()
-      }
-    });
-  }
-
-  getPayrollReport(startDate: Date, endDate: Date, departmentId?: string): Observable<any> {
-    const params: any = {
-      startDate: startDate.toISOString(),
-      endDate: endDate.toISOString()
+  // Mock data for quick frontend dev. Replace with API call.
+  getPayrollSummary(period: string): Observable<PayrollSummary> {
+    const mock: PayrollSummary = {
+      totalEmployees: 3,
+      grossPayroll: 22600,
+      netPayroll: 20600,
+      totalDeductions: 2000,
     };
-    
-    if (departmentId) {
-      params.departmentId = departmentId;
-    }
+    // return this.http.get<PayrollSummary>(`${this.apiBase}/summary?period=${period}`);
+    return of(mock);
+  }
 
-    return this.http.get<any>(`${this.apiUrl}/payroll/report`, { params });
+  getEmployeePayroll(period: string): Observable<EmployeePayroll[]> {
+    const mock: EmployeePayroll[] = [
+      {
+        id: '1',
+        name: 'Alice Johnson',
+        employeeId: 'EMP001',
+        department: 'Engineering',
+        baseSalary: 8000,
+        allowances: 1200,
+        deductions: 800,
+        grossSalary: 9200,
+        netSalary: 8400,
+        status: 'Processed',
+      },
+      {
+        id: '2',
+        name: 'Bob Smith',
+        employeeId: 'EMP002',
+        department: 'Marketing',
+        baseSalary: 6500,
+        allowances: 800,
+        deductions: 650,
+        grossSalary: 7300,
+        netSalary: 6650,
+        status: 'Processed',
+      },
+      {
+        id: '3',
+        name: 'Carol Davis',
+        employeeId: 'EMP003',
+        department: 'HR',
+        baseSalary: 5500,
+        allowances: 600,
+        deductions: 550,
+        grossSalary: 6100,
+        netSalary: 5550,
+        status: 'Pending',
+      },
+    ];
+    // return this.http.get<EmployeePayroll[]>(`${this.apiBase}/employees?period=${period}`);
+    return of(mock);
+  }
+
+  processPayroll(period: string): Observable<any> {
+    // return this.http.post(`${this.apiBase}/process`, { period });
+    return of({ success: true, message: 'Processed (mock)' });
+  }
+
+  getAllPayrolls(): Observable<EmployeePayroll[]> {
+    // For now, we’ll just reuse the mock from getEmployeePayroll
+    // Later, replace with your real API when ready
+    return this.getEmployeePayroll('all');
+  }
+
+  exportPayroll(period: string): Observable<Blob> {
+    // Example for API: return this.http.get(`${this.apiBase}/export?period=${period}`, { responseType: 'blob' });
+    const blob = new Blob(['mock csv content'], { type: 'text/csv' });
+    return of(blob);
   }
 }

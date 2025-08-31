@@ -9,11 +9,15 @@
         <p class="mt-2 text-600 text-lg">Welcome to your ERP Dashboard</p>
       </div>
       <div class="flex align-items-center gap-2">
-        <p-avatar 
-          [label]="(currentUser?.firstName || 'U') + (currentUser?.lastName?.charAt(0) || '')" 
-          size="large" 
-          shape="circle" 
-          styleClass="bg-primary">
+        <p-avatar
+          [label]="
+            (currentUser?.firstName || 'U') +
+            (currentUser?.lastName?.charAt(0) || '')
+          "
+          size="large"
+          shape="circle"
+          styleClass="bg-primary"
+        >
         </p-avatar>
       </div>
     </div>
@@ -25,13 +29,17 @@
     <div class="col-12 md:col-6 lg:col-3">
       <p-card>
         <div class="flex align-items-center">
-          <div class="flex align-items-center justify-content-center bg-blue-500 border-round" 
-               style="width: 4rem; height: 4rem;">
+          <div
+            class="flex align-items-center justify-content-center bg-blue-500 border-round"
+            style="width: 4rem; height: 4rem"
+          >
             <i class="pi pi-users text-white text-2xl"></i>
           </div>
           <div class="ml-3">
             <div class="text-500 font-medium mb-1">Total Employees</div>
-            <div class="text-900 font-bold text-2xl">{{ stats.totalEmployees }}</div>
+            <div class="text-900 font-bold text-2xl">
+              {{ stats.totalEmployees }}
+            </div>
           </div>
         </div>
       </p-card>
@@ -41,13 +49,17 @@
     <div class="col-12 md:col-6 lg:col-3">
       <p-card>
         <div class="flex align-items-center">
-          <div class="flex align-items-center justify-content-center bg-green-500 border-round" 
-               style="width: 4rem; height: 4rem;">
+          <div
+            class="flex align-items-center justify-content-center bg-green-500 border-round"
+            style="width: 4rem; height: 4rem"
+          >
             <i class="pi pi-check-circle text-white text-2xl"></i>
           </div>
           <div class="ml-3">
             <div class="text-500 font-medium mb-1">Active Employees</div>
-            <div class="text-900 font-bold text-2xl">{{ stats.activeEmployees }}</div>
+            <div class="text-900 font-bold text-2xl">
+              {{ stats.activeEmployees }}
+            </div>
           </div>
         </div>
       </p-card>
@@ -57,13 +69,17 @@
     <div class="col-12 md:col-6 lg:col-3">
       <p-card>
         <div class="flex align-items-center">
-          <div class="flex align-items-center justify-content-center bg-orange-500 border-round" 
-               style="width: 4rem; height: 4rem;">
+          <div
+            class="flex align-items-center justify-content-center bg-orange-500 border-round"
+            style="width: 4rem; height: 4rem"
+          >
             <i class="pi pi-user-plus text-white text-2xl"></i>
           </div>
           <div class="ml-3">
             <div class="text-500 font-medium mb-1">New Hires This Month</div>
-            <div class="text-900 font-bold text-2xl">{{ stats.newHiresThisMonth }}</div>
+            <div class="text-900 font-bold text-2xl">
+              {{ stats.newHiresThisMonth }}
+            </div>
           </div>
         </div>
       </p-card>
@@ -73,13 +89,17 @@
     <div class="col-12 md:col-6 lg:col-3">
       <p-card>
         <div class="flex align-items-center">
-          <div class="flex align-items-center justify-content-center bg-purple-500 border-round" 
-               style="width: 4rem; height: 4rem;">
+          <div
+            class="flex align-items-center justify-content-center bg-purple-500 border-round"
+            style="width: 4rem; height: 4rem"
+          >
             <i class="pi pi-building text-white text-2xl"></i>
           </div>
           <div class="ml-3">
             <div class="text-500 font-medium mb-1">Total Departments</div>
-            <div class="text-900 font-bold text-2xl">{{ stats.totalDepartments }}</div>
+            <div class="text-900 font-bold text-2xl">
+              {{ stats.totalDepartments }}
+            </div>
           </div>
         </div>
       </p-card>
@@ -89,13 +109,17 @@
     <div class="col-12 md:col-6 lg:col-3">
       <p-card>
         <div class="flex align-items-center">
-          <div class="flex align-items-center justify-content-center bg-teal-500 border-round" 
-               style="width: 4rem; height: 4rem;">
+          <div
+            class="flex align-items-center justify-content-center bg-teal-500 border-round"
+            style="width: 4rem; height: 4rem"
+          >
             <i class="pi pi-dollar text-white text-2xl"></i>
           </div>
           <div class="ml-3">
             <div class="text-500 font-medium mb-1">Average Salary</div>
-            <div class="text-900 font-bold text-2xl">{{ formatCurrency(stats.averageSalary) }}</div>
+            <div class="text-900 font-bold text-2xl">
+              {{ formatCurrency(stats.averageSalary) }}
+            </div>
           </div>
         </div>
       </p-card>
@@ -105,13 +129,17 @@
     <div class="col-12 md:col-6 lg:col-3">
       <p-card>
         <div class="flex align-items-center">
-          <div class="flex align-items-center justify-content-center bg-pink-500 border-round" 
-               style="width: 4rem; height: 4rem;">
+          <div
+            class="flex align-items-center justify-content-center bg-pink-500 border-round"
+            style="width: 4rem; height: 4rem"
+          >
             <i class="pi pi-credit-card text-white text-2xl"></i>
           </div>
           <div class="ml-3">
             <div class="text-500 font-medium mb-1">Monthly Payroll</div>
-            <div class="text-900 font-bold text-2xl">{{ formatCurrency(stats.monthlyPayroll) }}</div>
+            <div class="text-900 font-bold text-2xl">
+              {{ formatCurrency(stats.monthlyPayroll) }}
+            </div>
           </div>
         </div>
       </p-card>
@@ -121,225 +149,252 @@
     <div class="col-12 md:col-6 lg:col-3">
       <p-card>
         <div class="flex align-items-center">
-          <div class="flex align-items-center justify-content-center bg-indigo-500 border-round" 
-               style="width: 4rem; height: 4rem;">
+          <div
+            class="flex align-items-center justify-content-center bg-indigo-500 border-round"
+            style="width: 4rem; height: 4rem"
+          >
             <i class="pi pi-file text-white text-2xl"></i>
           </div>
           <div class="ml-3">
             <div class="text-500 font-medium mb-1">Total Payrolls</div>
-            <div class="text-900 font-bold text-2xl">{{ stats.totalPayrolls }}</div>
-          </div>
-        </div>
-      </p-card>
-    </div>
-
-    <!-- Inactive Employees -->
-    <div class="col-12 md:col-6 lg:col-3">
-      <p-card>
-        <div class="flex align-items-center">
-          <div class="flex align-items-center justify-content-center bg-red-500 border-round" 
-               style="width: 4rem; height: 4rem;">
-            <i class="pi pi-times-circle text-white text-2xl"></i>
-          </div>
-          <div class="ml-3">
-            <div class="text-500 font-medium mb-1">Inactive Employees</div>
-            <div class="text-900 font-bold text-2xl">{{ stats.inactiveEmployees }}</div>
+            <div class="text-900 font-bold text-2xl">
+              {{ stats.totalPayrolls }}
+            </div>
           </div>
         </div>
       </p-card>
     </div>
   </div>
 
-  <!-- Charts and Reports Section -->
-  <div class="grid mb-4">
-    <!-- Recent Hires -->
-    <div class="col-12 lg:col-6">
-      <p-card>
-        <ng-template pTemplate="header">
-          <div class="flex align-items-center p-4">
-            <i class="pi pi-user-plus text-primary mr-2"></i>
-            <h3 class="text-xl font-medium text-900 m-0">Recent Hires</h3>
-          </div>
-        </ng-template>
-        
-        <p-table 
-          [value]="recentEmployees" 
-          [loading]="loading"
-          styleClass="p-datatable-sm">
-          
-          <ng-template pTemplate="header">
-            <tr>
-              <th>Employee</th>
-              <th>Position</th>
-              <th>Department</th>
-              <th>Hire Date</th>
-              <th>Status</th>
-            </tr>
-          </ng-template>
-          
-          <ng-template pTemplate="body" let-employee>
-            <tr>
-              <td>
-                <div class="flex align-items-center">
-                  <p-avatar 
-                    [label]="(employee.firstName?.charAt(0) || 'E') + (employee.lastName?.charAt(0) || '')" 
-                    styleClass="mr-2">
-                  </p-avatar>
-                  <span class="font-medium">{{ employee.firstName }} {{ employee.lastName }}</span>
-                </div>
-              </td>
-              <td>{{ employee.position }}</td>
-              <td>{{ employee.department }}</td>
-              <td>{{ employee.hireDate | date:'MMM d, y' }}</td>
-              <td>
-                <p-tag 
-                  [value]="getStatusLabel(employee.isActive)" 
-                  [severity]="getStatusSeverity(employee.isActive)">
-                </p-tag>
-              </td>
-            </tr>
-          </ng-template>
-          
-          <ng-template pTemplate="emptymessage">
-            <tr>
-              <td colspan="5" class="text-center p-4">
-                <div class="flex flex-column align-items-center gap-2">
-                  <i class="pi pi-user-plus text-4xl text-400"></i>
-                  <span class="text-500">No recent hires found</span>
-                </div>
-              </td>
-            </tr>
-          </ng-template>
-        </p-table>
-      </p-card>
-    </div>
-
-    <!-- Department Distribution Chart -->
-    <div class="col-12 lg:col-6">
-      <p-card>
-        <ng-template pTemplate="header">
-          <div class="flex align-items-center p-4">
-            <i class="pi pi-chart-pie text-primary mr-2"></i>
-            <h3 class="text-xl font-medium text-900 m-0">Department Distribution</h3>
-          </div>
-        </ng-template>
-        
-        <div *ngIf="departmentChartData; else noDepartmentData">
-          <p-chart 
-            type="doughnut" 
-            [data]="departmentChartData" 
-            [options]="chartOptions"
-            width="300"
-            height="300">
-          </p-chart>
+  <!-- Inactive Employees -->
+  <div class="col-12 md:col-6 lg:col-3">
+    <p-card>
+      <div class="flex align-items-center">
+        <div
+          class="flex align-items-center justify-content-center bg-red-500 border-round"
+          style="width: 4rem; height: 4rem"
+        >
+          <i class="pi pi-times-circle text-white text-2xl"></i>
         </div>
-        
-        <ng-template #noDepartmentData>
-          <div class="text-center p-4">
-            <i class="pi pi-chart-pie text-4xl text-400 mb-3"></i>
-            <p class="text-500">No department data available</p>
+        <div class="ml-3">
+          <div class="text-500 font-medium mb-1">Inactive Employees</div>
+          <div class="text-900 font-bold text-2xl">
+            {{ stats.inactiveEmployees }}
           </div>
+        </div>
+      </div>
+    </p-card>
+  </div>
+</div>
+
+<!-- Charts and Reports Section -->
+<div class="grid mb-4">
+  <!-- Recent Hires -->
+  <div class="col-12 lg:col-6">
+    <p-card>
+      <ng-template pTemplate="header">
+        <div class="flex align-items-center p-4">
+          <i class="pi pi-user-plus text-primary mr-2"></i>
+          <h3 class="text-xl font-medium text-900 m-0">Recent Hires</h3>
+        </div>
+      </ng-template>
+
+      <p-table
+        [value]="recentEmployees"
+        [loading]="loading"
+        styleClass="p-datatable-sm"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Employee</th>
+            <th>Position</th>
+            <th>Department</th>
+            <th>Hire Date</th>
+            <th>Status</th>
+          </tr>
         </ng-template>
-      </p-card>
-    </div>
+
+        <ng-template pTemplate="body" let-employee>
+          <tr>
+            <td>
+              <div class="flex align-items-center">
+                <p-avatar
+                  [label]="
+                    (employee.firstName?.charAt(0) || 'E') +
+                    (employee.lastName?.charAt(0) || '')
+                  "
+                  styleClass="mr-2"
+                >
+                </p-avatar>
+                <span class="font-medium"
+                  >{{ employee.firstName }} {{ employee.lastName }}</span
+                >
+              </div>
+            </td>
+            <td>{{ employee.position }}</td>
+            <td>{{ employee.department }}</td>
+            <td>{{ employee.hireDate | date : "MMM d, y" }}</td>
+            <td>
+              <p-tag
+                [value]="getStatusLabel(employee.isActive)"
+                [severity]="getStatusSeverity(employee.isActive)"
+              >
+              </p-tag>
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="5" class="text-center p-4">
+              <div class="flex flex-column align-items-center gap-2">
+                <i class="pi pi-user-plus text-4xl text-400"></i>
+                <span class="text-500">No recent hires found</span>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>
   </div>
 
-  <!-- Department Statistics Table -->
-  <div class="grid mb-4">
-    <div class="col-12">
-      <p-card>
-        <ng-template pTemplate="header">
-          <div class="flex align-items-center p-4">
-            <i class="pi pi-building text-primary mr-2"></i>
-            <h3 class="text-xl font-medium text-900 m-0">Department Statistics</h3>
-          </div>
-        </ng-template>
-        
-        <p-table 
-          [value]="departmentStats" 
-          [loading]="loading"
-          styleClass="p-datatable-striped">
-          
-          <ng-template pTemplate="header">
-            <tr>
-              <th>Department</th>
-              <th>Employee Count</th>
-              <th>Percentage</th>
-              <th>Distribution</th>
-            </tr>
-          </ng-template>
-          
-          <ng-template pTemplate="body" let-dept>
-            <tr>
-              <td class="font-medium">{{ dept.name }}</td>
-              <td>{{ dept.count }}</td>
-              <td>{{ ((dept.count / stats.totalEmployees) * 100).toFixed(1) }}%</td>
-              <td>
-                <p-progressBar 
-                  [value]="(dept.count / stats.totalEmployees) * 100"
-                  [style]="{ height: '1rem' }"
-                  [showValue]="false">
-                </p-progressBar>
-              </td>
-            </tr>
-          </ng-template>
-          
-          <ng-template pTemplate="emptymessage">
-            <tr>
-              <td colspan="4" class="text-center p-4">
-                <div class="flex flex-column align-items-center gap-2">
-                  <i class="pi pi-building text-4xl text-400"></i>
-                  <span class="text-500">No departments found</span>
-                </div>
-              </td>
-            </tr>
-          </ng-template>
-        </p-table>
-      </p-card>
-    </div>
-  </div>
-
-  <!-- Quick Actions -->
-  <div class="grid">
-    <div class="col-12">
-      <p-card>
-        <ng-template pTemplate="header">
-          <div class="flex align-items-center p-4">
-            <i class="pi pi-bolt text-primary mr-2"></i>
-            <h3 class="text-xl font-medium text-900 m-0">Quick Actions</h3>
-          </div>
-        </ng-template>
-        
-        <div class="flex flex-wrap gap-3">
-          <p-button 
-            label="Add Employee" 
-            icon="pi pi-user-plus" 
-            routerLink="/employee"
-            styleClass="p-button-outlined">
-          </p-button>
-          
-          <p-button 
-            label="Manage Departments" 
-            icon="pi pi-building" 
-            routerLink="/department"
-            styleClass="p-button-outlined">
-          </p-button>
-          
-          <p-button 
-            label="View Attendance" 
-            icon="pi pi-clock" 
-            routerLink="/attendance"
-            styleClass="p-button-outlined">
-          </p-button>
-          
-          <p-button 
-            label="Payroll Management" 
-            icon="pi pi-credit-card" 
-            routerLink="/payroll"
-            styleClass="p-button-outlined">
-          </p-button>
+  <!-- Department Distribution Chart -->
+  <div class="col-12 lg:col-6">
+    <p-card>
+      <ng-template pTemplate="header">
+        <div class="flex align-items-center p-4">
+          <i class="pi pi-chart-pie text-primary mr-2"></i>
+          <h3 class="text-xl font-medium text-900 m-0">
+            Department Distribution
+          </h3>
         </div>
-      </p-card>
-    </div>
+      </ng-template>
+
+      <div *ngIf="departmentChartData; else noDepartmentData">
+        <p-chart
+          type="doughnut"
+          [data]="departmentChartData"
+          [options]="chartOptions"
+          width="300"
+          height="300"
+        >
+        </p-chart>
+      </div>
+
+      <ng-template #noDepartmentData>
+        <div class="text-center p-4">
+          <i class="pi pi-chart-pie text-4xl text-400 mb-3"></i>
+          <p class="text-500">No department data available</p>
+        </div>
+      </ng-template>
+    </p-card>
+  </div>
+</div>
+
+<!-- Department Statistics Table -->
+<div class="grid mb-4">
+  <div class="col-12">
+    <p-card>
+      <ng-template pTemplate="header">
+        <div class="flex align-items-center p-4">
+          <i class="pi pi-building text-primary mr-2"></i>
+          <h3 class="text-xl font-medium text-900 m-0">
+            Department Statistics
+          </h3>
+        </div>
+      </ng-template>
+
+      <p-table
+        [value]="departmentStats"
+        [loading]="loading"
+        styleClass="p-datatable-striped"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Department</th>
+            <th>Employee Count</th>
+            <th>Percentage</th>
+            <th>Distribution</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-dept>
+          <tr>
+            <td class="font-medium">{{ dept.name }}</td>
+            <td>{{ dept.count }}</td>
+            <td>
+              {{ ((dept.count / stats.totalEmployees) * 100).toFixed(1) }}%
+            </td>
+            <td>
+              <p-progressBar
+                [value]="(dept.count / stats.totalEmployees) * 100"
+                [style]="{ height: '1rem' }"
+                [showValue]="false"
+              >
+              </p-progressBar>
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="4" class="text-center p-4">
+              <div class="flex flex-column align-items-center gap-2">
+                <i class="pi pi-building text-4xl text-400"></i>
+                <span class="text-500">No departments found</span>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>
+  </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="grid">
+  <div class="col-12">
+    <p-card>
+      <ng-template pTemplate="header">
+        <div class="flex align-items-center p-4">
+          <i class="pi pi-bolt text-primary mr-2"></i>
+          <h3 class="text-xl font-medium text-900 m-0">Quick Actions</h3>
+        </div>
+      </ng-template>
+
+      <div class="flex flex-wrap gap-3">
+        <p-button
+          label="Add Employee"
+          icon="pi pi-user-plus"
+          routerLink="/employee"
+          styleClass="p-button-outlined"
+        >
+        </p-button>
+
+        <p-button
+          label="Manage Departments"
+          icon="pi pi-building"
+          routerLink="/department"
+          styleClass="p-button-outlined"
+        >
+        </p-button>
+
+        <p-button
+          label="View Attendance"
+          icon="pi pi-clock"
+          routerLink="/attendance"
+          styleClass="p-button-outlined"
+        >
+        </p-button>
+
+        <p-button
+          label="Payroll Management"
+          icon="pi pi-credit-card"
+          routerLink="/payroll"
+          styleClass="p-button-outlined"
+        >
+        </p-button>
+      </div>
+    </p-card>
   </div>
 </div>

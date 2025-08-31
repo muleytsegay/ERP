@@ -1,4 +1,4 @@
-
+/* 
 .sidebar-container {
   width: 250px;
   min-height: 100vh;
@@ -49,4 +49,102 @@
 
 .nav-link.active i {
   color: var(--primary-color-text);
+} */
+
+/* Sidebar Container */
+/* Sidebar Container */
+.sidebar-container {
+  display: flex;
+  flex-direction: column;
+  width: 250px;
+  height: auto;
+  background: var(--surface-card);
+  border-right: 1px solid var(--surface-border);
+  /* box-shadow: 2px 0 8px 0 rgba(0, 0, 0, 0.08); */
+  overflow-y: auto; /* scroll if menu is long */
+  padding-top: 1rem;
+}
+
+/* Sidebar Header (Logo or Title) */
+.sidebar-header {
+  padding: 1rem 1.5rem;
+  font-size: 1.25rem;
+  font-weight: bold;
+  border-bottom: 1px solid var(--surface-border);
+  background: var(--surface-ground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Navigation Menu */
+.navigation-menu {
+  flex: 1; /* take all remaining height */
+  overflow-y: auto; /* scroll if items exceed height */
+  padding: 1rem 0;
+  scroll-behavior: smooth;
+}
+
+/* List Styling */
+.nav-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Individual Nav Item */
+.nav-item {
+  margin-bottom: 0.25rem;
+}
+
+/* Nav Links */
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1.5rem;
+  color: var(--text-color);
+  text-decoration: none;
+  border-radius: 6px;
+  margin: 0 0.5rem;
+  transition: all 0.2s ease;
+}
+
+/* Hover Effect: text turns black */
+.nav-link:hover {
+  background: var(--surface-hover);
+  color: black;
+  transform: translateX(2px); /* subtle shift */
+}
+
+/* Active Link: text turns blue */
+.nav-link.active {
+  background: var(--surface-card); /* keep background neutral */
+  color: blue;
+  font-weight: 500;
+}
+
+.nav-link.active i {
+  color: blue;
+}
+
+/* Icon Styling */
+.nav-link i {
+  min-width: 1.5rem;
+  text-align: center;
+  font-size: 1.2rem;
+}
+
+/* Scrollbar Styling */
+.navigation-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.navigation-menu::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.navigation-menu::-webkit-scrollbar-track {
+  background: transparent;
 }

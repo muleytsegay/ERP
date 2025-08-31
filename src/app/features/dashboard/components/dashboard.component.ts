@@ -13,23 +13,23 @@ import { TagModule } from 'primeng/tag';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { AvatarModule } from 'primeng/avatar';
 import { DividerModule } from 'primeng/divider';
+import { EmployeePayroll } from '../../payroll/models/payroll.model';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [
-    CommonModule, 
-    CardModule, 
-    ButtonModule, 
-    TableModule, 
-    ChartModule, 
-    TagModule, 
-    ProgressBarModule, 
-    AvatarModule, 
-    DividerModule
+    CommonModule,
+    CardModule,
+    ButtonModule,
+    TableModule,
+    ChartModule,
+    TagModule,
+    ProgressBarModule,
+    AvatarModule,
+    DividerModule,
   ],
   templateUrl: './dashboard.component.html',
-  // styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
   currentUser: User | null = null;
@@ -41,17 +41,14 @@ export class DashboardComponent implements OnInit {
     totalPayrolls: 0,
     monthlyPayroll: 0,
     averageSalary: 0,
-    totalDepartments: 0
+    totalDepartments: 0,
   };
 
   recentEmployees: Employee[] = [];
   departmentStats: { name: string; count: number }[] = [];
-  
-  // Chart data for PrimeNG Charts
   departmentChartData: any;
   employeeStatusChartData: any;
   chartOptions: any;
-  
   loading = false;
 
   constructor(
@@ -73,159 +70,155 @@ export class DashboardComponent implements OnInit {
       plugins: {
         legend: {
           position: 'bottom',
-        }
-      }
+        },
+      },
     };
   }
 
   updateChartData(): void {
-    // Department distribution chart
     this.departmentChartData = {
-      labels: this.departmentStats.map(d => d.name),
+      labels: this.departmentStats.map((d) => d.name),
       datasets: [
         {
-          data: this.departmentStats.map(d => d.count),
+          data: this.departmentStats.map((d) => d.count),
           backgroundColor: [
             '#FF6384',
             '#36A2EB',
             '#FFCE56',
             '#4BC0C0',
             '#9966FF',
-            '#FF9F40'
-          ]
-        }
-      ]
+            '#FF9F40',
+          ],
+        },
+      ],
     };
 
-    // Employee status chart
     this.employeeStatusChartData = {
       labels: ['Active', 'Inactive'],
       datasets: [
         {
           data: [this.stats.activeEmployees, this.stats.inactiveEmployees],
-          backgroundColor: ['#4CAF50', '#F44336']
-        }
-      ]
+          backgroundColor: ['#4CAF50', '#F44336'],
+        },
+      ],
     };
   }
 
   loadCurrentUser(): void {
-    this.authService.currentUser$.subscribe(user => {
-      this.currentUser = user;
-    });
+    this.authService.currentUser$.subscribe(
+      (user) => (this.currentUser = user)
+    );
   }
 
   loadDashboardStats(): void {
     this.loading = true;
-    
-    // Load employee stats
+
     this.employeeService.getEmployees().subscribe({
       next: (response) => {
-        console.log('Dashboard received employees:', response);
-        
-        // Handle API response format - extract employees array from data property
         const employees = (response as any)?.data || response;
-        console.log('Employees length:', employees?.length);
-        
         if (!Array.isArray(employees)) {
-          console.error('Employees data is not an array:', employees);
+          console.error('Employees data is invalid:', employees);
+          this.loading = false;
           return;
         }
-        
+
         this.stats.totalEmployees = employees.length;
-        // Since the backend doesn't have isActive field yet, assume all employees are active
-        this.stats.activeEmployees = employees.filter(emp => emp.isActive !== false).length;
-        this.stats.inactiveEmployees = employees.filter(emp => emp.isActive === false).length;
-        
-        console.log('Updated stats:', this.stats);
-        
-        // Calculate new hires this month
+        this.stats.activeEmployees = employees.filter(
+          (emp) => emp.isActive !== false
+        ).length;
+        this.stats.inactiveEmployees = employees.filter(
+          (emp) => emp.isActive === false
+        ).length;
+
         const currentMonth = new Date().getMonth();
         const currentYear = new Date().getFullYear();
-        this.stats.newHiresThisMonth = employees.filter(emp => {
+        this.stats.newHiresThisMonth = employees.filter((emp) => {
           if (emp.hireDate) {
             const hireDate = new Date(emp.hireDate);
-            return hireDate.getMonth() === currentMonth && hireDate.getFullYear() === currentYear;
+            return (
+              hireDate.getMonth() === currentMonth &&
+              hireDate.getFullYear() === currentYear
+            );
           }
           return false;
         }).length;
 
-        // Calculate average salary
         const activeSalaries = employees
-          .filter(emp => emp.isActive && emp.salary)
-          .map(emp => emp.salary || 0);
-        this.stats.averageSalary = activeSalaries.length > 0 
-          ? activeSalaries.reduce((sum, salary) => sum + salary, 0) / activeSalaries.length
-          : 0;
+          .filter((emp) => emp.isActive && emp.salary)
+          .map((emp) => emp.salary || 0);
+        this.stats.averageSalary =
+          activeSalaries.length > 0
+            ? activeSalaries.reduce((sum, salary) => sum + salary, 0) /
+              activeSalaries.length
+            : 0;
 
-        // Get recent employees (last 5 hired)
         this.recentEmployees = employees
-          .filter(emp => emp.hireDate)
-          .sort((a, b) => new Date(b.hireDate!).getTime() - new Date(a.hireDate!).getTime())
+          .filter((emp) => emp.hireDate)
+          .sort(
+            (a, b) =>
+              new Date(b.hireDate!).getTime() - new Date(a.hireDate!).getTime()
+          )
           .slice(0, 5);
 
-        // Calculate department statistics
-        const departmentCounts = employees.reduce((acc, emp) => {
-          if (emp.department) {
-            acc[emp.department] = (acc[emp.department] || 0) + 1;
-          }
-          return acc;
-        }, {} as Record<string, number>);
+        const departmentCounts = employees.reduce(
+          (acc: Record<string, number>, emp) => {
+            if (emp.department) {
+              acc[emp.department] = (acc[emp.department] || 0) + 1;
+            }
+            return acc;
+          },
+          {}
+        );
 
         this.departmentStats = Object.entries(departmentCounts)
-          .map(([name, count]) => ({ name, count: count as number }))
-          .sort((a, b) => b.count - a.count);
+          .map(([name, count]) => ({ name, count: count as number })) // <-- FIXED
+          .sort((a, b) => (b.count as number) - (a.count as number)); // <-- FIXED
 
         this.stats.totalDepartments = this.departmentStats.length;
-        
-        // Update chart data
+
         this.updateChartData();
       },
       error: (error) => {
         console.error('Failed to load employee stats', error);
         this.loading = false;
-      }
+      },
     });
 
-    // Load payroll stats (optional - might not be available yet)
-    this.payrollService.getPayrolls().subscribe({
-      next: (response) => {
-        const payrolls = (response as any)?.data || response || [];
+    // Payroll stats
+    this.payrollService.getAllPayrolls().subscribe({
+      next: (response: EmployeePayroll[]) => {
+        const payrolls = response || [];
         this.stats.totalPayrolls = payrolls.length;
-        if (Array.isArray(payrolls)) {
-          this.stats.monthlyPayroll = payrolls
-            .filter(p => p.payPeriodStart && this.isCurrentMonth(new Date(p.payPeriodStart)))
-            .reduce((sum, p) => sum + (p.netSalary || 0), 0);
-        }
+        this.stats.monthlyPayroll = payrolls
+          .filter(
+            (p) =>
+              p.payPeriodStart &&
+              this.isCurrentMonth(new Date(p.payPeriodStart))
+          )
+          .reduce((sum, p) => sum + (p.netSalary || 0), 0);
         this.loading = false;
       },
-      error: (error) => {
-        console.warn('Payroll stats not available:', error.message);
-        // Set default values for payroll stats
+      error: () => {
         this.stats.totalPayrolls = 0;
         this.stats.monthlyPayroll = 0;
         this.loading = false;
-      }
+      },
     });
   }
 
   private isCurrentMonth(date: Date): boolean {
     const now = new Date();
-    return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+    return (
+      date.getMonth() === now.getMonth() &&
+      date.getFullYear() === now.getFullYear()
+    );
   }
 
   formatCurrency(amount: number): string {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'USD',
     }).format(amount);
-  }
-
-  getGreeting(): string {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 18) return 'Good afternoon';
-    return 'Good evening';
   }
 
   getStatusSeverity(isActive: boolean): string {
