@@ -170,8 +170,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PayrollFacade } from '../facade/payroll.facade';
-import { PayrollSummaryComponent } from './payroll-summary.component';
-import { PayrollFilterComponent } from './payroll-filter.component';
+import { PayrollSummaryComponent } from './summary-card/payroll-summary.component';
+import { PayrollFilterComponent } from './filter/payroll-filter.component';
 import { PayrollTableComponent } from './payroll-table.component';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { PayrollPeriod, EmployeePayroll } from '../models/payroll.model';
@@ -205,6 +205,7 @@ import { map } from 'rxjs/operators';
             label="Calculate Payroll"
             icon="pi pi-calculator"
             class="p-button-text bg-white"
+            (click)="onCalculatePayroll()"
           ></button>
           <button
             style="background-color: #000; border-color: #000;"
@@ -212,7 +213,7 @@ import { map } from 'rxjs/operators';
             label="Process Payroll"
             icon="pi pi-play"
             class="p-button-raised p-button-success"
-            (click)="onProcess()"
+            (click)="onProcessAll()"
           ></button>
         </div>
       </header>
@@ -238,6 +239,10 @@ import { map } from 'rxjs/operators';
           <h3 class="section-title">Payroll Details - {{ selected.label }}</h3>
           <app-payroll-table
             [employees]="(employees$ | async) ?? []"
+            (payslip)="onDownloadPayslip($event)"
+            (approve)="onApprove($event)"
+            (reject)="onReject($event)"
+            (lazyLoad)="onLazyLoad($event)"
           ></app-payroll-table>
         </ng-template>
       </section>
@@ -247,9 +252,8 @@ import { map } from 'rxjs/operators';
     `
       .page {
         padding: 18px;
-        max-width: 1100px;
         margin: 0 auto;
-        background: #f9fafb;
+        background: #f3f4f6;
       }
       .head {
         display: flex;
@@ -294,6 +298,7 @@ export class PayrollRootComponent implements OnInit {
     { label: 'November 2024', value: 'nov-2024' },
   ];
   selected: PayrollPeriod = this.periods[0];
+  selectedPeriod: string = 'current';
 
   summary$!: Observable<any>;
   employees$!: Observable<EmployeePayroll[]>;
@@ -337,6 +342,52 @@ export class PayrollRootComponent implements OnInit {
       a.download = `payroll_${p}.csv`;
       a.click();
       window.URL.revokeObjectURL(url);
+    });
+  }
+
+  onCalculatePayroll() {
+    const period = this.selected.value;
+    this.facade.calculatePayroll(period).subscribe(() => {
+      this.loadFor(period); // refresh UI after calculation
+    });
+  }
+
+  onDownloadPayslip(employeeId: string) {
+    this.facade.downloadPayslip(employeeId).subscribe((blob: Blob) => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `payslip_${employeeId}.pdf`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    });
+  }
+
+  onProcessAll() {
+    this.facade.processAll().subscribe(() => {
+      this.loadFor(this.selected.value);
+    });
+  }
+
+  // onLazyLoad(event: any) {
+  //   const page = event.first / event.rows;
+  //   const size = event.rows;
+  //   this.facade.loadPaginated(this.selected.value, page, size);
+  // }
+
+  onLazyLoad(event: { page: number; size: number }) {
+    this.facade.loadPaginated(this.selectedPeriod, event.page, event.size);
+  }
+
+  onApprove(employeeId: string) {
+    this.facade.approvePayroll(employeeId).subscribe(() => {
+      this.loadFor(this.selected.value);
+    });
+  }
+
+  onReject(employeeId: string) {
+    this.facade.rejectPayroll(employeeId).subscribe(() => {
+      this.loadFor(this.selected.value);
     });
   }
 }

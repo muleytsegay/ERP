@@ -1,55 +1,55 @@
-<!-- Navigation Bar -->
-<!-- <nav *ngIf="isAuthenticated()" class="bg-white shadow-sm border-b">
-  <p-menubar [model]="menuItems" class="custom-menubar">
-    <ng-template pTemplate="start">
-      <div class="flex align-items-center">
-        <i class="pi pi-building text-2xl text-primary mr-2"></i>
-        <span class="text-xl font-bold text-primary">ERP System</span>
-      </div>
-    </ng-template>
-    
-    <ng-template pTemplate="end">
-      <div class="flex align-items-center gap-2">
-        <span class="text-sm text-600">Welcome, {{ currentUser?.firstName || 'User' }}</span>
-        <p-button 
-          icon="pi pi-user" 
-          [text]="true" 
-          [rounded]="true"
-          severity="secondary"
-          (onClick)="navigateToProfile()"
-          pTooltip="Profile">
-        </p-button>
-        <p-button 
-          icon="pi pi-sign-out" 
-          [text]="true" 
-          [rounded]="true"
-          severity="danger"
-          (onClick)="logout()"
-          pTooltip="Logout">
-        </p-button>
-      </div>
-    </ng-template>
-  </p-menubar>
-</nav> -->
-
-<!-- Main Content with Sidebar -->
-<!-- <div [class]="isAuthenticated() ? 'min-h-screen bg-gray-50 flex' : ''">
-  <ng-container *ngIf="isAuthenticated()">
-    <app-sidabar></app-sidabar>
-  </ng-container>
-  <div class="main-content" style="flex:1">
-    <router-outlet></router-outlet>
-  </div>
-</div> -->
-
 <!-- Authenticated layout -->
-<div *ngIf="isAuthenticated()" class="app-container">
+<div
+  *ngIf="isAuthenticated()"
+  class="app-container"
+  [class.collapsed]="isCollapsed"
+>
   <!-- Topbar -->
   <app-topbar></app-topbar>
 
   <div class="layout-body">
     <!-- Sidebar -->
-    <app-sidabar></app-sidabar>
+    <div class="sidebar" [class.collapsed]="isCollapsed">
+      <!-- Collapse Toggle Button -->
+      <div class="toggle-btn" (click)="toggleSidebar()">
+        <i
+          class="pi"
+          [ngClass]="isCollapsed ? 'pi-angle-right' : 'pi-angle-left'"
+        ></i>
+      </div>
+
+      <!-- Sidebar Menu -->
+      <ul class="menu">
+        <li class="menu-item" routerLink="/dashboard" routerLinkActive="active">
+          <i class="pi pi-home"></i>
+          <span *ngIf="!isCollapsed">Dashboard</span>
+        </li>
+        <li class="menu-item" routerLink="/employees" routerLinkActive="active">
+          <i class="pi pi-users"></i>
+          <span *ngIf="!isCollapsed">Employees</span>
+        </li>
+        <li
+          class="menu-item"
+          routerLink="/departments"
+          routerLinkActive="active"
+        >
+          <i class="pi pi-building"></i>
+          <span *ngIf="!isCollapsed">Departments</span>
+        </li>
+        <li
+          class="menu-item"
+          routerLink="/attendance"
+          routerLinkActive="active"
+        >
+          <i class="pi pi-calendar"></i>
+          <span *ngIf="!isCollapsed">Attendance</span>
+        </li>
+        <li class="menu-item" routerLink="/payroll" routerLinkActive="active">
+          <i class="pi pi-wallet"></i>
+          <span *ngIf="!isCollapsed">Payroll</span>
+        </li>
+      </ul>
+    </div>
 
     <!-- Main Content -->
     <main class="main-content">

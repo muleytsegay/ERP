@@ -22,6 +22,5 @@ export class SidabarComponent {
     },
     { label: 'Attendance', icon: 'pi pi-calendar', routerLink: '/attendance' },
     { label: 'Payroll', icon: 'pi pi-money-bill', routerLink: '/payroll' },
-    // Add more as needed
   ];
 }

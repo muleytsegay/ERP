@@ -1,6 +1,6 @@
 .topbar {
   height: 80px;
-  /* background-color: #ffffff; */
+  background-color: #ffffff;
   border-bottom: 1px solid #e5e7eb;
   /* box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); */
   display: flex;
@@ -30,6 +30,7 @@
 .topbar-title {
   font-size: 1.25rem;
   font-weight: bold;
+  font-family: "Recoleta", sans-serif;
   color: #000;
   white-space: nowrap;
 }
