@@ -39,8 +39,55 @@ export class PayrollFacade {
   process(period: string): Observable<any> {
     return this.svc.processPayroll(period);
   }
-
+  /**
+   * Exports payroll data as a CSV file.
+   */
   export(period: string): Observable<Blob> {
     return this.svc.exportPayroll(period);
+  }
+
+  /**
+   * Calculates payroll and refreshes data.
+   */
+  calculatePayroll(period: string): Observable<any> {
+    return this.svc.calculatePayroll(period);
+  }
+
+  /**
+   * Loads paginated data for lazy tables.
+   */
+  loadPaginated(period: string, page: number, size: number) {
+    this.loadingSubject.next(true);
+    this.svc
+      .getEmployeePayrollPaginated(period, page, size)
+      .pipe(finalize(() => this.loadingSubject.next(false)))
+      .subscribe((employees) => {
+        this.employeesSubject.next(employees);
+      });
+  }
+
+  /**
+   * Processes all pending payrolls.
+   */
+  processAll(): Observable<any> {
+    return this.svc.processAllPayroll();
+  }
+  /**
+   * Approves a specific employee's payroll.
+   */
+  approvePayroll(id: string): Observable<any> {
+    return this.svc.approvePayroll(id);
+  }
+  /**
+   * Rejects a specific employee's payroll.
+   */
+  rejectPayroll(id: string): Observable<any> {
+    return this.svc.rejectPayroll(id);
+  }
+  /**
+   * Downloads the payslip for a specific employee.
+   */
+  downloadPayslip(employeeId: string): Observable<Blob> {
+    return this.svc.downloadPayslip(employeeId);
   }
 }

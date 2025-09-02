@@ -1,67 +1,44 @@
+/* @import "@primeng/themes/lara/theme.css"; */
+@import "primeicons/primeicons.css";
+@import "primeflex/primeflex.css";
 
-/* @import '@primeng/themes/lara'; */
-@import 'primeicons/primeicons.css';
-@import 'primeflex/primeflex.css';
-
-/* Global styles */
-* {
-  box-sizing: border-box;
+@font-face {
+  font-family: "Kantumruy Pro";
+  src: url("/assets/fonts/KantumruyPro-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
 }
+
+@font-face {
+  font-family: "Kantumruy Pro";
+  src: url("/assets/fonts/KantumruyPro-SemiBold.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Kantumruy Pro";
+  src: url("/assets/fonts/KantumruyPro-Bold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Kantumruy Pro";
+  src: url("/assets/fonts/KantumruyPro-Light.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Kantumruy Pro";
+  src: url("/assets/fonts/KantumruyPro-ExtraLight.ttf") format("truetype");
+  font-weight: 200;
+  font-style: normal;
+}
+
+/* Add others as needed (Medium, SemiBold, Thin) */
 
 body {
-  margin: 0;
-  font-family: var(--p-font-family);
-  background-color: #f8f9fa;
-  color: var(--p-text-color);
+  font-family: "Kantumruy Pro", sans-serif;
 }
-
-/* Main content background */
-.main-content {
-  padding: 1rem;
-  background-color: white;
-  min-height: calc(100vh - 60px);
-}
-
-/* Custom menubar styling */
-.custom-menubar {
-  border: none !important;
-  background: white !important;
-  border-radius: 0 !important;
-  padding: 0.5rem 1rem !important;
-}
-
-.custom-menubar .p-menubar-start {
-  margin-right: auto;
-}
-
-.custom-menubar .p-menubar-end {
-  margin-left: auto;
-}
-
-/* Component white backgrounds */
-.p-card {
-  background: white !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
-}
-
-.p-datatable {
-  background: white !important;
-}
-
-.p-datatable .p-datatable-header {
-  background: white !important;
-}
-
-.p-dialog {
-  background: white !important;
-}
-
-/* Ensure all components have white backgrounds */
-.component-container {
-  background: white;
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-}
-
-

@@ -1,0 +1,48 @@
+<div class="mainbar">
+  <span class="filter-label">Payroll Period</span>
+  <div class="toolbar">
+    <!-- Dropdown for selecting payroll period -->
+    <p-dropdown
+      [options]="periods"
+      [(ngModel)]="selected"
+      optionLabel="label"
+      placeholder="Select period"
+      (onChange)="periodChange()"
+    ></p-dropdown>
+
+    <div class="actions">
+      <!-- Export payroll button -->
+      <button
+        title="export payroll"
+        pButton
+        type="button"
+        label="Export Payroll"
+        icon="pi pi-download"
+        class="p-button-secondary custom-btn"
+        (click)="export.emit(selected?.value)"
+      ></button>
+
+      <!-- Generate reports button -->
+      <button
+        title="generate reports"
+        pButton
+        type="button"
+        label="Generate Reports"
+        icon="pi pi-file"
+        (click)="process.emit(selected?.value)"
+        class="p-button-secondary custom-btn"
+      ></button>
+
+      <!-- Uncomment this if you want a Process Payroll button -->
+      <!--
+    <button
+      pButton
+      type="button"
+      label="Process Payroll"
+      icon="pi pi-play"
+      class="p-button-success"
+      (click)="process.emit(selected?.value)"
+    ></button>
+    --></div>
+  </div>
+</div>

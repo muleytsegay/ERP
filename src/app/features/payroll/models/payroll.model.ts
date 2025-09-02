@@ -26,3 +26,16 @@ export interface PayrollPeriod {
   label: string;
   value: string;
 }
+
+// export interface EmployeePayroll {
+//   id: number;             // Unique ID of the employee
+//   name: string;           // Employee full name
+//   position: string;       // Job title
+//   salary: number;         // Monthly salary
+//   status: 'Active' | 'Inactive'; // Employment status
+// }
+
+// export interface PayrollSummary {
+//   totalEmployees: number; // Total employees in payroll
+//   totalSalary: number;    // Total monthly payroll cost
+// }

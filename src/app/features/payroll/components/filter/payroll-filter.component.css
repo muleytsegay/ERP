@@ -1,0 +1,71 @@
+/* Toolbar container */
+.mainbar {
+  gap: 12px;
+  margin: 30px 0;
+  color: #000;
+  background: #fff;
+  padding: 25px 16px;
+  border-radius: 15px;
+  border: 1px solid #ccc;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.filter-label {
+  display: flex;
+  margin: 5px 20px;
+  color: #444;
+  font-weight: 600;
+}
+
+/* Dropdown width */
+p-dropdown {
+  width: 200px;
+  margin: 10px 20px;
+  color: #000;
+  background-color: #ddd;
+  font-size: 0.9rem;
+}
+
+p-dropdown:focus,
+p-dropdown:focus-within {
+  border: 1px solid #666; /* Darker gray for active state */
+  border-radius: 6px;
+}
+
+/* Action buttons styling */
+.actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.custom-btn {
+  color: #000000;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  font-weight: regular;
+  font-size: 0.9rem;
+}
+
+/* Hover state */
+.custom-btn:hover {
+  background-color: #eee; /* dark gray */
+  border-color: #999; /* medium gray */
+  color: #000; /* keep text black */
+}
+
+/* Active/clicked state */
+.custom-btn:active {
+  background-color: #000; /* black */
+  color: #fff; /* white text */
+  border-color: #000; /* optional: match border */
+}
