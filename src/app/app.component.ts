@@ -97,9 +97,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, RouterOutlet } from '@angular/router';
-import { AuthService } from './shared/services/auth.service';
-// import { User } from './features/auth/profile/models/user.model';
-// import { MenuItem } from 'primeng/api';
+import { AuthService } from './core/services/auth.service';
 import { TopbarComponent } from './layout/topbar/topbar.component';
 // import { SidabarComponent } from './layout/sidabar/sidabar.component';
 
@@ -118,6 +116,9 @@ export class AppComponent implements OnInit {
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
+    // No initialization needed for HTTP-based auth
+    // User will be loaded automatically if valid token exists
+    
     // this.authService.currentUser$.subscribe((user) => {
     //   this.currentUser = user;
     //   if (user) this.initializeMenu();
