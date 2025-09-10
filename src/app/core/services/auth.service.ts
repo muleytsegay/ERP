@@ -27,7 +27,7 @@ export class AuthService {
   private realm = 'hrms';
   private keycloakBaseUrl = 'http://localhost:8080'; // Gateway forwards to Keycloak
   private clientId = 'hrms-api';
-  private clientSecret = '46aKzP0Xe4hXANdIpkpezBGPMl1bBY4c';
+  private clientSecret = 'Gw9QCikk2bBzbqF6IS3O7e8UvM7Dn7MT';
 
   private tokenUrl = `${this.keycloakBaseUrl}/realms/${this.realm}/protocol/openid-connect/token`;
   private userInfoUrl = `${this.keycloakBaseUrl}/realms/${this.realm}/protocol/openid-connect/userinfo`;
@@ -43,7 +43,7 @@ export class AuthService {
     body.set('client_id', this.clientId);
     body.set('client_secret', this.clientSecret);
     body.set('grant_type', 'password');
-    body.set('email', credentials.email);
+    body.set('username', credentials.email);
     body.set('password', credentials.password);
 
     const headers = new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' });
