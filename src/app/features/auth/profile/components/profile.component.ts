@@ -10,7 +10,7 @@ import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
 import { DividerModule } from 'primeng/divider';
-import {FloatLabelModule } from 'primeng/floatlabel';
+import {FloatLabelModule } from 'primeng/floatlabel'
 @Component({
   selector: 'app-profile',
   standalone: true,
@@ -118,12 +118,12 @@ export class ProfileComponent implements OnInit {
     this.clearMessages();
 
     this.authService.updateProfile(this.profileForm.value).subscribe({
-      next: (updatedUser) => {
+      next: (updatedUser: User) => {
         this.loading = false;
         this.success = 'Profile updated successfully!';
         this.user = updatedUser;
       },
-      error: (error) => {
+      error: (error: any) => {
         this.loading = false;
         this.error = error.error?.message || 'Failed to update profile. Please try again.';
       }
@@ -146,7 +146,7 @@ export class ProfileComponent implements OnInit {
         this.success = 'Password changed successfully!';
         this.passwordForm.reset();
       },
-      error: (error) => {
+      error: (error: any) => {
         this.loading = false;
         this.error = error.error?.message || 'Failed to change password. Please try again.';
       }
