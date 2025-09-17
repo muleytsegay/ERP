@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './features/auth/login/login.component';
-import { RegisterComponent } from './features/auth/register/register.component';
 import { ProfileComponent } from './features/auth/profile/components/profile.component';
 import { DashboardComponent } from './features/dashboard/components/dashboard.component';
 import { DepartmentComponent } from './features/department/components/department.component';
@@ -20,11 +19,7 @@ export const routes: Routes = [
     component: LoginComponent,
     canActivate: [LoginRedirectGuard],
   },
-  {
-    path: 'auth/register',
-    component: RegisterComponent,
-    canActivate: [LoginRedirectGuard],
-  },
+
   {
     path: 'auth/profile',
     component: ProfileComponent,

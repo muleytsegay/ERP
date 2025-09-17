@@ -82,161 +82,164 @@
     [(visible)]="showAddModal" 
     [header]="isEditMode ? 'Edit Employee' : 'Add Employee'"
     [modal]="true" 
-    [style]="{width: '600px'}"
+    [style]="{width: '800px'}"
     [draggable]="false"
     [resizable]="false">
     
-    <form [formGroup]="employeeForm" (ngSubmit)="onAddEmployeeSubmit()">
-      <div class="grid">
-        
-        <div class="col-12 md:col-6">
-          <label for="firstName" class="block text-900 font-medium mb-2">First Name *</label>
-          <input 
-            pInputText 
-            id="firstName" 
-            formControlName="firstName"
-            class="w-full"
-            [class.ng-invalid]="employeeForm.get('firstName')?.invalid && employeeForm.get('firstName')?.touched" />
-          <small 
-            class="p-error" 
-            *ngIf="employeeForm.get('firstName')?.invalid && employeeForm.get('firstName')?.touched">
-            First name is required
-          </small>
-        </div>
+    <!-- Steps indicator -->
+    <p-steps 
+      [model]="steps" 
+      [activeIndex]="activeStep" 
+      [readonly]="true"
+      class="mb-4">
+    </p-steps>
 
-        <div class="col-12 md:col-6">
-          <label for="lastName" class="block text-900 font-medium mb-2">Last Name *</label>
-          <input 
-            pInputText 
-            id="lastName" 
-            formControlName="lastName"
-            class="w-full"
-            [class.ng-invalid]="employeeForm.get('lastName')?.invalid && employeeForm.get('lastName')?.touched" />
-          <small 
-            class="p-error" 
-            *ngIf="employeeForm.get('lastName')?.invalid && employeeForm.get('lastName')?.touched">
-            Last name is required
-          </small>
-        </div>
+    <!-- Step 1: Employee Information -->
+    <div *ngIf="activeStep === 0">
+      <form [formGroup]="employeeForm">
+        <div class="grid">
+          
+          <div class="col-12 md:col-6">
+            <label for="firstName" class="block text-900 font-medium mb-2">First Name *</label>
+            <input 
+              pInputText 
+              id="firstName" 
+              formControlName="firstName"
+              class="w-full"
+              [class.ng-invalid]="employeeForm.get('firstName')?.invalid && employeeForm.get('firstName')?.touched" />
+            <small 
+              class="p-error" 
+              *ngIf="employeeForm.get('firstName')?.invalid && employeeForm.get('firstName')?.touched">
+              First name is required
+            </small>
+          </div>
 
-        <div class="col-12 md:col-6">
-          <label for="email" class="block text-900 font-medium mb-2">Email *</label>
-          <input 
-            pInputText 
-            id="email" 
-            formControlName="email"
-            type="email"
-            class="w-full"
-            [class.ng-invalid]="employeeForm.get('email')?.invalid && employeeForm.get('email')?.touched" />
-          <small 
-            class="p-error" 
-            *ngIf="employeeForm.get('email')?.invalid && employeeForm.get('email')?.touched">
-            Valid email is required
-          </small>
-        </div>
+          <div class="col-12 md:col-6">
+            <label for="lastName" class="block text-900 font-medium mb-2">Last Name *</label>
+            <input 
+              pInputText 
+              id="lastName" 
+              formControlName="lastName"
+              class="w-full"
+              [class.ng-invalid]="employeeForm.get('lastName')?.invalid && employeeForm.get('lastName')?.touched" />
+            <small 
+              class="p-error" 
+              *ngIf="employeeForm.get('lastName')?.invalid && employeeForm.get('lastName')?.touched">
+              Last name is required
+            </small>
+          </div>
 
-        <div class="col-12 md:col-6">
-          <label for="phone" class="block text-900 font-medium mb-2">Phone *</label>
-          <input 
-            pInputText 
-            id="phone" 
-            formControlName="phone"
-            class="w-full"
-            [class.ng-invalid]="employeeForm.get('phone')?.invalid && employeeForm.get('phone')?.touched" />
-          <small 
-            class="p-error" 
-            *ngIf="employeeForm.get('phone')?.invalid && employeeForm.get('phone')?.touched">
-            Phone is required
-          </small>
-        </div>
+          <div class="col-12 md:col-6">
+            <label for="email" class="block text-900 font-medium mb-2">Email *</label>
+            <input 
+              pInputText 
+              id="email" 
+              formControlName="email"
+              type="email"
+              class="w-full"
+              [class.ng-invalid]="employeeForm.get('email')?.invalid && employeeForm.get('email')?.touched" />
+            <small 
+              class="p-error" 
+              *ngIf="employeeForm.get('email')?.invalid && employeeForm.get('email')?.touched">
+              Valid email is required
+            </small>
+          </div>
 
-        <div class="col-12">
-          <label for="address" class="block text-900 font-medium mb-2">Address</label>
-          <textarea 
-            pInputTextarea
-            id="address" 
-            formControlName="address"
-            rows="3"
-            placeholder="Enter address"
-            class="w-full">
-          </textarea>
-        </div>
+          <div class="col-12 md:col-6">
+            <label for="password" class="block text-900 font-medium mb-2">Password *</label>
+            <input 
+              pInputText 
+              id="password" 
+              formControlName="password"
+              type="password"
+              placeholder="Enter password"
+              class="w-full"
+              [class.ng-invalid]="employeeForm.get('password')?.invalid && employeeForm.get('password')?.touched" />
+            <small 
+              class="p-error" 
+              *ngIf="employeeForm.get('password')?.invalid && employeeForm.get('password')?.touched">
+              Password is required (minimum 6 characters)
+            </small>
+          </div>
 
-        <div class="col-12 md:col-6">
-          <label for="departmentId" class="block text-900 font-medium mb-2">Department *</label>
-          <p-dropdown
-            id="departmentId" 
-            formControlName="departmentId"
-            [options]="departmentOptions"
-            placeholder="Select Department"
-            optionLabel="label"
-            optionValue="value"
-            class="w-full">
-          </p-dropdown>
-          <small 
-            class="p-error" 
-            *ngIf="employeeForm.get('departmentId')?.invalid && employeeForm.get('departmentId')?.touched">
-            Department is required
-          </small>
-        </div>
+          <div class="col-12 md:col-6">
+            <label for="role" class="block text-900 font-medium mb-2">Role *</label>
+            <p-dropdown
+              id="role" 
+              formControlName="role"
+              [options]="roleOptions"
+              placeholder="Select Role"
+              optionLabel="label"
+              optionValue="value"
+              class="w-full">
+            </p-dropdown>
+            <small 
+              class="p-error" 
+              *ngIf="employeeForm.get('role')?.invalid && employeeForm.get('role')?.touched">
+              Role is required
+            </small>
+          </div>
 
-        <div class="col-12 md:col-6">
-          <label for="positionId" class="block text-900 font-medium mb-2">Position *</label>
-          <p-dropdown
-            id="positionId" 
-            formControlName="positionId"
-            [options]="positionOptions"
-            placeholder="Select Position"
-            optionLabel="label"
-            optionValue="value"
-            class="w-full">
-          </p-dropdown>
-          <small 
-            class="p-error" 
-            *ngIf="employeeForm.get('positionId')?.invalid && employeeForm.get('positionId')?.touched">
-            Position is required
-          </small>
-        </div>
+          <div class="col-12 md:col-6">
+            <label for="departmentId" class="block text-900 font-medium mb-2">Department *</label>
+            <p-dropdown
+              id="departmentId" 
+              formControlName="departmentId"
+              [options]="departmentOptions"
+              placeholder="Select Department"
+              optionLabel="label"
+              optionValue="value"
+              class="w-full">
+            </p-dropdown>
+            <small 
+              class="p-error" 
+              *ngIf="employeeForm.get('departmentId')?.invalid && employeeForm.get('departmentId')?.touched">
+              Department is required
+            </small>
+          </div>
 
-        <div class="col-12 md:col-6">
-          <label for="hireDate" class="block text-900 font-medium mb-2">Hire Date *</label>
-          <p-calendar
-            id="hireDate" 
-            formControlName="hireDate"
-            placeholder="Select hire date"
-            dateFormat="dd/mm/yy"
-            class="w-full">
-          </p-calendar>
-          <small 
-            class="p-error" 
-            *ngIf="employeeForm.get('hireDate')?.invalid && employeeForm.get('hireDate')?.touched">
-            Hire date is required
-          </small>
-        </div>
+          <div class="col-12 md:col-6">
+            <label for="positionId" class="block text-900 font-medium mb-2">Position *</label>
+            <p-dropdown
+              id="positionId" 
+              formControlName="positionId"
+              [options]="positionOptions"
+              placeholder="Select Position"
+              optionLabel="label"
+              optionValue="value"
+              class="w-full">
+            </p-dropdown>
+            <small 
+              class="p-error" 
+              *ngIf="employeeForm.get('positionId')?.invalid && employeeForm.get('positionId')?.touched">
+              Position is required
+            </small>
+          </div>
 
-        <div class="col-12 md:col-6">
-          <label for="salary" class="block text-900 font-medium mb-2">Salary *</label>
-          <p-inputNumber
-            id="salary" 
-            formControlName="salary"
-            placeholder="Enter salary"
-            mode="currency"
-            currency="USD"
-            locale="en-US"
-            class="w-full">
-          </p-inputNumber>
-          <small 
-            class="p-error" 
-            *ngIf="employeeForm.get('salary')?.invalid && employeeForm.get('salary')?.touched">
-            Salary is required
-          </small>
         </div>
+      </form>
+    </div>
 
-      </div>
-    </form>
+    <!-- Step 2: Salary Structure -->
+    <div *ngIf="activeStep === 1">
+      <app-salary-structure
+        [initialData]="salaryData"
+        (dataChange)="onSalaryDataChange($event)"
+        (validChange)="onSalaryValidChange($event)">
+      </app-salary-structure>
+    </div>
+
+    <!-- Step 3: Bank Account -->
+    <div *ngIf="activeStep === 2">
+      <app-bank-account
+        [initialData]="bankData"
+        (dataChange)="onBankDataChange($event)"
+        (validChange)="onBankValidChange($event)">
+      </app-bank-account>
+    </div>
     
     <ng-template pTemplate="footer">
-      <div class="flex justify-content-end gap-2">
+      <div class="flex justify-content-between">
         <p-button 
           label="Cancel" 
           icon="pi pi-times" 
@@ -244,12 +247,34 @@
           [text]="true"
           (onClick)="closeAddModal()">
         </p-button>
-        <p-button 
-          [label]="isEditMode ? 'Update' : 'Save'" 
-          icon="pi pi-check" 
-          (onClick)="onAddEmployeeSubmit()"
-          [loading]="loading">
-        </p-button>
+        
+        <div class="flex gap-2">
+          <p-button 
+            label="Previous" 
+            icon="pi pi-chevron-left" 
+            severity="secondary"
+            [disabled]="activeStep === 0"
+            (onClick)="previousStep()">
+          </p-button>
+          
+          <p-button 
+            *ngIf="activeStep < steps.length - 1"
+            label="Next" 
+            icon="pi pi-chevron-right" 
+            iconPos="right"
+            [disabled]="!canProceedToNext()"
+            (onClick)="nextStep()">
+          </p-button>
+          
+          <p-button 
+            *ngIf="activeStep === steps.length - 1"
+            [label]="isEditMode ? 'Update' : 'Create Employee'" 
+            icon="pi pi-check" 
+            [disabled]="!canSubmit()"
+            [loading]="loading"
+            (onClick)="onAddEmployeeSubmit()">
+          </p-button>
+        </div>
       </div>
     </ng-template>
   </p-dialog>

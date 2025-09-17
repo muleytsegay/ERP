@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { EmployeePayroll, PayrollSummary } from '../models/payroll.model';
-import { HttpClient } from '@angular/common/http';
+import { SalaryStructure } from '../../employee/models/salary.model';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { tap, catchError } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class PayrollService {
   //to be Replaced with  actual API base when ready
-  private apiBase = ''; // e.g. 'https://api.example.com/payroll'
+  private apiBase = 'https://gateway-microservice.onrender.com/payroll/api/v1'; // Updated to actual payroll API
+  private apiUrl = 'https://gateway-microservice.onrender.com/payroll/api/v1';
 
   constructor(private http: HttpClient) {}
 
@@ -230,5 +233,95 @@ export class PayrollService {
   rejectPayroll(id: string): Observable<any> {
     // return this.http.put(`${this.apiBase}/payroll/${id}/reject`, {});
     return of({ success: true });
+  }
+
+  // Salary Structure operations for Employee Creation
+  createSalaryStructure(salaryStructure: SalaryStructure): Observable<SalaryStructure> {
+    console.log('PayrollService: Creating salary structure:', salaryStructure);
+    console.log('PayrollService: POST request to:', `${this.apiUrl}/salary-structures`);
+    
+    return this.http.post<SalaryStructure>(`${this.apiUrl}/salary-structures`, salaryStructure).pipe(
+      tap(response => {
+        console.log('PayrollService: Salary structure created successfully:', response);
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('PayrollService: Failed to create salary structure:', {
+          status: error.status,
+          statusText: error.statusText,
+          message: error.message,
+          error: error.error,
+          url: error.url,
+          salaryData: salaryStructure
+        });
+        return throwError(() => error);
+      })
+    );
+  }
+
+  getSalaryStructure(employeeId: string): Observable<SalaryStructure> {
+    console.log('PayrollService: Getting salary structure for employee:', employeeId);
+    console.log('PayrollService: GET request to:', `${this.apiUrl}/salary-structures/${employeeId}`);
+    
+    return this.http.get<SalaryStructure>(`${this.apiUrl}/salary-structures/${employeeId}`).pipe(
+      tap(response => {
+        console.log('PayrollService: Salary structure retrieved successfully:', response);
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('PayrollService: Failed to get salary structure:', {
+          status: error.status,
+          statusText: error.statusText,
+          message: error.message,
+          error: error.error,
+          url: error.url,
+          employeeId
+        });
+        return throwError(() => error);
+      })
+    );
+  }
+
+  updateSalaryStructure(employeeId: string, salaryStructure: Partial<SalaryStructure>): Observable<SalaryStructure> {
+    console.log('PayrollService: Updating salary structure for employee:', employeeId, 'with data:', salaryStructure);
+    console.log('PayrollService: PUT request to:', `${this.apiUrl}/salary-structures/${employeeId}`);
+    
+    return this.http.put<SalaryStructure>(`${this.apiUrl}/salary-structures/${employeeId}`, salaryStructure).pipe(
+      tap(response => {
+        console.log('PayrollService: Salary structure updated successfully:', response);
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('PayrollService: Failed to update salary structure:', {
+          status: error.status,
+          statusText: error.statusText,
+          message: error.message,
+          error: error.error,
+          url: error.url,
+          employeeId,
+          updateData: salaryStructure
+        });
+        return throwError(() => error);
+      })
+    );
+  }
+
+  deleteSalaryStructure(employeeId: string): Observable<void> {
+    console.log('PayrollService: Deleting salary structure for employee:', employeeId);
+    console.log('PayrollService: DELETE request to:', `${this.apiUrl}/salary-structures/${employeeId}`);
+    
+    return this.http.delete<void>(`${this.apiUrl}/salary-structures/${employeeId}`).pipe(
+      tap(() => {
+        console.log('PayrollService: Salary structure deleted successfully for employee:', employeeId);
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('PayrollService: Failed to delete salary structure:', {
+          status: error.status,
+          statusText: error.statusText,
+          message: error.message,
+          error: error.error,
+          url: error.url,
+          employeeId
+        });
+        return throwError(() => error);
+      })
+    );
   }
 }

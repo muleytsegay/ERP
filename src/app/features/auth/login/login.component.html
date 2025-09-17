@@ -1,8 +1,8 @@
 <div class="surface-0 flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden p-3">
-    <p-card class="flex justify-content-center align-items-center" [style]="{width: '360px'}">
+  <p-card class="flex justify-content-center align-items-center border-2 border-black font-semibold" [style]="{width: '460px', borderColor: 'black', borderWidth: '2px', fontWeight: '600'}">
     <ng-template pTemplate="header">
       <div class="text-center py-4">
-        <h2 class="text-3xl font-bold text-primary mb-2">Welcome Back</h2>
+        <h2 class="text-3xl font-bold mb-2">Welcome</h2>
         <p class="text-600 m-0">Sign in to your ERP account</p>
       </div>
     </ng-template>
@@ -16,12 +16,12 @@
             pInputText 
             id="email" 
             type="email" 
-            placeholder="Enter your email" 
+            placeholder="Enter email" 
             formControlName="email"
             class="w-full p-3" 
             [class.ng-invalid]="f['email'].invalid && f['email'].touched" 
             autocomplete="email"
-            />
+            >
           <small *ngIf="f['email'].invalid && f['email'].touched" class="p-error block mt-1">
             email is required
           </small>
@@ -33,9 +33,9 @@
           <p-password 
             id="password" 
             formControlName="password" 
-            placeholder="Enter your password" 
+            placeholder="Enter password" 
             [toggleMask]="true" 
-            class="w-full"
+            class="w-full p-3"
             inputStyleClass="w-full p-3"
             [feedback]="false"
             [class.ng-invalid]="f['password'].invalid && f['password'].touched"
@@ -62,18 +62,8 @@
           icon="pi pi-sign-in"
           [loading]="loading"
           [disabled]="loginForm.invalid"
-          styleClass="w-full p-3 text-xl font-semibold">
+          styleClass="w-full p-3 text-xl font-semibold bg-black border-black text-white">
         </p-button>
-
-        <!-- Register Link -->
-        <div class="text-center mt-4">
-          <span class="text-600">Don't have an account? </span>
-          <a 
-            routerLink="/auth/register" 
-            class="text-primary font-medium no-underline cursor-pointer hover:underline">
-            Create one here
-          </a>
-        </div>
       </form>
     </ng-template>
   </p-card>

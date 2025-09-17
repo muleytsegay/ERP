@@ -7,7 +7,7 @@ import { Department, Position } from '../../employee/models/employee.model';
   providedIn: 'root'
 })
 export class DepartmentService {
-  private apiUrl = 'http://localhost:5141/api/v1';
+  private apiUrl = 'https://gateway-microservice.onrender.com/hrms/api/v1';
 
   constructor(private http: HttpClient) {}
 

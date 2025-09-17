@@ -34,6 +34,18 @@ export interface Position {
 }
 
 export interface CreateEmployeeRequest {
+  id?: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  role: string;
+  departmentId: string;
+  positionId: string;
+}
+
+// Extended interface for internal form data collection
+export interface EmployeeFormData {
   firstName: string;
   lastName: string;
   email: string;
@@ -42,5 +54,21 @@ export interface CreateEmployeeRequest {
   departmentId: string;
   positionId: string;
   hireDate: Date;
-  salary: number;
+  role: string;
+}
+
+// Extended interface for creating employee with salary breakdown
+export interface CreateEmployeeWithSalaryBreakdown {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  address: string;
+  departmentId: string;
+  positionId: string;
+  hireDate: Date;
+  basicSalary: number;
+  housingAllowance: number;
+  transportAllowance: number;
+  otherAllowance: number;
 }

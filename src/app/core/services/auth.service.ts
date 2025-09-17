@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap, catchError, throwError, switchMap } from 'rxjs';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { BehaviorSubject, Observable, tap, catchError, throwError, switchMap, of, map } from 'rxjs';
 import { User, UserRole } from '../../features/auth/profile/models/user.model';
 
 interface LoginRequest {
@@ -25,7 +25,7 @@ export class AuthService {
 
   // 🔑 CONFIG (adjust to your setup)
   private realm = 'hrms';
-  private keycloakBaseUrl = 'http://localhost:8080'; // Gateway forwards to Keycloak
+  private keycloakBaseUrl = 'https://hrms-microservices-1-07vv.onrender.com'; // Gateway forwards to Keycloak
   private clientId = 'hrms-api';
   private clientSecret = 'Gw9QCikk2bBzbqF6IS3O7e8UvM7Dn7MT';
 
@@ -45,11 +45,13 @@ export class AuthService {
     body.set('grant_type', 'password');
     body.set('username', credentials.email);
     body.set('password', credentials.password);
+    body.set('scope', 'openid profile email'); // Add required scopes
 
     const headers = new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' });
 
     return this.http.post<KeycloakTokenResponse>(this.tokenUrl, body.toString(), { headers }).pipe(
       tap(res => {
+        console.log('Token received, storing in localStorage');
         localStorage.setItem('token', res.access_token);
         localStorage.setItem('refreshToken', res.refresh_token);
       }),
@@ -58,7 +60,12 @@ export class AuthService {
           headers: { Authorization: `Bearer ${res.access_token}` }
         })
       ),
-      tap(user => this.currentUserSubject.next(user)),
+      tap(user => {
+        console.log('Login successful, storing user data');
+        // Store user data in localStorage for refresh persistence
+        localStorage.setItem('user', JSON.stringify(user));
+        this.currentUserSubject.next(user);
+      }),
       catchError(error => {
         console.error('Login failed:', error);
         return throwError(() => error);
@@ -68,23 +75,46 @@ export class AuthService {
 
   // 🚪 Logout from Keycloak
   logout(): Observable<void> {
+    console.log('AuthService: Starting logout process');
+    
     const refreshToken = localStorage.getItem('refreshToken');
+    console.log('AuthService: Logout - refresh token available:', !!refreshToken);
+    
     const body = new URLSearchParams();
     body.set('client_id', this.clientId);
     body.set('client_secret', this.clientSecret);
     if (refreshToken) {
       body.set('refresh_token', refreshToken);
+      console.log('AuthService: Logout - added refresh token to request');
     }
 
     const headers = new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' });
+    console.log('AuthService: Logout - making request to:', this.logoutUrl);
 
     return this.http.post<void>(this.logoutUrl, body.toString(), { headers }).pipe(
-      tap(() => this.clearAuthData()),
-      catchError(err => {
+      tap(() => {
+        console.log('AuthService: Logout request successful, clearing auth data');
+        this.clearAuthData();
+      }),
+      catchError((err: HttpErrorResponse) => {
+        console.error('AuthService: Logout request failed:', {
+          status: err.status,
+          message: err.message,
+          error: err.error
+        });
+        // Always clear auth data even if logout request fails
+        console.log('AuthService: Clearing auth data despite logout error');
         this.clearAuthData();
         return throwError(() => err);
       })
     );
+  }
+
+  // Simple logout without API call (for cases where token is invalid)
+  logoutLocal(): void {
+    console.log('AuthService: Performing local logout (no API call)');
+    this.clearAuthData();
+    console.log('AuthService: Local logout completed');
   }
 
   // 🔄 Refresh token
@@ -117,14 +147,78 @@ export class AuthService {
   // 👤 Load user profile
   private loadUserFromToken(): void {
     const token = this.getToken();
-    if (token && this.isAuthenticated()) {
-      this.http.get<User>(this.userInfoUrl, {
-        headers: { Authorization: `Bearer ${token}` }
-      }).subscribe({
-        next: user => this.currentUserSubject.next(user),
-        error: () => this.clearAuthData()
-      });
+    const storedUser = localStorage.getItem('user');
+    
+    if (!token) {
+      console.log('No token found, clearing auth data');
+      this.clearAuthData();
+      return;
     }
+
+    // Check if token is expired
+    if (!this.isAuthenticated()) {
+      console.log('Token expired, attempting refresh...');
+      this.refreshToken().subscribe({
+        next: () => {
+          console.log('Token refreshed successfully');
+          this.loadUserFromToken(); // Retry loading user after refresh
+        },
+        error: (refreshError) => {
+          console.error('Token refresh failed:', refreshError);
+          this.clearAuthData();
+        }
+      });
+      return;
+    }
+
+    // If we have stored user data and a valid token, use that instead of calling userinfo
+    if (storedUser) {
+      try {
+        const user = JSON.parse(storedUser);
+        console.log('Loading user from localStorage:', user);
+        this.currentUserSubject.next(user);
+        return;
+      } catch (error) {
+        console.error('Failed to parse stored user data:', error);
+        localStorage.removeItem('user'); // Clear corrupted user data
+      }
+    }
+
+    // Fallback: try to get user info from Keycloak (only if no stored user)
+    console.log('No stored user data, attempting to fetch from userinfo endpoint');
+    this.http.get<User>(this.userInfoUrl, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).subscribe({
+      next: user => {
+        console.log('User loaded from userinfo endpoint:', user);
+        localStorage.setItem('user', JSON.stringify(user));
+        this.currentUserSubject.next(user);
+      },
+      error: (error) => {
+        console.error('Failed to load user info:', error);
+        
+        // If 403 or 401, token is likely invalid or expired
+        if (error.status === 403 || error.status === 401) {
+          console.log('Token invalid or expired, attempting refresh...');
+          
+          // Try to refresh token first
+          this.refreshToken().subscribe({
+            next: () => {
+              console.log('Token refreshed, retrying user info...');
+              // Retry getting user info with new token
+              this.loadUserFromToken();
+            },
+            error: (refreshError) => {
+              console.error('Token refresh failed:', refreshError);
+              this.clearAuthData();
+            }
+          });
+        } else {
+          // For other errors, just clear auth data
+          this.clearAuthData();
+        }
+      }
+    });
   }
 
   // ✏️ Update profile (Keycloak account endpoint)
@@ -172,9 +266,23 @@ export class AuthService {
   }
 
   private clearAuthData(): void {
+    console.log('AuthService: Clearing authentication data');
+    
+    const hadToken = !!localStorage.getItem('token');
+    const hadRefreshToken = !!localStorage.getItem('refreshToken');
+    const hadUser = !!localStorage.getItem('user');
+    
     localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user'); // Also clear stored user data
     this.currentUserSubject.next(null);
+    
+    console.log('AuthService: Auth data cleared:', {
+      hadToken,
+      hadRefreshToken,
+      hadUser,
+      currentUserSubjectValue: this.currentUserSubject.value
+    });
   }
 
   // --- Helpers ---
@@ -182,14 +290,60 @@ export class AuthService {
     return localStorage.getItem('token');
   }
 
+  // Get a valid token, refreshing if necessary
+  getValidToken(): Observable<string> {
+    const token = this.getToken();
+    
+    console.log('getValidToken: Current token exists:', !!token);
+    
+    if (!token) {
+      console.log('getValidToken: No token available');
+      return throwError(() => new Error('No token available'));
+    }
+
+    if (this.isAuthenticated()) {
+      console.log('getValidToken: Token is valid, returning current token');
+      return of(token);
+    }
+
+    // Token is expired, try to refresh
+    console.log('getValidToken: Token expired, attempting refresh...');
+    return this.refreshToken().pipe(
+      map(() => {
+        const newToken = this.getToken();
+        console.log('getValidToken: Got new token after refresh:', !!newToken);
+        if (!newToken) {
+          throw new Error('Failed to get new token after refresh');
+        }
+        return newToken;
+      }),
+      catchError(error => {
+        console.error('getValidToken: Token refresh failed:', error);
+        this.clearAuthData();
+        return throwError(() => new Error('Token refresh failed'));
+      })
+    );
+  }
+
   isAuthenticated(): boolean {
     const token = this.getToken();
-    if (!token) return false;
+    if (!token) {
+      console.log('No token found');
+      return false;
+    }
+    
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       const currentTime = Math.floor(Date.now() / 1000);
-      return payload.exp > currentTime;
-    } catch {
+      const isValid = payload.exp > currentTime;
+      
+      if (!isValid) {
+        console.log('Token expired:', new Date(payload.exp * 1000));
+      }
+      
+      return isValid;
+    } catch (error) {
+      console.error('Invalid token format:', error);
       return false;
     }
   }
