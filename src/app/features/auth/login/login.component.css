@@ -1,1 +1,8 @@
+/* Custom card border and font weight for login card */
+.border-black {
+	border-color: #000 !important;
+}
+.font-semibold {
+	font-weight: 600 !important;
+}
 /* Login component styles - using only PrimeNG utility classes */
