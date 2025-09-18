@@ -28,32 +28,48 @@ export class EmployeeService {
     console.log('EmployeeService: Getting employees from:', `${this.apiUrl}/employees`);
     
     return this.http.get<any[]>(`${this.apiUrl}/employees`).pipe(
-      map(employees => {
+      switchMap(employees => {
         console.log('EmployeeService: Raw employees from backend:', employees);
         
-        return employees.map(emp => {
-          // Map backend employee data to frontend Employee interface
-          const mappedEmployee: Employee = {
-            id: emp.id || emp.employeeId || '',
-            employeeId: emp.employeeId || emp.id || '',
-            firstName: emp.firstName || '',
-            lastName: emp.lastName || '',
-            email: emp.email || '',
-            phone: emp.phone || '',
-            address: emp.address || '',
-            department: emp.department?.name || emp.departmentName || emp.department || '',
-            position: emp.position?.title || emp.positionTitle || emp.position || '',
-            hireDate: emp.hireDate ? new Date(emp.hireDate) : new Date(),
-            salary: emp.salary || emp.baseSalary || 0,
-            isActive: emp.isActive !== undefined ? emp.isActive : true,
-            userId: emp.userId || emp.id || '',
-            createdAt: emp.createdAt ? new Date(emp.createdAt) : new Date(),
-            updatedAt: emp.updatedAt ? new Date(emp.updatedAt) : new Date()
-          };
-          
-          console.log('EmployeeService: Mapped employee:', mappedEmployee);
-          return mappedEmployee;
-        });
+        // Get departments and positions to map names
+        return this.getDepartments().pipe(
+          switchMap(departments => {
+            return this.getPositions().pipe(
+              map(positions => {
+                console.log('EmployeeService: Departments loaded:', departments);
+                console.log('EmployeeService: Positions loaded:', positions);
+                
+                return employees.map(emp => {
+                  // Find department name
+                  const department = departments.find(d => d.id === emp.departmentId);
+                  const position = positions.find(p => p.id === emp.positionId);
+                  
+                  // Map backend employee data to frontend Employee interface
+                  const mappedEmployee: Employee = {
+                    id: emp.id || emp.employeeId || '',
+                    employeeId: emp.employeeId || emp.id || '',
+                    firstName: emp.firstName || '',
+                    lastName: emp.lastName || '',
+                    email: emp.email || '',
+                    phone: emp.phone || '',
+                    address: emp.address || '',
+                    department: department?.name || emp.department?.name || emp.departmentName || emp.department || 'Unknown Department',
+                    position: position?.title || emp.position?.title || emp.positionTitle || emp.position || 'Unknown Position',
+                    hireDate: emp.hireDate ? new Date(emp.hireDate) : new Date(),
+                    salary: emp.salary || emp.baseSalary || 0,
+                    isActive: emp.isActive !== undefined ? emp.isActive : true,
+                    userId: emp.userId || emp.id || '',
+                    createdAt: emp.createdAt ? new Date(emp.createdAt) : new Date(),
+                    updatedAt: emp.updatedAt ? new Date(emp.updatedAt) : new Date()
+                  };
+                  
+                  console.log('EmployeeService: Mapped employee:', mappedEmployee);
+                  return mappedEmployee;
+                });
+              })
+            );
+          })
+        );
       }),
       tap(mappedEmployees => {
         console.log('EmployeeService: Final mapped employees:', mappedEmployees);
@@ -82,30 +98,43 @@ export class EmployeeService {
     console.log('EmployeeService: Getting employee by id:', id);
     
     return this.http.get<any>(`${this.apiUrl}/employees/${id}`).pipe(
-      map(emp => {
+      switchMap(emp => {
         console.log('EmployeeService: Raw employee from backend:', emp);
         
-        // Map backend employee data to frontend Employee interface
-        const mappedEmployee: Employee = {
-          id: emp.id || emp.employeeId || '',
-          employeeId: emp.employeeId || emp.id || '',
-          firstName: emp.firstName || '',
-          lastName: emp.lastName || '',
-          email: emp.email || '',
-          phone: emp.phone || '',
-          address: emp.address || '',
-          department: emp.department?.name || emp.departmentName || emp.department || '',
-          position: emp.position?.title || emp.positionTitle || emp.position || '',
-          hireDate: emp.hireDate ? new Date(emp.hireDate) : new Date(),
-          salary: emp.salary || emp.baseSalary || 0,
-          isActive: emp.isActive !== undefined ? emp.isActive : true,
-          userId: emp.userId || emp.id || '',
-          createdAt: emp.createdAt ? new Date(emp.createdAt) : new Date(),
-          updatedAt: emp.updatedAt ? new Date(emp.updatedAt) : new Date()
-        };
-        
-        console.log('EmployeeService: Mapped single employee:', mappedEmployee);
-        return mappedEmployee;
+        // Get departments and positions to map names
+        return this.getDepartments().pipe(
+          switchMap(departments => {
+            return this.getPositions().pipe(
+              map(positions => {
+                // Find department name
+                const department = departments.find(d => d.id === emp.departmentId);
+                const position = positions.find(p => p.id === emp.positionId);
+                
+                // Map backend employee data to frontend Employee interface
+                const mappedEmployee: Employee = {
+                  id: emp.id || emp.employeeId || '',
+                  employeeId: emp.employeeId || emp.id || '',
+                  firstName: emp.firstName || '',
+                  lastName: emp.lastName || '',
+                  email: emp.email || '',
+                  phone: emp.phone || '',
+                  address: emp.address || '',
+                  department: department?.name || emp.department?.name || emp.departmentName || emp.department || 'Unknown Department',
+                  position: position?.title || emp.position?.title || emp.positionTitle || emp.position || 'Unknown Position',
+                  hireDate: emp.hireDate ? new Date(emp.hireDate) : new Date(),
+                  salary: emp.salary || emp.baseSalary || 0,
+                  isActive: emp.isActive !== undefined ? emp.isActive : true,
+                  userId: emp.userId || emp.id || '',
+                  createdAt: emp.createdAt ? new Date(emp.createdAt) : new Date(),
+                  updatedAt: emp.updatedAt ? new Date(emp.updatedAt) : new Date()
+                };
+                
+                console.log('EmployeeService: Mapped single employee:', mappedEmployee);
+                return mappedEmployee;
+              })
+            );
+          })
+        );
       }),
       catchError((error: HttpErrorResponse) => {
         console.error('EmployeeService: Failed to get employee:', error);

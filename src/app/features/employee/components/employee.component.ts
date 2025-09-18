@@ -59,10 +59,10 @@ export class EmployeeComponent implements OnInit {
   departmentOptions: { label: string; value: string }[] = [];
   positionOptions: { label: string; value: string }[] = [];
   roleOptions: { label: string; value: string }[] = [
-    { label: 'Employee', value: 'EMPLOYEE' },
-    { label: 'Manager', value: 'MANAGER' },
-    { label: 'Admin', value: 'ADMIN' },
-    { label: 'HR', value: 'HR' }
+    { label: 'Employee', value: 'employee' },
+    { label: 'Manager', value: 'manager' },
+    { label: 'Admin', value: 'admin' },
+    { label: 'HR', value: 'hr' }
   ];
 
   showAddModal = false;

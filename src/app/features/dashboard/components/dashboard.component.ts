@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/services/auth.service';
 import { EmployeeService } from '../../employee/services/employee.service';
+import { DepartmentService } from '../../department/services/department.service';
 import { PayrollService } from '../../payroll/services/payroll.service';
 import { User } from '../../auth/profile/models/user.model';
 import { Employee } from '../../employee/models/employee.model';
@@ -54,6 +55,7 @@ export class DashboardComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private employeeService: EmployeeService,
+    private departmentService: DepartmentService,
     private payrollService: PayrollService
   ) {}
 
@@ -160,21 +162,46 @@ export class DashboardComponent implements OnInit {
           )
           .slice(0, 5);
 
+        console.log('Dashboard: Processing employees for department stats:', employees);
+        console.log('Dashboard: Sample employee structure:', employees[0]);
+
         const departmentCounts = employees.reduce(
           (acc: Record<string, number>, emp) => {
-            if (emp.department) {
-              acc[emp.department] = (acc[emp.department] || 0) + 1;
+            console.log('Dashboard: Processing employee department:', emp.department, 'for employee:', emp.firstName, emp.lastName);
+            
+            // Handle different department field structures
+            let departmentName = '';
+            
+            if (typeof emp.department === 'string' && emp.department.trim()) {
+              departmentName = emp.department.trim();
+            } else if (emp.department && typeof emp.department === 'object' && emp.department.name) {
+              departmentName = emp.department.name.trim();
+            } else if (emp.departmentName && emp.departmentName.trim()) {
+              departmentName = emp.departmentName.trim();
             }
+            
+            if (departmentName) {
+              acc[departmentName] = (acc[departmentName] || 0) + 1;
+              console.log('Dashboard: Added employee to department:', departmentName, 'New count:', acc[departmentName]);
+            } else {
+              console.log('Dashboard: Employee has no valid department info:', emp);
+            }
+            
             return acc;
           },
           {}
         );
 
+        console.log('Dashboard: Final department counts:', departmentCounts);
+
         this.departmentStats = Object.entries(departmentCounts)
-          .map(([name, count]) => ({ name, count: count as number })) // <-- FIXED
-          .sort((a, b) => (b.count as number) - (a.count as number)); // <-- FIXED
+          .map(([name, count]) => ({ name, count: count as number }))
+          .sort((a, b) => (b.count as number) - (a.count as number));
 
         this.stats.totalDepartments = this.departmentStats.length;
+        
+        console.log('Dashboard: Department stats:', this.departmentStats);
+        console.log('Dashboard: Total departments:', this.stats.totalDepartments);
 
         this.updateChartData();
       },
@@ -182,6 +209,31 @@ export class DashboardComponent implements OnInit {
         console.error('Failed to load employee stats', error);
         this.loading = false;
       },
+    });
+
+    // Load departments directly from department service as fallback/verification
+    this.departmentService.getDepartments().subscribe({
+      next: (departments) => {
+        console.log('Dashboard: Departments from department service:', departments);
+        
+        // If we didn't get department stats from employees, use direct department count
+        if (this.stats.totalDepartments === 0 && departments && departments.length > 0) {
+          console.log('Dashboard: Using direct department count as fallback');
+          this.stats.totalDepartments = departments.length;
+          
+          // Create basic department stats if we have no employee-based stats
+          if (this.departmentStats.length === 0) {
+            this.departmentStats = departments.map(dept => ({
+              name: dept.name,
+              count: 0 // We don't have employee counts per department
+            }));
+            this.updateChartData();
+          }
+        }
+      },
+      error: (error) => {
+        console.error('Dashboard: Failed to load departments from department service', error);
+      }
     });
 
     // Payroll stats

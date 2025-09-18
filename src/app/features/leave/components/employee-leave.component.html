@@ -1,0 +1,259 @@
+<div class="leave-container">
+  <!-- Header -->
+  <div class="header-section mb-4">
+    <div class="flex justify-content-between align-items-center">
+      <h2>My Leave Management</h2>
+      <p-button 
+        label="Apply for Leave" 
+        icon="pi pi-plus" 
+        (click)="openLeaveModal()"
+        styleClass="p-button-primary">
+      </p-button>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid mb-4">
+    <div class="col-12 md:col-3">
+      <p-card>
+        <div class="text-center">
+          <div class="text-3xl font-bold text-blue-500">{{totalPendingLeaves}}</div>
+          <div class="text-sm text-gray-600">Pending Requests</div>
+        </div>
+      </p-card>
+    </div>
+    <div class="col-12 md:col-3">
+      <p-card>
+        <div class="text-center">
+          <div class="text-3xl font-bold text-green-500">{{totalApprovedLeaves}}</div>
+          <div class="text-sm text-gray-600">Approved Leaves</div>
+        </div>
+      </p-card>
+    </div>
+    <div class="col-12 md:col-3">
+      <p-card>
+        <div class="text-center">
+          <div class="text-3xl font-bold text-red-500">{{totalRejectedLeaves}}</div>
+          <div class="text-sm text-gray-600">Rejected Requests</div>
+        </div>
+      </p-card>
+    </div>
+    <div class="col-12 md:col-3">
+      <p-card>
+        <div class="text-center">
+          <div class="text-3xl font-bold text-purple-500">{{myLeaves.length}}</div>
+          <div class="text-sm text-gray-600">Total Requests</div>
+        </div>
+      </p-card>
+    </div>
+  </div>
+
+  <!-- Leave Balance Section -->
+  <div class="grid mb-4">
+    <div class="col-12">
+      <p-panel header="Leave Balance" [toggleable]="true">
+        <div class="grid">
+          <div class="col-12 md:col-4" *ngFor="let balance of leaveBalances">
+            <p-card>
+              <div class="text-center">
+                <h4>{{balance.leaveType.name || 'Unknown Type'}}</h4>
+                <div class="grid">
+                  <div class="col-4">
+                    <div class="text-sm text-gray-600">Allotted</div>
+                    <div class="text-lg font-bold">{{balance.totalAllotted}}</div>
+                  </div>
+                  <div class="col-4">
+                    <div class="text-sm text-gray-600">Used</div>
+                    <div class="text-lg font-bold text-orange-500">{{balance.totalUsed}}</div>
+                  </div>
+                  <div class="col-4">
+                    <div class="text-sm text-gray-600">Remaining</div>
+                    <div class="text-lg font-bold text-green-500">{{balance.totalRemaining}}</div>
+                  </div>
+                </div>
+              </div>
+            </p-card>
+          </div>
+        </div>
+      </p-panel>
+    </div>
+  </div>
+
+  <!-- Leave Requests Table -->
+  <div class="card">
+    <p-table 
+      [value]="myLeaves" 
+      [loading]="loading"
+      [paginator]="true" 
+      [rows]="10"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+      styleClass="p-datatable-striped">
+      
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Leave Type</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>Days</th>
+          <th>Reason</th>
+          <th>Status</th>
+          <th>Applied Date</th>
+          <th>Approved By</th>
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-leave>
+        <tr>
+          <td>{{getLeaveTypeName(leave.leaveTypeId)}}</td>
+          <td>{{leave.startDate | date:'mediumDate'}}</td>
+          <td>{{leave.endDate | date:'mediumDate'}}</td>
+          <td>{{leave.numberOfDays}}</td>
+          <td>
+            <span [title]="leave.reason">
+              {{leave.reason.length > 50 ? (leave.reason | slice:0:50) + '...' : leave.reason}}
+            </span>
+          </td>
+          <td>
+            <p-tag 
+              [value]="leave.status" 
+              [severity]="getStatusSeverity(leave.status)">
+            </p-tag>
+          </td>
+          <td>{{leave.appliedDate | date:'mediumDate'}}</td>
+          <td>{{leave.approverName || '-'}}</td>
+          <td>
+            <p-button 
+              *ngIf="canCancelLeave(leave)"
+              icon="pi pi-times" 
+              styleClass="p-button-rounded p-button-danger p-button-text"
+              pTooltip="Cancel Leave"
+              (click)="cancelLeave(leave)">
+            </p-button>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="9" class="text-center">No leave requests found</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- Apply Leave Modal -->
+  <p-dialog 
+    header="Apply for Leave" 
+    [(visible)]="showLeaveModal" 
+    [modal]="true" 
+    [responsive]="true" 
+    [style]="{width: '50vw'}"
+    [maximizable]="true"
+    [closable]="true"
+    (onHide)="closeLeaveModal()">
+    
+    <form [formGroup]="leaveForm" (ngSubmit)="onLeaveSubmit()">
+      <div class="grid">
+        <!-- Leave Type -->
+        <div class="col-12 md:col-6">
+          <label for="leaveType">Leave Type *</label>
+          <p-dropdown 
+            id="leaveType"
+            formControlName="leaveTypeId"
+            [options]="leaveTypes"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="Select Leave Type"
+            styleClass="w-full">
+          </p-dropdown>
+        </div>
+
+        <!-- Emergency Leave Checkbox -->
+        <div class="col-12 md:col-6 flex align-items-end">
+          <p-checkbox 
+            formControlName="isEmergency"
+            label="Emergency Leave"
+            binary="true">
+          </p-checkbox>
+        </div>
+
+        <!-- Start Date -->
+        <div class="col-12 md:col-6">
+          <label for="startDate">Start Date *</label>
+          <p-calendar 
+            id="startDate"
+            formControlName="startDate"
+            [minDate]="today"
+            dateFormat="mm/dd/yy"
+            [showIcon]="true"
+            styleClass="w-full">
+          </p-calendar>
+        </div>
+
+        <!-- End Date -->
+        <div class="col-12 md:col-6">
+          <label for="endDate">End Date *</label>
+          <p-calendar 
+            id="endDate"
+            formControlName="endDate"
+            [minDate]="leaveForm.get('startDate')?.value"
+            dateFormat="mm/dd/yy"
+            [showIcon]="true"
+            styleClass="w-full">
+          </p-calendar>
+        </div>
+
+        <!-- Leave Days Display -->
+        <div class="col-12" *ngIf="calculateLeaveDays() > 0">
+          <p-message 
+            severity="info" 
+            [text]="'Total Leave Days: ' + calculateLeaveDays()">
+          </p-message>
+        </div>
+
+        <!-- Remaining Balance Display -->
+        <div class="col-12" *ngIf="leaveForm.get('leaveTypeId')?.value">
+          <p-message 
+            severity="warn" 
+            [text]="'Remaining Balance: ' + getRemainingBalance(leaveForm.get('leaveTypeId')?.value) + ' days'">
+          </p-message>
+        </div>
+
+        <!-- Reason -->
+        <div class="col-12">
+          <label for="reason">Reason *</label>
+          <textarea 
+            id="reason"
+            formControlName="reason"
+            pInputTextarea
+            rows="4"
+            placeholder="Please provide a detailed reason for your leave request"
+            style="width: 100%;">
+          </textarea>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="flex justify-content-end gap-2 mt-3">
+        <p-button 
+          label="Cancel" 
+          icon="pi pi-times" 
+          styleClass="p-button-text"
+          (click)="closeLeaveModal()">
+        </p-button>
+        <p-button 
+          label="Submit Application" 
+          icon="pi pi-check" 
+          type="submit"
+          [loading]="loading"
+          [disabled]="!leaveForm.valid">
+        </p-button>
+      </div>
+    </form>
+  </p-dialog>
+
+  <!-- Toast for messages -->
+  <p-toast></p-toast>
+</div>

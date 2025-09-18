@@ -21,6 +21,7 @@ export class SidabarComponent {
       routerLink: '/departments',
     },
     { label: 'Attendance', icon: 'pi pi-calendar', routerLink: '/attendance' },
+    {label: 'Leave', icon: 'pi pi-calendar', routerLink: '/hr-leave-management' },
     { label: 'Payroll', icon: 'pi pi-money-bill', routerLink: '/payroll' },
   ];
 }

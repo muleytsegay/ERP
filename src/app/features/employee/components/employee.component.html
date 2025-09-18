@@ -25,11 +25,9 @@
         <tr>
           <th>Name</th>
           <th>Email</th>
-          <th>Phone</th>
           <th>Department</th>
           <th>Position</th>
           <th>Hire Date</th>
-          <th>Salary</th>
           <th>Actions</th>
         </tr>
       </ng-template>
@@ -38,11 +36,9 @@
         <tr>
           <td>{{ employee.firstName }} {{ employee.lastName }}</td>
           <td>{{ employee.email }}</td>
-          <td>{{ employee.phone }}</td>
           <td>{{ employee.department }}</td>
           <td>{{ employee.position }}</td>
           <td>{{ employee.hireDate | date:'shortDate' }}</td>
-          <td>{{ employee.salary | currency }}</td>
           <td>
             <p-button 
               icon="pi pi-pencil" 
