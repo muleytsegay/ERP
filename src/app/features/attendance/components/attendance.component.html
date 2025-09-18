@@ -41,8 +41,8 @@
           <th>Employee</th>
           <th>Department</th>
           <th>Date</th>
-          <th>Time In</th>
-          <th>Time Out</th>
+          <th>Check In</th>
+          <th>Check Out</th>
           <th>Hours Worked</th>
           <th>Status</th>
           <th>Actions</th>
@@ -51,16 +51,16 @@
 
       <ng-template pTemplate="body" let-record>
         <tr>
-          <td>{{ record.employeeName }}</td>
-          <td>{{ record.department }}</td>
-          <td>{{ record.date | date : "dd/MM/yyyy" }}</td>
-          <td>{{ record.timeIn }}</td>
-          <td>{{ record.timeOut }}</td>
-          <td>{{ record.hoursWorked }}h</td>
+          <td>{{ getEmployeeName(record.employeeId) }}</td>
+          <td>{{ getEmployeeDepartment(record.employeeId) }}</td>
+          <td>{{ record.checkIn | date : "dd/MM/yyyy" }}</td>
+          <td>{{ record.checkIn | date : "HH:mm" }}</td>
+          <td>{{ record.checkOut ? (record.checkOut | date : "HH:mm") : 'Not checked out' }}</td>
+          <td>{{ calculateHoursWorked(record) }}h</td>
           <td>
             <p-tag
-              [value]="record.status"
-              [severity]="getStatusSeverity(record.status)"
+              [value]="record.checkOut ? 'Present' : 'Partial'"
+              [severity]="record.checkOut ? 'success' : 'warning'"
             >
             </p-tag>
           </td>
@@ -70,7 +70,7 @@
               [text]="true"
               [rounded]="true"
               severity="info"
-              (onClick)="editAttendance(record)"
+              (onClick)="openAttendanceModal(record)"
               title="Edit"
             >
             </p-button>
@@ -79,7 +79,7 @@
               [text]="true"
               [rounded]="true"
               severity="danger"
-              (onClick)="deleteAttendance(record.id)"
+              (onClick)="deleteAttendance(record)"
               title="Delete"
             >
             </p-button>
@@ -110,7 +110,7 @@
     [resizable]="false"
     (onHide)="closeAttendanceModal()"
   >
-    <form [formGroup]="attendanceForm" (ngSubmit)="onSubmitAttendance()">
+    <form [formGroup]="attendanceForm" (ngSubmit)="onAttendanceSubmit()">
       <p-message *ngIf="error" severity="error" [text]="error" class="mb-4">
       </p-message>
 
@@ -140,12 +140,12 @@
       </div>
 
       <div class="field mb-4">
-        <label for="attendanceDate" class="block text-900 font-medium mb-2"
-          >Date *</label
+        <label for="checkInDate" class="block text-900 font-medium mb-2"
+          >Check In Date *</label
         >
         <p-calendar
-          id="attendanceDate"
-          formControlName="date"
+          id="checkInDate"
+          formControlName="checkInDate"
           placeholder="Select date"
           dateFormat="dd/mm/yy"
           class="w-full"
@@ -153,93 +153,81 @@
         </p-calendar>
         <small
           *ngIf="
-            attendanceForm.get('date')?.invalid &&
-            attendanceForm.get('date')?.touched
+            attendanceForm.get('checkInDate')?.invalid &&
+            attendanceForm.get('checkInDate')?.touched
           "
           class="p-error block"
         >
-          Date is required
+          Check In Date is required
         </small>
       </div>
 
       <div class="grid">
         <div class="col-6">
           <div class="field">
-            <label for="timeIn" class="block text-900 font-medium mb-2"
-              >Time In *</label
+            <label for="checkInTime" class="block text-900 font-medium mb-2"
+              >Check In Time *</label
             >
             <input
               pInputText
               type="time"
-              id="timeIn"
-              formControlName="timeIn"
+              id="checkInTime"
+              formControlName="checkInTime"
               class="w-full"
             />
             <small
               *ngIf="
-                attendanceForm.get('timeIn')?.invalid &&
-                attendanceForm.get('timeIn')?.touched
+                attendanceForm.get('checkInTime')?.invalid &&
+                attendanceForm.get('checkInTime')?.touched
               "
               class="p-error block"
             >
-              Time In is required
+              Check In Time is required
             </small>
           </div>
         </div>
         <div class="col-6">
           <div class="field">
-            <label for="timeOut" class="block text-900 font-medium mb-2"
-              >Time Out *</label
+            <label for="checkOutTime" class="block text-900 font-medium mb-2"
+              >Check Out Time</label
             >
             <input
               pInputText
               type="time"
-              id="timeOut"
-              formControlName="timeOut"
+              id="checkOutTime"
+              formControlName="checkOutTime"
               class="w-full"
             />
-            <small
-              *ngIf="
-                attendanceForm.get('timeOut')?.invalid &&
-                attendanceForm.get('timeOut')?.touched
-              "
-              class="p-error block"
-            >
-              Time Out is required
-            </small>
           </div>
         </div>
       </div>
 
       <div class="field mb-4">
-        <label for="status" class="block text-900 font-medium mb-2"
-          >Status *</label
+        <label for="checkOutDate" class="block text-900 font-medium mb-2"
+          >Check Out Date</label
         >
-        <p-dropdown
-          id="status"
-          formControlName="status"
-          [options]="statusOptions"
-          placeholder="Select Status"
-          optionLabel="label"
-          optionValue="value"
+        <p-calendar
+          id="checkOutDate"
+          formControlName="checkOutDate"
+          placeholder="Select date (optional)"
+          dateFormat="dd/mm/yy"
           class="w-full"
         >
-        </p-dropdown>
-        <select pInputText title="full" formControlName="status" class="w-full">
-          <option value="">-- Select Status --</option>
-          <option *ngFor="let status of statusOptions" [value]="status.value">
-            {{ status.label }}
-          </option>
-        </select>
-        <small
-          *ngIf="
-            attendanceForm.get('status')?.invalid &&
-            attendanceForm.get('status')?.touched
-          "
-          class="p-error block"
+        </p-calendar>
+      </div>
+
+      <div class="field mb-4">
+        <label for="notes" class="block text-900 font-medium mb-2"
+          >Notes</label
         >
-          Status is required
-        </small>
+        <textarea
+          pInputText
+          id="notes"
+          formControlName="notes"
+          placeholder="Add any notes..."
+          rows="3"
+          class="w-full"
+        ></textarea>
       </div>
     </form>
 
@@ -255,7 +243,7 @@
         <p-button
           [label]="isEditMode ? 'Update' : 'Save'"
           icon="pi pi-check"
-          (onClick)="onSubmitAttendance()"
+          (onClick)="onAttendanceSubmit()"
           [loading]="loading"
           [disabled]="attendanceForm.invalid"
         >

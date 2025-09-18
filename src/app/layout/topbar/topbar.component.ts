@@ -26,6 +26,11 @@ export class TopbarComponent {
   ) {}
 
   navigateToProfile(): void {
+    console.log('TopbarComponent: Attempting to navigate to profile');
+    console.log('TopbarComponent: Current user:', this.currentUser);
+    if (this.currentUser) {
+      console.log('TopbarComponent: Current user role:', this.currentUser.role);
+    }
     this.router.navigate(['/auth/profile']);
   }
 

@@ -1,0 +1,236 @@
+<div class="p-grid p-m-3">
+	<div class="p-col-12">
+		<p-card header="Leave Management Dashboard">
+			<div class="p-grid">
+				<div class="p-col-12 p-md-6">
+					<p-chart type="doughnut" [data]="leaveChartData" [options]="leaveChartOptions" style="height:250px"></p-chart>
+				</div>
+				<div class="p-col-12 p-md-6">
+					<div *ngIf="leaveStats">
+						<h4>Summary</h4>
+						<ul>
+							  <li>Pending: {{leaveStats.totalPending}}</li>
+							  <li>Approved: {{leaveStats.totalApproved}}</li>
+							  <li>Rejected: {{leaveStats.totalRejected}}</li>
+							  <li>Cancelled: {{leaveStats.totalCancelled}}</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</p-card>
+	</div>
+
+	<div class="p-col-12">
+		<p-panel header="Pending Leave Requests">
+			<p-table [value]="pendingLeaves" [paginator]="true" [rows]="5" responsiveLayout="scroll">
+				<ng-template pTemplate="header">
+					<tr>
+						<th>Employee</th>
+						<th>Type</th>
+						<th>Start</th>
+						<th>End</th>
+						<th>Days</th>
+						<th>Reason</th>
+						<th>Status</th>
+						<th>Actions</th>
+					</tr>
+				</ng-template>
+				<ng-template pTemplate="body" let-leave>
+					<tr>
+						<td>{{getEmployeeName(leave.employeeId)}}</td>
+						<td>{{getLeaveTypeName(leave.leaveTypeId)}}</td>
+						<td>{{leave.startDate | date:'mediumDate'}}</td>
+						<td>{{leave.endDate | date:'mediumDate'}}</td>
+						<td>{{leave.numberOfDays}}</td>
+						<td>{{leave.reason}}</td>
+						<td><p-tag [value]="leave.status" [severity]="getStatusSeverity(leave.status)"></p-tag></td>
+						<td>
+							<button pButton icon="pi pi-check" class="p-button-success p-mr-2" (click)="openApprovalModal(leave, 'approve')" *ngIf="canApprove(leave)"></button>
+							<button pButton icon="pi pi-times" class="p-button-danger" (click)="openApprovalModal(leave, 'reject')" *ngIf="canApprove(leave)"></button>
+							<button pButton icon="pi pi-eye" class="p-button-text" (click)="viewLeaveDetails(leave)"></button>
+						</td>
+					</tr>
+				</ng-template>
+				<ng-template pTemplate="emptymessage">
+					<tr><td colspan="8">No pending leave requests.</td></tr>
+				</ng-template>
+			</p-table>
+		</p-panel>
+	</div>
+
+	<div class="p-col-12">
+		<p-panel header="All Leave Records">
+			<p-table [value]="allLeaves" [paginator]="true" [rows]="10" responsiveLayout="scroll">
+				<ng-template pTemplate="header">
+					<tr>
+						<th>Employee</th>
+						<th>Type</th>
+						<th>Start</th>
+						<th>End</th>
+						<th>Days</th>
+						<th>Status</th>
+						<th>Applied</th>
+						<th>Approved By</th>
+						<th>Actions</th>
+					</tr>
+				</ng-template>
+				<ng-template pTemplate="body" let-leave>
+					<tr>
+						<td>{{getEmployeeName(leave.employeeId)}}</td>
+						<td>{{getLeaveTypeName(leave.leaveTypeId)}}</td>
+						<td>{{leave.startDate | date:'mediumDate'}}</td>
+						<td>{{leave.endDate | date:'mediumDate'}}</td>
+						<td>{{leave.days}}</td>
+						<td><p-tag [value]="leave.status" [severity]="getStatusSeverity(leave.status)"></p-tag></td>
+						<td>{{leave.appliedDate | date:'mediumDate'}}</td>
+						<td>{{getEmployeeName(leave.approvedBy)}}</td>
+						<td>
+							<button pButton icon="pi pi-eye" class="p-button-text" (click)="viewLeaveDetails(leave)"></button>
+						</td>
+					</tr>
+				</ng-template>
+				<ng-template pTemplate="emptymessage">
+					<tr><td colspan="9">No leave records found.</td></tr>
+				</ng-template>
+			</p-table>
+		</p-panel>
+	</div>
+
+	<div class="p-col-12">
+		<p-panel header="Leave Types">
+			<button pButton label="Add Leave Type" icon="pi pi-plus" class="p-button-success p-mb-3" (click)="openLeaveTypeModal()"></button>
+			<p-table [value]="leaveTypes" [paginator]="true" [rows]="5" responsiveLayout="scroll">
+				<ng-template pTemplate="header">
+					<tr>
+						<th>Name</th>
+						<th>Description</th>
+						<th>Max Days/Year</th>
+						<th>Carry Forward</th>
+						<th>Active</th>
+						<th>Actions</th>
+					</tr>
+				</ng-template>
+				<ng-template pTemplate="body" let-type>
+					<tr>
+						<td>{{type.name}}</td>
+						<td>{{type.description}}</td>
+						<td>{{type.maxDaysPerYear}}</td>
+						<td>{{type.carryForwardAllowed ? 'Yes' : 'No'}}</td>
+						<td><p-tag [value]="type.isActive ? 'Active' : 'Inactive'" [severity]="type.isActive ? 'success' : 'danger'"></p-tag></td>
+						<td>
+							<button pButton icon="pi pi-pencil" class="p-button-warning p-mr-2" (click)="openLeaveTypeModal(type)"></button>
+							<button pButton icon="pi pi-trash" class="p-button-danger" (click)="deleteLeaveType(type)"></button>
+						</td>
+					</tr>
+				</ng-template>
+				<ng-template pTemplate="emptymessage">
+					<tr><td colspan="6">No leave types found.</td></tr>
+				</ng-template>
+			</p-table>
+		</p-panel>
+	</div>
+
+	<div class="p-col-12">
+		<p-panel header="Employee Leave Stats">
+			<p-table [value]="employeeLeaveStats" [paginator]="true" [rows]="5" responsiveLayout="scroll">
+				<ng-template pTemplate="header">
+					<tr>
+						<th>Employee</th>
+						<th>Department</th>
+						<th>Total Leaves</th>
+						<th>Approved</th>
+						<th>Pending</th>
+						<th>Rejected</th>
+					</tr>
+				</ng-template>
+				<ng-template pTemplate="body" let-stat>
+					<tr>
+						<td>{{getEmployeeName(stat.employeeId)}}</td>
+						<td>{{getEmployeeDepartment(stat.employeeId)}}</td>
+						<td>{{stat.total}}</td>
+						<td>{{stat.approved}}</td>
+						<td>{{stat.pending}}</td>
+						<td>{{stat.rejected}}</td>
+					</tr>
+				</ng-template>
+				<ng-template pTemplate="emptymessage">
+					<tr><td colspan="6">No employee stats found.</td></tr>
+				</ng-template>
+			</p-table>
+		</p-panel>
+	</div>
+
+	<!-- Approval Modal -->
+	<p-dialog header="Leave Approval" [(visible)]="showApprovalModal" [modal]="true" [closable]="true" (onHide)="closeApprovalModal()">
+		<form [formGroup]="approvalForm" (ngSubmit)="onApprovalSubmit()">
+			<div class="p-field">
+				<label>Action</label>
+				<p-dropdown [options]="[{label: 'Approve', value: 'approve'}, {label: 'Reject', value: 'reject'}]" formControlName="action"></p-dropdown>
+			</div>
+			<div class="p-field">
+				<label>Comments</label>
+				<textarea pInputTextarea formControlName="comments" rows="3"></textarea>
+			</div>
+			<button pButton type="submit" label="Submit" [disabled]="!approvalForm.valid || loading"></button>
+		</form>
+	</p-dialog>
+
+	<!-- Leave Type Modal -->
+	<p-dialog header="{{isEditingLeaveType ? 'Edit Leave Type' : 'Add Leave Type'}}" [(visible)]="showLeaveTypeModal" [modal]="true" [closable]="true" (onHide)="closeLeaveTypeModal()">
+		<form [formGroup]="leaveTypeForm" (ngSubmit)="onLeaveTypeSubmit()">
+			<div class="p-field">
+				<label>Name</label>
+				<input pInputText formControlName="name" />
+			</div>
+			<div class="p-field">
+				<label>Description</label>
+				<input pInputText formControlName="description" />
+			</div>
+			<div class="p-field">
+				<label>Max Days Per Year</label>
+				<input pInputText type="number" formControlName="maxDaysPerYear" />
+			</div>
+			<div class="p-field-checkbox">
+				<p-checkbox formControlName="carryForwardAllowed" binary="true"></p-checkbox>
+				<label>Carry Forward Allowed</label>
+			</div>
+			<div class="p-field">
+				<label>Max Carry Forward</label>
+				<input pInputText type="number" formControlName="maxCarryForward" />
+			</div>
+			<div class="p-field-checkbox">
+				<p-checkbox formControlName="requiresApproval" binary="true"></p-checkbox>
+				<label>Requires Approval</label>
+			</div>
+			<div class="p-field-checkbox">
+				<p-checkbox formControlName="allowedForEmployees" binary="true"></p-checkbox>
+				<label>Allowed For Employees</label>
+			</div>
+			<div class="p-field">
+				<label>Minimum Notice Days</label>
+				<input pInputText type="number" formControlName="minimumNoticeRays" />
+			</div>
+			<div class="p-field-checkbox">
+				<p-checkbox formControlName="isActive" binary="true"></p-checkbox>
+				<label>Active</label>
+			</div>
+			<button pButton type="submit" label="Save" [disabled]="!leaveTypeForm.valid || loading"></button>
+		</form>
+	</p-dialog>
+
+	<!-- View Leave Modal -->
+	<p-dialog header="Leave Details" [(visible)]="showViewModal" [modal]="true" [closable]="true" (onHide)="closeViewModal()">
+		<div *ngIf="selectedLeave">
+			<div><strong>Employee:</strong> {{getEmployeeName(selectedLeave.employeeId)}}</div>
+			<div><strong>Type:</strong> {{getLeaveTypeName(selectedLeave.leaveTypeId)}}</div>
+			<div><strong>Start:</strong> {{selectedLeave.startDate | date:'mediumDate'}}</div>
+			<div><strong>End:</strong> {{selectedLeave.endDate | date:'mediumDate'}}</div>
+			<div><strong>Days:</strong> {{selectedLeave.numberOfDays}}</div>
+			<div><strong>Status:</strong> <p-tag [value]="selectedLeave.status" [severity]="getStatusSeverity(selectedLeave.status)"></p-tag></div>
+			<div><strong>Reason:</strong> {{selectedLeave.reason}}</div>
+			<div><strong>Applied:</strong> {{selectedLeave.appliedDate | date:'mediumDate'}}</div>
+			<div><strong>Approved By:</strong> {{selectedLeave.approvedBy ? getEmployeeName(selectedLeave.approvedBy) : 'N/A'}}</div>
+			<div><strong>Comments:</strong> {{selectedLeave.approverComments || 'N/A'}}</div>
+		</div>
+	</p-dialog>
+</div>
