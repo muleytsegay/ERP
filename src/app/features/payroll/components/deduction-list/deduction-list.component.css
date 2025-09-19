@@ -1,0 +1,72 @@
+/* Container padding */
+.bonus-management {
+  padding: 20px;
+  background-color: #f9fafb;
+}
+
+/* Header spacing */
+.bonus-management .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.bonus-management .header h2 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.bonus-management .header button {
+  height: 40px;
+}
+
+/* Table spacing */
+p-table {
+  margin-top: 20px;
+}
+
+/* Dialog (modal) styling */
+p-dialog .p-fluid {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* space between each form field */
+}
+
+p-dialog .p-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+p-dialog .p-field label {
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+p-dialog .p-field input,
+p-dialog .p-field textarea,
+p-dialog .p-field p-inputNumber,
+p-dialog .p-field p-calendar {
+  width: 100%;
+}
+
+/* Checkbox spacing */
+.p-field-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Footer buttons spacing */
+p-dialog ::ng-deep .p-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Optional: make modal a bit wider */
+p-dialog {
+  max-width: 550px !important;
+}

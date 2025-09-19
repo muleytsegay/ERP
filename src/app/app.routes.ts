@@ -7,7 +7,7 @@ import { AttendanceComponent } from './features/attendance/components/attendance
 import { EmployeeComponent } from './features/employee/components/employee.component';
 import { AuthGuard } from './core/guards/auth.guard';
 import { LoginRedirectGuard } from './core/guards/login-redirect.guard';
-import { PayrollRootComponent } from './features/payroll/components/payroll-root.component';
+import { PayrollRootComponent } from './features/payroll/components/payroll-root/payroll-root.component';
 import { EmployeeLeaveComponent } from './features/leave/components/employee-leave.component';
 import { HrLeaveManagementComponent } from './features/leave/components/hr-leave-management.component';
 
@@ -26,7 +26,7 @@ export const routes: Routes = [
     path: 'auth/profile',
     component: ProfileComponent,
     canActivate: [AuthGuard],
-    data: { roles: ['EMPLOYEE'] }
+    data: { roles: ['EMPLOYEE'] },
   },
 
   // Employee leave page (employee only)
@@ -34,7 +34,7 @@ export const routes: Routes = [
     path: 'leave',
     component: EmployeeLeaveComponent,
     canActivate: [AuthGuard],
-    data: { roles: ['EMPLOYEE'] }
+    data: { roles: ['EMPLOYEE'] },
   },
 
   // HR leave management (HR/admin only)
@@ -42,7 +42,7 @@ export const routes: Routes = [
     path: 'hr-leave-management',
     component: HrLeaveManagementComponent,
     canActivate: [AuthGuard],
-    data: { roles: ['HR', 'ADMIN'] }
+    data: { roles: ['HR', 'ADMIN'] },
   },
 
   // Dashboard

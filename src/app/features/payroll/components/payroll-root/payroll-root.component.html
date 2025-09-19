@@ -1,0 +1,130 @@
+<div class="page">
+  <p-toast></p-toast>
+
+  <!-- Header always visible -->
+  <header class="head">
+    <div>
+      <h2 class="pay-title">Payroll Management</h2>
+      <p class="pay-subTitle">
+        Process and manage employee payroll, bonuses, and deductions
+      </p>
+    </div>
+    <div class="process-wrapper" *ngIf="activeTab === 'payroll'">
+      <button
+        pButton
+        type="button"
+        class="process-btn"
+        icon="pi pi-play"
+        (click)="onProcessAll()"
+      >
+        Process Payroll
+      </button>
+    </div>
+  </header>
+
+  <!-- Custom centered tab-button strip -->
+  <div class="tabs-strip">
+    <div class="button-group" role="presentation">
+      <button
+        type="button"
+        title="Payroll"
+        class="tab-btn"
+        [class.active]="activeTab === 'payroll'"
+        (click)="setActive('payroll')"
+        [attr.aria-pressed]="activeTab === 'payroll'"
+      >
+        Payroll
+      </button>
+
+      <button
+        type="button"
+        title="Bonuses"
+        class="tab-btn"
+        icon="pi pi-play"
+        [class.active]="activeTab === 'bonuses'"
+        (click)="setActive('bonuses')"
+        [attr.aria-pressed]="activeTab === 'bonuses'"
+      >
+        Bonuses
+      </button>
+
+      <button
+        type="button"
+        title="Deductions"
+        class="tab-btn"
+        [class.active]="activeTab === 'deductions'"
+        (click)="setActive('deductions')"
+        [attr.aria-pressed]="activeTab === 'deductions'"
+      >
+        Deductions
+      </button>
+    </div>
+
+    <!-- Process button sits on the right inside the same strip (only for Payroll) -->
+    <!-- <div class="process-wrapper" *ngIf="activeTab === 'payroll'">
+      <button
+        pButton
+        type="button"
+        class="process-btn"
+        label="Process Payroll"
+        icon="pi pi-play"
+        (click)="onProcessAll()"
+      >
+        Process Payroll
+      </button>
+    </div> -->
+  </div>
+
+  <!-- Content area -->
+  <section class="content-area">
+    <!-- Payroll content -->
+    <ng-container *ngIf="activeTab === 'payroll'">
+      <app-payroll-summary [summary]="summary$ | async"></app-payroll-summary>
+
+      <section class="controls">
+        <app-payroll-filter
+          [periods]="periods"
+          [selected]="selected"
+          (change)="onPeriodChange($event)"
+          (process)="onProcess($event)"
+          (export)="onExport($event)"
+        ></app-payroll-filter>
+      </section>
+
+      <section class="table-wrap">
+        <ng-container *ngIf="loading$ | async; else tableBlock">
+          <div class="loading">
+            <p-progressSpinner></p-progressSpinner>
+            <div class="loading-text">Loading payroll data...</div>
+          </div>
+        </ng-container>
+
+        <ng-template #tableBlock>
+          <h3 class="section-title">Payroll Details - {{ selected.label }}</h3>
+          <app-payroll-table
+            [employees]="(employees$ | async) ?? []"
+            (payslip)="onDownloadPayslip($event)"
+            (reject)="onReject($event)"
+            (lazyLoad)="onLazyLoad($event)"
+            (markAsPaid)="onMarkAsPaid($event)"
+            (delete)="onDelete($event)"
+          ></app-payroll-table>
+        </ng-template>
+      </section>
+    </ng-container>
+
+    <!-- Bonuses content -->
+    <ng-container *ngIf="activeTab === 'bonuses'">
+      <div class="table-wrap">
+        <app-bonus-list></app-bonus-list>
+      </div>
+    </ng-container>
+
+    <!-- Deductions content -->
+    <ng-container *ngIf="activeTab === 'deductions'">
+      <div class="table-wrap">
+        <app-deduction-list></app-deduction-list>
+      </div>
+    </ng-container>
+  </section>
+</div>
