@@ -1,327 +1,263 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, throwError } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { EmployeePayroll, PayrollSummary } from '../models/payroll.model';
-import { SalaryStructure } from '../../employee/models/salary.model';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { tap, catchError } from 'rxjs/operators';
-
+import { Bonus, CreateBonusDto, UpdateBonusDto } from '../models/bonus.model';
+import {
+  Deduction,
+  CreateDeductionDto,
+  UpdateDeductionDto,
+} from '../models/deduction.model';
+import { tap } from 'rxjs/operators';
+import { AuthService } from '../../../core/services/auth.service';
 @Injectable({ providedIn: 'root' })
 export class PayrollService {
-  //to be Replaced with  actual API base when ready
-  private apiBase = 'https://gateway-microservice.onrender.com/payroll/api/v1'; // Updated to actual payroll API
-  private apiUrl = 'https://gateway-microservice.onrender.com/payroll/api/v1';
+  private apiBase = 'https://gateway-microservice.onrender.com/payroll/api/v1';
+  private employeeApiBase =
+    'https://gateway-microservice.onrender.com/hrms/api/v1';
 
   constructor(private http: HttpClient) {}
 
-  // Mock data for quick frontend dev. Replace with API call.
-  getPayrollSummary(period: string): Observable<PayrollSummary> {
-    const mock: PayrollSummary = {
-      totalEmployees: 5,
-      grossPayroll: 22600,
-      netPayroll: 206009,
-      totalDeductions: 2100000,
-    };
-    // return this.http.get<PayrollSummary>(`${this.apiBase}/summary?period=${period}`);
-    return of(mock);
+  // Payroll methods
+  getAllPayrolls(): Observable<EmployeePayroll[]> {
+    return this.http.get<any[]>(`${this.apiBase}/payroll`).pipe(
+      map((payrolls) => this.mapToEmployeePayroll(payrolls)),
+      catchError(this.handleError('getAllPayrolls'))
+    );
   }
 
-  private mock: EmployeePayroll[] = [
-    {
-      id: '1',
-      name: 'Alice Johnson',
-      employeeId: 'EMP001',
-      department: 'Engineering',
-      baseSalary: 8000,
-      allowances: 1200,
-      deductions: 800,
-      grossSalary: 9200,
-      netSalary: 8400,
-      status: 'Processed',
-    },
-    {
-      id: '2',
-      name: 'Bob Smith',
-      employeeId: 'EMP002',
-      department: 'Marketing',
-      baseSalary: 6500,
-      allowances: 800,
-      deductions: 650,
-      grossSalary: 7300,
-      netSalary: 6650,
-      status: 'Processed',
-    },
-    {
-      id: '3',
-      name: 'Carol Davis',
-      employeeId: 'EMP003',
-      department: 'HR',
-      baseSalary: 5500,
-      allowances: 600,
-      deductions: 550,
-      grossSalary: 6100,
-      netSalary: 5550,
-      status: 'Pending',
-    },
-    {
-      id: '4',
-      name: 'Alice Johnson',
-      employeeId: 'EMP001',
-      department: 'Engineering',
-      baseSalary: 8000,
-      allowances: 1200,
-      deductions: 800,
-      grossSalary: 9200,
-      netSalary: 8400,
-      status: 'Processed',
-    },
-    {
-      id: '5',
-      name: 'Bob Smith',
-      employeeId: 'EMP002',
-      department: 'Marketing',
-      baseSalary: 6500,
-      allowances: 800,
-      deductions: 650,
-      grossSalary: 7300,
-      netSalary: 6650,
-      status: 'Processed',
-    },
-    {
-      id: '6',
-      name: 'Carol Davis',
-      employeeId: 'EMP003',
-      department: 'HR',
-      baseSalary: 5500,
-      allowances: 600,
-      deductions: 550,
-      grossSalary: 6100,
-      netSalary: 5550,
-      status: 'Pending',
-    },
-    {
-      id: '7',
-      name: 'Alice Johnson',
-      employeeId: 'EMP001',
-      department: 'Engineering',
-      baseSalary: 8000,
-      allowances: 1200,
-      deductions: 800,
-      grossSalary: 9200,
-      netSalary: 8400,
-      status: 'Processed',
-    },
-    {
-      id: '8',
-      name: 'Bob Smith',
-      employeeId: 'EMP002',
-      department: 'Marketing',
-      baseSalary: 6500,
-      allowances: 800,
-      deductions: 650,
-      grossSalary: 7300,
-      netSalary: 6650,
-      status: 'Processed',
-    },
-    {
-      id: '9',
-      name: 'Carol Davis',
-      employeeId: 'EMP003',
-      department: 'HR',
-      baseSalary: 5500,
-      allowances: 600,
-      deductions: 550,
-      grossSalary: 6100,
-      netSalary: 5550,
-      status: 'Pending',
-    },
-    {
-      id: '10',
-      name: 'Alice Johnson',
-      employeeId: 'EMP001',
-      department: 'Engineering',
-      baseSalary: 8000,
-      allowances: 1200,
-      deductions: 800,
-      grossSalary: 9200,
-      netSalary: 8400,
-      status: 'Processed',
-    },
-    {
-      id: '11',
-      name: 'Bob Smith',
-      employeeId: 'EMP002',
-      department: 'Marketing',
-      baseSalary: 6500,
-      allowances: 800,
-      deductions: 650,
-      grossSalary: 7300,
-      netSalary: 6650,
-      status: 'Processed',
-    },
-    {
-      id: '12',
-      name: 'Carol Davis',
-      employeeId: 'EMP003',
-      department: 'HR',
-      baseSalary: 5500,
-      allowances: 600,
-      deductions: 550,
-      grossSalary: 6100,
-      netSalary: 5550,
-      status: 'Pending',
-    },
-  ];
-
-  getEmployeePayroll(period: string): Observable<EmployeePayroll[]> {
-    // return this.http.get<EmployeePayroll[]>(`${this.apiBase}/employees?period=${period}`);
-    return of(this.mock);
+  getPayrollById(id: string): Observable<EmployeePayroll> {
+    return this.http.get<any>(`${this.apiBase}/payroll/${id}`).pipe(
+      map((payroll) => this.mapToSingleEmployeePayroll(payroll)),
+      catchError(this.handleError('getPayrollById'))
+    );
   }
 
   processPayroll(period: string): Observable<any> {
-    // return this.http.post(`${this.apiBase}/process`, { period });
-    return of({ success: true, message: 'Processed (mock)' });
+    const [monthStr, yearStr] = period.split('-');
+    const monthMap: Record<string, number> = {
+      jan: 1,
+      feb: 2,
+      mar: 3,
+      apr: 4,
+      may: 5,
+      jun: 6,
+      jul: 7,
+      aug: 8,
+      sep: 9,
+      oct: 10,
+      nov: 11,
+      dec: 12,
+    };
+    const month = monthMap[monthStr.toLowerCase()];
+    const year = parseInt(yearStr, 10);
+    return this.http
+      .post(`${this.apiBase}/payroll/actions/process`, { year, month })
+      .pipe(catchError(this.handleError('processPayroll')));
   }
 
-  getAllPayrolls(): Observable<EmployeePayroll[]> {
-    // For now, we’ll just reuse the mock from getEmployeePayroll
-    // Later, replace with your real API when ready
-    return this.getEmployeePayroll('all');
+  getPayrollSummary(): Observable<PayrollSummary> {
+    return this.getAllPayrolls().pipe(
+      map((payrolls) => this.computeSummary(payrolls))
+    );
+  }
+
+  getSalaryStructures(): Observable<any[]> {
+    return this.http
+      .get<any[]>(`${this.apiBase}/salary-structures`)
+      .pipe(catchError(this.handleError('getSalaryStructures')));
+  }
+
+  createSalaryStructure(data: any): Observable<any> {
+    return this.http
+      .post(`${this.apiBase}/salary-structures`, data)
+      .pipe(catchError(this.handleError('createSalaryStructure')));
   }
 
   exportPayroll(period: string): Observable<Blob> {
-    // Example for API: return this.http.get(`${this.apiBase}/export?period=${period}`, { responseType: 'blob' });
-    const data = new Blob([JSON.stringify(this.mock)], { type: 'text/csv' });
-    return of(data);
+    return this.getAllPayrolls().pipe(
+      map(
+        (payrolls) =>
+          new Blob([this.convertToCSV(payrolls)], { type: 'text/csv' })
+      )
+    );
   }
 
-  calculatePayroll(period: string): Observable<any> {
-    // return this.http.post(`${this.apiBase}/calculate`, { period });
-    return of({ success: true });
+  // Bonus methods
+  getAllBonuses(): Observable<Bonus[]> {
+    return this.http
+      .get<Bonus[]>(`${this.apiBase}/bonuses`)
+      .pipe(catchError(this.handleError('getAllBonuses')));
   }
 
-  downloadPayslip(employeeId: string): Observable<Blob> {
-    // return this.http.get(`${this.apiBase}/payslip/${employeeId}`, {
-    //   responseType: 'blob',
-    // });
-    const payslipContent = `Payslip for Employee ID: ${employeeId}`;
-    const blob = new Blob([payslipContent], { type: 'application/pdf' });
-    return of(blob);
+  getBonusById(id: string): Observable<Bonus> {
+    return this.http
+      .get<Bonus>(`${this.apiBase}/bonuses/${id}`)
+      .pipe(catchError(this.handleError('getBonusById')));
   }
 
-  getEmployeePayrollPaginated(
-    period: string,
-    page: number,
-    size: number
-  ): Observable<EmployeePayroll[]> {
-    // return this.http.get<EmployeePayroll[]>(
-    //   `${this.apiBase}/employees?period=${period}&page=${page}&size=${size}`
-    // );
-    return of(this.mock.slice(page * size, (page + 1) * size));
+  getBonusesByEmployee(employeeId: string): Observable<Bonus[]> {
+    return this.http
+      .get<Bonus[]>(`${this.apiBase}/bonuses/employee/${employeeId}`)
+      .pipe(catchError(this.handleError('getBonusesByEmployee')));
   }
 
-  processAllPayroll(): Observable<any> {
-    // return this.http.post(`${this.apiBase}/process/all`, {});
-
-    return of({ success: true });
+  createBonus(bonus: CreateBonusDto): Observable<any> {
+    return this.http
+      .post(`${this.apiBase}/bonuses`, bonus)
+      .pipe(catchError(this.handleError('createBonus')));
   }
 
+  updateBonus(id: string, bonus: UpdateBonusDto): Observable<any> {
+    return this.http
+      .put(`${this.apiBase}/bonuses/${id}`, bonus)
+      .pipe(catchError(this.handleError('updateBonus')));
+  }
+
+  deleteBonus(id: string): Observable<any> {
+    return this.http
+      .delete(`${this.apiBase}/bonuses/${id}`)
+      .pipe(catchError(this.handleError('deleteBonus')));
+  }
+
+  // Deduction methods
+  getAllDeductions(): Observable<Deduction[]> {
+    return this.http
+      .get<Deduction[]>(`${this.apiBase}/deductions`)
+      .pipe(catchError(this.handleError('getAllDeductions')));
+  }
+
+  getDeductionById(id: string): Observable<Deduction> {
+    return this.http
+      .get<Deduction>(`${this.apiBase}/deductions/${id}`)
+      .pipe(catchError(this.handleError('getDeductionById')));
+  }
+
+  getDeductionsByEmployee(employeeId: string): Observable<Deduction[]> {
+    return this.http
+      .get<Deduction[]>(`${this.apiBase}/deductions/employee/${employeeId}`)
+      .pipe(catchError(this.handleError('getDeductionsByEmployee')));
+  }
+
+  createDeduction(deduction: CreateDeductionDto): Observable<any> {
+    return this.http
+      .post(`${this.apiBase}/deductions`, deduction)
+      .pipe(catchError(this.handleError('createDeduction')));
+  }
+
+  updateDeduction(id: string, deduction: UpdateDeductionDto): Observable<any> {
+    return this.http
+      .put(`${this.apiBase}/deductions/${id}`, deduction)
+      .pipe(catchError(this.handleError('updateDeduction')));
+  }
+
+  deleteDeduction(id: string): Observable<any> {
+    return this.http
+      .delete(`${this.apiBase}/deductions/${id}`)
+      .pipe(catchError(this.handleError('deleteDeduction')));
+  }
+  // Update the markAsPaid method to use the correct API endpoint
+  markAsPaid(id: string): Observable<any> {
+    // The API endpoint is /api/v1/payroll/{id}/pay according to the swagger
+    return this.http
+      .post(`${this.apiBase}/payroll/${id}/pay`, {
+        payDateUtc: new Date().toISOString(),
+      })
+      .pipe(catchError(this.handleError('markAsPaid')));
+  }
+
+  // Add the approvePayroll method that was missing
   approvePayroll(id: string): Observable<any> {
-    // return this.http.put(`${this.apiBase}/payroll/${id}/approve`, {});
-    return of({ success: true });
-  }
-
-  rejectPayroll(id: string): Observable<any> {
-    // return this.http.put(`${this.apiBase}/payroll/${id}/reject`, {});
-    return of({ success: true });
-  }
-
-  // Salary Structure operations for Employee Creation
-  createSalaryStructure(salaryStructure: SalaryStructure): Observable<SalaryStructure> {
-    console.log('PayrollService: Creating salary structure:', salaryStructure);
-    console.log('PayrollService: POST request to:', `${this.apiUrl}/salary-structures`);
-    
-    return this.http.post<SalaryStructure>(`${this.apiUrl}/salary-structures`, salaryStructure).pipe(
-      tap(response => {
-        console.log('PayrollService: Salary structure created successfully:', response);
-      }),
-      catchError((error: HttpErrorResponse) => {
-        console.error('PayrollService: Failed to create salary structure:', {
-          status: error.status,
-          statusText: error.statusText,
-          message: error.message,
-          error: error.error,
-          url: error.url,
-          salaryData: salaryStructure
-        });
-        return throwError(() => error);
-      })
+    return this.http.post(`${this.apiBase}/payroll/${id}/approve`, {}).pipe(
+      tap((response) => console.log('Approve API response:', response)),
+      catchError(this.handleError('approvePayroll'))
     );
   }
 
-  getSalaryStructure(employeeId: string): Observable<SalaryStructure> {
-    console.log('PayrollService: Getting salary structure for employee:', employeeId);
-    console.log('PayrollService: GET request to:', `${this.apiUrl}/salary-structures/${employeeId}`);
-    
-    return this.http.get<SalaryStructure>(`${this.apiUrl}/salary-structures/${employeeId}`).pipe(
-      tap(response => {
-        console.log('PayrollService: Salary structure retrieved successfully:', response);
-      }),
-      catchError((error: HttpErrorResponse) => {
-        console.error('PayrollService: Failed to get salary structure:', {
-          status: error.status,
-          statusText: error.statusText,
-          message: error.message,
-          error: error.error,
-          url: error.url,
-          employeeId
-        });
-        return throwError(() => error);
-      })
+  deletePayroll(id: string): Observable<any> {
+    return this.http
+      .delete(`${this.apiBase}/payroll/${id}`)
+      .pipe(catchError(this.handleError('deletePayroll')));
+  }
+
+  // getAllEmployees(): Observable<any[]> {
+  //   return this.http
+  //     .get<any[]>(`${this.employeeApiBase}/employees`)
+  //     .pipe(catchError(this.handleError('getAllEmployees')));
+  // }
+
+  getAllEmployees(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.employeeApiBase}/employees`).pipe(
+      map((employees: any[]) =>
+        employees.map((emp) => ({
+          id: emp.id,
+          name: `${emp.firstName} ${emp.lastName}`.trim(),
+          firstName: emp.firstName,
+          lastName: emp.lastName,
+          email: emp.email,
+        }))
+      ),
+      catchError(this.handleError('getAllEmployees'))
     );
   }
 
-  updateSalaryStructure(employeeId: string, salaryStructure: Partial<SalaryStructure>): Observable<SalaryStructure> {
-    console.log('PayrollService: Updating salary structure for employee:', employeeId, 'with data:', salaryStructure);
-    console.log('PayrollService: PUT request to:', `${this.apiUrl}/salary-structures/${employeeId}`);
-    
-    return this.http.put<SalaryStructure>(`${this.apiUrl}/salary-structures/${employeeId}`, salaryStructure).pipe(
-      tap(response => {
-        console.log('PayrollService: Salary structure updated successfully:', response);
-      }),
-      catchError((error: HttpErrorResponse) => {
-        console.error('PayrollService: Failed to update salary structure:', {
-          status: error.status,
-          statusText: error.statusText,
-          message: error.message,
-          error: error.error,
-          url: error.url,
-          employeeId,
-          updateData: salaryStructure
-        });
-        return throwError(() => error);
-      })
-    );
+  // Helper methods
+  private mapToEmployeePayroll(payrolls: any[]): EmployeePayroll[] {
+    return payrolls.map((p) => this.mapToSingleEmployeePayroll(p));
   }
 
-  deleteSalaryStructure(employeeId: string): Observable<void> {
-    console.log('PayrollService: Deleting salary structure for employee:', employeeId);
-    console.log('PayrollService: DELETE request to:', `${this.apiUrl}/salary-structures/${employeeId}`);
-    
-    return this.http.delete<void>(`${this.apiUrl}/salary-structures/${employeeId}`).pipe(
-      tap(() => {
-        console.log('PayrollService: Salary structure deleted successfully for employee:', employeeId);
-      }),
-      catchError((error: HttpErrorResponse) => {
-        console.error('PayrollService: Failed to delete salary structure:', {
-          status: error.status,
-          statusText: error.statusText,
-          message: error.message,
-          error: error.error,
-          url: error.url,
-          employeeId
-        });
-        return throwError(() => error);
-      })
-    );
+  private mapToSingleEmployeePayroll(p: any): EmployeePayroll {
+    return {
+      id: p.id,
+      employeeId: p.employeeId,
+      name: p.employeeName || `Employee ${p.employeeId?.substring(0, 8)}`,
+      basicSalary: p.basicSalary,
+      totalAllowances: p.totalAllowances,
+      totalDeductions: p.totalDeductions,
+      grossPay: p.grossPay,
+      netPay: p.netPay,
+      status: p.status,
+      payDateUtc: p.payDateUtc,
+    };
+  }
+
+  private computeSummary(payrolls: EmployeePayroll[]): PayrollSummary {
+    return {
+      totalEmployees: payrolls.length,
+      grossPayroll: payrolls.reduce((sum, p) => sum + (p.grossPay || 0), 0),
+      netPayroll: payrolls.reduce((sum, p) => sum + (p.netPay || 0), 0),
+      totalDeductions: payrolls.reduce(
+        (sum, p) => sum + (p.totalDeductions || 0),
+        0
+      ),
+    };
+  }
+
+  private convertToCSV(payrolls: EmployeePayroll[]): string {
+    const headers = [
+      'Employee',
+      'Basic Salary',
+      'Gross Pay',
+      'Deductions',
+      'Net Pay',
+      'Status',
+    ];
+    const rows = payrolls.map((p) => [
+      p.name || '',
+      p.basicSalary?.toString() || '0',
+      p.grossPay?.toString() || '0',
+      p.totalDeductions?.toString() || '0',
+      p.netPay?.toString() || '0',
+      p.status || '',
+    ]);
+    return [headers, ...rows].map((row) => row.join(',')).join('\n');
+  }
+
+  private handleError(operation = 'operation') {
+    return (error: any) => {
+      console.error(`PayrollService ${operation} failed:`, error);
+      return throwError(() => error);
+    };
   }
 }

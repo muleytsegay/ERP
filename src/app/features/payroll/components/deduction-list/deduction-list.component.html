@@ -1,0 +1,171 @@
+<div class="bonus-management">
+  <div class="header">
+    <h2>Deduction Management</h2>
+    <button
+      pButton
+      title="add deduction"
+      label="Add Deduction"
+      icon="pi pi-plus"
+      (click)="showDialogToAdd()"
+    ></button>
+  </div>
+
+  <p-table [value]="deductions" [paginator]="true" [rows]="10">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Employee</th>
+        <th>Deduction Name</th>
+        <th>Type</th>
+        <th>Amount/Percent</th>
+        <th>Recurring</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Actions</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-deduction>
+      <tr>
+        <td>{{ deduction.employeeId }}</td>
+        <td>{{ deduction.name }}</td>
+        <td>{{ deduction.isPercentage ? "Percentage" : "Fixed Amount" }}</td>
+        <td>
+          {{ deduction.amountOrPercent | number
+          }}{{ deduction.isPercentage ? "%" : "" }}
+        </td>
+        <td>{{ deduction.isRecurring ? "Yes" : "No" }}</td>
+        <td>{{ deduction.startUtc | date }}</td>
+        <td>{{ deduction.endUtc | date }}</td>
+        <td>
+          <button
+            pButton
+            title="Edit Deduction"
+            icon="pi pi-pencil"
+            class="p-button-text"
+            (click)="showDialogToEdit(deduction)"
+          ></button>
+          <button
+            pButton
+            title="Delete Deduction"
+            icon="pi pi-trash"
+            class="p-button-text p-button-danger"
+            (click)="deleteDeduction(deduction)"
+          ></button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-dialog
+    header="{{ editingDeduction ? 'Edit Deduction' : 'Add Deduction' }}"
+    [(visible)]="displayDialog"
+    [modal]="true"
+    [style]="{ width: '500px' }"
+  >
+    <div class="p-fluid">
+      <div class="p-field">
+        <label for="employee">Employee</label>
+        <p-dropdown
+          id="employee"
+          [options]="employees"
+          [(ngModel)]="deduction.employeeId"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="Select Employee"
+          [showClear]="true"
+          [disabled]="editingDeduction"
+        ></p-dropdown>
+      </div>
+
+      <div class="p-field">
+        <label for="name">Deduction Name</label>
+        <input
+          id="name"
+          type="text"
+          pInputText
+          [(ngModel)]="deduction.name"
+          required
+        />
+      </div>
+
+      <div class="p-field-checkbox">
+        <p-checkbox
+          id="isPercentage"
+          [(ngModel)]="deduction.isPercentage"
+          binary="true"
+        ></p-checkbox>
+        <label for="isPercentage">Is Percentage</label>
+      </div>
+
+      <div class="p-field">
+        <label for="amountOrPercent">{{
+          deduction.isPercentage ? "Percentage" : "Amount"
+        }}</label>
+        <p-inputNumber
+          id="amountOrPercent"
+          [(ngModel)]="deduction.amountOrPercent"
+          [min]="0"
+          [max]="deduction.isPercentage ? 100 : null"
+          [mode]="deduction.isPercentage ? 'decimal' : 'currency'"
+          currency="USD"
+          locale="en-US"
+        ></p-inputNumber>
+      </div>
+
+      <div class="p-field-checkbox">
+        <p-checkbox
+          id="isRecurring"
+          [(ngModel)]="deduction.isRecurring"
+          binary="true"
+        ></p-checkbox>
+        <label for="isRecurring">Recurring</label>
+      </div>
+
+      <div class="p-field" *ngIf="deduction.isRecurring">
+        <label for="startDate">Start Date</label>
+        <p-calendar
+          id="startDate"
+          [(ngModel)]="deduction.startUtc"
+          [showTime]="true"
+          dateFormat="yy-mm-dd"
+        ></p-calendar>
+      </div>
+
+      <div class="p-field" *ngIf="deduction.isRecurring">
+        <label for="endDate">End Date</label>
+        <p-calendar
+          id="endDate"
+          [(ngModel)]="deduction.endUtc"
+          [showTime]="true"
+          dateFormat="yy-mm-dd"
+        ></p-calendar>
+      </div>
+
+      <div class="p-field">
+        <label for="notes">Notes</label>
+        <textarea
+          id="notes"
+          pInputTextarea
+          [(ngModel)]="deduction.notes"
+        ></textarea>
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <button
+        pButton
+        title="cancel"
+        label="Cancel"
+        icon="pi pi-times"
+        (click)="displayDialog = false"
+        class="p-button-text"
+      ></button>
+      <button
+        pButton
+        title="save"
+        label="Save"
+        icon="pi pi-check"
+        (click)="save()"
+      ></button>
+    </ng-template>
+  </p-dialog>
+</div>

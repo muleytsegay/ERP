@@ -1,3 +1,4 @@
+// src/app/features/payroll/components/summary-card/payroll-summary.component.ts
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardModule } from 'primeng/card';
