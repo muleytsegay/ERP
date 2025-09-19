@@ -1,3 +1,36 @@
+/* Loading container */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.loading-content {
+  text-align: center;
+  color: #6c757d;
+}
+
+.loading-content i {
+  margin-bottom: 1rem;
+  color: #007ad9;
+}
+
+.loading-content p {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+/* Unauthenticated container */
+.unauth-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f8f9fa;
+}
+
 /* Full viewport container */
 .app-container {
   display: flex;

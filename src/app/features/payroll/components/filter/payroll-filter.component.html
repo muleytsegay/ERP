@@ -1,3 +1,4 @@
+<!-- src/app/features/payroll/components/filter/payroll-filter.component.html -->
 <div class="mainbar">
   <span class="filter-label">Payroll Period</span>
   <div class="toolbar">
@@ -19,7 +20,7 @@
         label="Export Payroll"
         icon="pi pi-download"
         class="p-button-secondary custom-btn"
-        (click)="export.emit(selected?.value)"
+        (click)="onExport()"
       ></button>
 
       <!-- Generate reports button -->
@@ -29,20 +30,9 @@
         type="button"
         label="Generate Reports"
         icon="pi pi-file"
-        (click)="process.emit(selected?.value)"
+        (click)="onProcess()"
         class="p-button-secondary custom-btn"
       ></button>
-
-      <!-- Uncomment this if you want a Process Payroll button -->
-      <!--
-    <button
-      pButton
-      type="button"
-      label="Process Payroll"
-      icon="pi pi-play"
-      class="p-button-success"
-      (click)="process.emit(selected?.value)"
-    ></button>
-    --></div>
+    </div>
   </div>
 </div>

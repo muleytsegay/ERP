@@ -1,0 +1,344 @@
+.page {
+  padding: 18px;
+  margin: 0 auto;
+  background: #f3f4f6;
+}
+
+.pay-title {
+  color: #000;
+  font-size: 1.7rem;
+}
+
+.pay-subTitle {
+  color: #374151;
+  font-size: 1rem;
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.muted {
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+.top-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.controls {
+  margin: 18px 0;
+}
+
+.table-wrap {
+  background: #fff;
+  border-radius: 10px;
+  padding: 18px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.section-title {
+  margin: 10px;
+  margin-bottom: 20px;
+  font-weight: 600;
+  /* color: #000; */
+  color: #444;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+}
+
+.custom-btn {
+  color: #000000;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  padding: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  font-weight: regular;
+  font-size: 1.1rem;
+}
+
+/* Hover state */
+.custom-btn:hover {
+  background-color: #eee; /* dark gray */
+  border-color: #999; /* medium gray */
+  color: #000; /* keep text black */
+}
+
+/* Active/clicked state */
+.custom-btn:active {
+  background-color: #000; /* black */
+  color: #fff; /* white text */
+  border-color: #000; /* optional: match border */
+}
+/***********************************************************************************/
+/* Modal styling */
+.p-dialog .p-dialog-header {
+  background-color: #f3f4f6;
+  color: #111827;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.p-dialog {
+  z-index: 10000 !important;
+}
+
+.p-dialog .p-dialog-content {
+  padding: 1.5rem 1rem;
+  background-color: #fff;
+}
+.p-dialog .p-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: #f9fafb;
+}
+
+/* Fields inside modal */
+.p-field label {
+  font-weight: 500;
+  margin-bottom: 4px;
+  display: block;
+  color: #374151;
+}
+
+.p-field .p-dropdown,
+.p-field .p-inputnumber {
+  width: 100%;
+}
+
+/* Modal buttons consistent with custom-btn */
+.p-dialog .p-button-secondary {
+  border: 1px solid #ccc;
+  background-color: #fff;
+  color: #000;
+  transition: all 0.2s ease-in-out;
+}
+
+.p-dialog .p-button-secondary:hover {
+  background-color: #eee;
+  border-color: #999;
+  color: #000;
+}
+
+.p-dialog .p-button-primary {
+  background-color: #2563eb;
+  border-color: #2563eb;
+  color: #fff;
+}
+
+.p-dialog .p-button-primary:hover {
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
+}
+/*********************************************************************************/
+/* Add to your payroll-root.component.css */
+/* :host ::ng-deep .p-tabview-nav {
+  margin-bottom: 1rem;
+}
+
+.bonus-management,
+.deduction-management {
+  padding: 1rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+} */
+
+/***************************************************/
+/* Payroll tab layout */
+:host ::ng-deep .p-tabview {
+  /* font-family: "Segoe UI", Tahoma, sans-serif; */
+  font-size: 14px;
+}
+
+/* Controls section */
+.controls {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  border: 1px solid #e3e6eb;
+  border-radius: 6px;
+  background-color: #fafbfc;
+}
+
+/* Section titles */
+.section-title {
+  margin: 1.5rem 0 1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+/* Loading block */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 0;
+  color: #718096;
+}
+.loading-text {
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+}
+
+/* Table container */
+.table-wrap {
+  margin-top: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 1rem;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+/* TabView headers */
+/* Entire tab header container */
+:host ::ng-deep .p-tabview .p-tabview-nav {
+  display: flex !important;
+  gap: 1rem !important;
+  border-bottom: 2px solid #e5e7eb !important;
+  margin-bottom: 1.5rem !important;
+  padding: 0 0.5rem !important;
+}
+
+/* Each tab link */
+:host ::ng-deep .p-tabview .p-tabview-nav li .p-tabview-nav-link {
+  padding: 0.75rem 1.25rem !important;
+  border-radius: 8px 8px 0 0 !important;
+  font-weight: 600 !important;
+  font-size: 0.95rem !important;
+  background-color: #f9fafb !important;
+  color: #374151 !important;
+  border: 1px solid #e5e7eb !important;
+  border-bottom: none !important;
+  transition: all 0.25s ease !important;
+}
+
+/* Hover */
+:host ::ng-deep .p-tabview .p-tabview-nav li .p-tabview-nav-link:hover {
+  background-color: #f3f4f6 !important;
+  color: #111827 !important;
+}
+
+/* Active tab */
+:host ::ng-deep .p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+  background-color: #2563eb !important;
+  color: #fff !important;
+  border-color: #2563eb !important;
+  box-shadow: 0 -2px 6px rgba(37, 99, 235, 0.2) !important;
+}
+
+/* Keep title section separated */
+
+/* Align Process Payroll button properly inside Payroll tab */
+.top-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+/* Section spacing */
+.controls,
+.table-wrap {
+  margin-top: 1rem;
+}
+
+/****************************************************************************************************************************************************
+/* ---- centered gray strip for the button tabs ---- */
+.tabs-strip {
+  width: 100%;
+  background-color: #fff; /* light gray background */
+  border-top: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+  /* border-radius: 10px; */
+  padding: 1rem;
+  margin: 1.5rem 0;
+  display: flex;
+  align-items: center;
+  /* justify-content: center;  */
+  /* position: relative;  */
+}
+
+/* buttons container (centered group) */
+.button-group {
+  display: flex;
+  gap: 0rem;
+  z-index: 1;
+}
+
+/* base tab button */
+.tab-btn {
+  background: transparent;
+  border: 1px solid #ccc;
+  padding: 0.55rem 1rem;
+  border-radius: 3px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #000;
+  /* transition: all 0.15s ease; */
+  outline: none;
+  margin-left: 9rem;
+}
+
+/* hover */
+.tab-btn:hover {
+  background: #eaeef3;
+  color: #111827;
+}
+
+/* active */
+.tab-btn.active {
+  background: #000;
+  color: #fff;
+  border-color: #000;
+  /* box-shadow: 0 4px 10px rgba(37, 99, 235, 0.12); */
+}
+
+/* Process button — positioned right inside the strip */
+.process-wrapper {
+  right: 14px;
+  display: flex;
+  align-items: center;
+}
+
+/* small adjustments for responsive screens */
+@media (max-width: 720px) {
+  .tabs-strip {
+    padding: 0.5rem;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: stretch;
+  }
+  .button-group {
+    justify-content: center;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .process-wrapper {
+    position: static;
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+}
+
+/* keep existing table-wrap, controls, header styles (no change) */
+/* ... your other css remains the same ... */

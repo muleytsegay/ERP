@@ -1,0 +1,160 @@
+<div class="bonus-management">
+  <div class="header">
+    <h2>Bonus Management</h2>
+    <button
+      pButton
+      title="add bonus"
+      label="Add Bonus"
+      icon="pi pi-plus"
+      (click)="showDialogToAdd()"
+    ></button>
+  </div>
+
+  <p-table [value]="bonuses" [paginator]="true" [rows]="10">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Employee ID</th>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Amount/Percent</th>
+        <th>Recurring</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Actions</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-bonus>
+      <tr>
+        <td>{{ bonus.employeeId | slice : 0 : 8 }}</td>
+        <td>{{ bonus.name }}</td>
+        <td>{{ bonus.isPercentage ? "Percentage" : "Fixed Amount" }}</td>
+        <td>
+          {{ bonus.amountOrPercent | number
+          }}{{ bonus.isPercentage ? "%" : "" }}
+        </td>
+        <td>{{ bonus.isRecurring ? "Yes" : "No" }}</td>
+        <td>{{ bonus.startUtc | date }}</td>
+        <td>{{ bonus.endUtc | date }}</td>
+        <td>
+          <!-- <button pButton title="showDialogToAdd" icon="pi pi-pencil" class="p-button-text" (click)="showDialogToEdit(bonus)"></button>
+          <button pButton title="deleteBonus icon="pi pi-trash" class="p-button-text p-button-danger" (click)="deleteBonus(bonus)"></button>
+        </td> -->
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-dialog
+    header="{{ editingBonus ? 'Edit Bonus' : 'Add Bonus' }}"
+    [(visible)]="displayDialog"
+    [modal]="true"
+    [style]="{ width: '500px' }"
+  >
+    <div class="p-fluid">
+      <div class="p-field mg-10px">
+        <label for="employeeId">Employee ID</label>
+        <p-dropdown
+          id="employee"
+          [options]="employees"
+          [(ngModel)]="bonus.employeeId"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="Select Employee"
+          [showClear]="true"
+          [disabled]="editingBonus"
+        >
+        </p-dropdown>
+      </div>
+
+      <div class="p-field">
+        <label for="name">Bonus Name</label>
+        <input
+          id="name"
+          type="text"
+          pInputText
+          [(ngModel)]="bonus.name"
+          required
+        />
+      </div>
+
+      <div class="p-field">
+        <label for="notes">Notes</label>
+        <textarea
+          id="notes"
+          pInputTextarea
+          [(ngModel)]="bonus.notes"
+        ></textarea>
+      </div>
+
+      <div class="p-field-checkbox">
+        <p-checkbox
+          id="isPercentage"
+          [(ngModel)]="bonus.isPercentage"
+          binary="true"
+        ></p-checkbox>
+        <label for="isPercentage">Is Percentage</label>
+      </div>
+
+      <div class="p-field">
+        <label for="amountOrPercent">{{
+          bonus.isPercentage ? "Percentage" : "Amount"
+        }}</label>
+        <p-inputNumber
+          id="amountOrPercent"
+          [(ngModel)]="bonus.amountOrPercent"
+          [min]="0"
+          [max]="bonus.isPercentage ? 100 : null"
+        ></p-inputNumber>
+      </div>
+
+      <div class="p-field-checkbox">
+        <p-checkbox
+          id="isRecurring"
+          [(ngModel)]="bonus.isRecurring"
+          binary="true"
+        ></p-checkbox>
+        <label for="isRecurring">Recurring</label>
+      </div>
+
+      <div class="p-field">
+        <label for="startDate">Start Date</label>
+        <p-calendar
+          id="startDate"
+          [(ngModel)]="bonus.startUtc"
+          [timeOnly]="false"
+          dateFormat="yy-mm-dd"
+          [showTime]="true"
+        ></p-calendar>
+      </div>
+
+      <div class="p-field" *ngIf="!bonus.isRecurring">
+        <label for="endDate">End Date</label>
+        <p-calendar
+          id="endDate"
+          [(ngModel)]="bonus.endUtc"
+          [timeOnly]="false"
+          dateFormat="yy-mm-dd"
+          [showTime]="true"
+        ></p-calendar>
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <button
+        pButton
+        title="cancel"
+        label="Cancel"
+        icon="pi pi-times"
+        (click)="displayDialog = false"
+        class="p-button-text"
+      ></button>
+      <button
+        pButton
+        title="save"
+        label="Save"
+        icon="pi pi-check"
+        (click)="save()"
+      ></button>
+    </ng-template>
+  </p-dialog>
+</div>

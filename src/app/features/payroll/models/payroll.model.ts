@@ -1,18 +1,19 @@
+// src/app/features/payroll/models/payroll.model.ts
 export interface EmployeePayroll {
   id: string;
-  name: string;
-  employeeId: string;
-  department: string;
-  baseSalary: number;
-  allowances: number;
-  deductions: number;
-  grossSalary: number;
-  netSalary: number;
-  // payDate: string;
-  status: 'Processed' | 'Pending';
-
-  payPeriodStart?: string;
-  payPeriodEnd?: string;
+  employeeId?: string;
+  name?: string;
+  // department?: string;
+  basicSalary?: number;
+  totalAllowances?: number;
+  totalDeductions?: number;
+  deductions?: number;
+  grossPay?: number;
+  netPay?: number;
+  netSalary?: number; // Added for dashboard
+  payPeriodStart?: string; // Added for dashboard
+  status?: 'Pending' | 'Processed' | 'Approved' | string;
+  payDateUtc?: string;
 }
 
 export interface PayrollSummary {
@@ -22,20 +23,8 @@ export interface PayrollSummary {
   totalDeductions: number;
 }
 
+// PayrollPeriod for dropdown
 export interface PayrollPeriod {
   label: string;
-  value: string;
+  value: string; // e.g., 'dec-2024'
 }
-
-// export interface EmployeePayroll {
-//   id: number;             // Unique ID of the employee
-//   name: string;           // Employee full name
-//   position: string;       // Job title
-//   salary: number;         // Monthly salary
-//   status: 'Active' | 'Inactive'; // Employment status
-// }
-
-// export interface PayrollSummary {
-//   totalEmployees: number; // Total employees in payroll
-//   totalSalary: number;    // Total monthly payroll cost
-// }

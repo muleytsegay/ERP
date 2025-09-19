@@ -157,16 +157,8 @@ export class ProfileComponent implements OnInit {
     console.log('ProfileComponent: User initiated logout');
     console.log('ProfileComponent: Current user before logout:', this.user);
     
-    this.authService.logout().subscribe({
-      next: () => {
-        console.log('ProfileComponent: Logout successful, navigating to login');
-        this.router.navigate(['/auth/login']);
-      },
-      error: (error) => {
-        console.error('ProfileComponent: Logout failed, but navigating to login anyway:', error);
-        // Navigate to login even if logout fails (user still logged out locally)
-        this.router.navigate(['/auth/login']);
-      }
-    });
+    this.authService.logout();
+    console.log('ProfileComponent: Logout completed, navigating to login');
+    this.router.navigate(['/auth/login']);
   }
 }

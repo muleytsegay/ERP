@@ -1,0 +1,140 @@
+<!-- src/app/features/payroll/components/table/payroll-table.component.html -->
+<div class="table-wrap">
+  <p-table
+    [value]="employees"
+    [paginator]="true"
+    [rows]="4"
+    [rowsPerPageOptions]="[5, 10, 20]"
+    [responsiveLayout]="'stack'"
+    [autoLayout]="true"
+    (onLazyLoad)="loadPayroll($event)"
+  >
+    <!-- Add this to your payroll-table.component.html to test if data is reaching the template -->
+    <div *ngIf="employees.length > 0">
+      <h3>Debug: Employees data is available</h3>
+      <p>Number of employees: {{ employees.length }}</p>
+      <p>First employee name: {{ employees[0].name }}</p>
+    </div>
+
+    <div *ngIf="employees.length === 0">
+      <h3>Debug: No employees data</h3>
+    </div>
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Employee</th>
+        <!-- <th>Department</th> -->
+        <th>Basic Salary</th>
+        <th>Allowances</th>
+        <th>Deductions</th>
+        <th>Gross Pay</th>
+        <th>Net Pay</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-e>
+      <tr>
+        <td>
+          <div class="employee-name">{{ e.name || "Unknown" }}</div>
+          <div class="employee-id">{{ e.employeeId | slice : 0 : 8 }}</div>
+        </td>
+        <!-- <td>{{ e.department || "N/A" }}</td> -->
+        <td>{{ e.basicSalary | currency }}</td>
+        <td>{{ e.totalAllowances | currency }}</td>
+        <td>{{ e.totalDeductions | currency }}</td>
+        <td>{{ e.grossPay | currency }}</td>
+        <td class="net">{{ e.netPay | currency }}</td>
+        <td>
+          <span
+            class="status"
+            [ngClass]="{
+              processed: e.status === 'Processed',
+              pending: e.status === 'Pending',
+              approved: e.status === 'Approved'
+            }"
+          >
+            {{ e.status || "Unknown" }}
+          </span>
+        </td>
+
+        <td>
+          <button
+            pButton
+            title="Download Payslip"
+            icon="pi pi-download"
+            class="p-button-text"
+            (click)="downloadPayslip(e.id)"
+          ></button>
+          <!-- 
+          <button
+            pButton
+            title="Payment"
+            icon="pi pi-money-bill"
+            class="p-button-text text-green-600"
+            (click)="onMarkAsPaid(e.id)"
+          ></button>
+
+          <button
+            pButton
+            title="Delete"
+            icon="pi pi-trash"
+            class="p-button-text text-red-600"
+            (click)="onDelete(e.id)"
+          ></button> -->
+          <!-- In your action buttons section -->
+          <ng-container *ngIf="e.status === 'Draft'">
+            <button
+              pButton
+              icon="pi pi-money-bill"
+              class="p-button-text"
+              (click)="onMarkAsPaid(e.id)"
+              title="payment"
+            ></button>
+
+            <!-- <button
+              pButton
+              icon="pi pi-thumbs-up"
+              class="p-button-info p-button-sm"
+              (click)="approve.emit(e.id)"
+              title="Approve"
+            ></button> -->
+          </ng-container>
+
+          <!-- <ng-container *ngIf="e.status === 'Approved'">
+            <button
+              pButton
+              icon="pi pi-check"
+              class="p-button-success p-button-sm"
+              (click)="onMarkAsPaid(e.id)"
+              title="Mark as Paid"
+            ></button>
+          </ng-container> -->
+
+          <ng-container *ngIf="e.status === 'Paid'">
+            <span class="paid-status">Paid</span>
+          </ng-container>
+
+          <button
+            pButton
+            icon="pi pi-trash"
+            class="p-button-text"
+            (click)="onDelete(e.id)"
+            title="Delete"
+          ></button>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="9" class="empty">
+          <div class="empty-state">
+            <i class="pi pi-info-circle"></i>
+            <p>No payroll data available for this period</p>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

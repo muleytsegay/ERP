@@ -1,8 +1,16 @@
-/* Custom card border and font weight for login card */
-.border-black {
-	border-color: #000 !important;
+/* Make p-password wrapper behave like a normal input */
+:host ::ng-deep .custom-password {
+  display: block !important;
+  width: 100% !important;
 }
-.font-semibold {
-	font-weight: 600 !important;
+
+:host ::ng-deep .custom-password .p-password-input {
+  width: 100% !important;
+  padding: 0.75rem !important; /* same as email input */
+  box-sizing: border-box;
 }
-/* Login component styles - using only PrimeNG utility classes */
+
+/* Keep eye toggle inside without shrinking input */
+:host ::ng-deep .custom-password .p-password-input::-ms-reveal {
+  display: none; /* hide default browser toggle */
+}

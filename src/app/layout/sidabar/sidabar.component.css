@@ -1,35 +1,5 @@
-/* Sidebar Container */
-.sidebar-container {
-  display: flex;
-  flex-direction: column;
-  width: 250px;
-  height: auto;
-  background: var(--surface-card);
-  border-right: 1px solid var(--surface-border);
-  /* box-shadow: 2px 0 8px 0 rgba(0, 0, 0, 0.08); */
-  overflow-y: auto; /* scroll if menu is long */
-  padding-top: 1rem;
-}
-
-/* Sidebar Header (Logo or Title) */
-.sidebar-header {
-  padding: 1rem 1.5rem;
-  font-size: 1.25rem;
-  font-weight: bold;
-  border-bottom: 1px solid var(--surface-border);
-  background: var(--surface-ground);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Navigation Menu */
-.navigation-menu {
-  flex: 1; /* take all remaining height */
-  overflow-y: auto; /* scroll if items exceed height */
-  padding: 1rem 0;
-  scroll-behavior: smooth;
-}
+/* The parent app.component handles the sidebar container */
+/* This component just provides the menu items */
 
 /* List Styling */
 .nav-list {

@@ -38,16 +38,8 @@ export class TopbarComponent {
     console.log('TopbarComponent: User clicked logout button');
     console.log('TopbarComponent: Current user:', this.currentUser);
     
-    this.authService.logout().subscribe({
-      next: () => {
-        console.log('TopbarComponent: Logout successful, navigating to login');
-        this.router.navigate(['/auth/login']);
-      },
-      error: (error) => {
-        console.error('TopbarComponent: Logout failed, but navigating to login anyway:', error);
-        // Navigate to login even if logout fails (user still logged out locally)
-        this.router.navigate(['/auth/login']);
-      }
-    });
+    this.authService.logout();
+    console.log('TopbarComponent: Logout completed, navigating to login');
+    this.router.navigate(['/auth/login']);
   }
 }

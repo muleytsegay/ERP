@@ -271,7 +271,7 @@ export class EmployeeComponent implements OnInit {
         summary: 'Session Expired',
         detail: 'Your session has expired. Please login again.'
       });
-      this.authService.logoutLocal();
+      this.authService.logout();
       return;
     }
     
@@ -511,7 +511,7 @@ export class EmployeeComponent implements OnInit {
               errorMessage = employeeError.error.detail;
             } else if (employeeError.status === 401) {
               errorMessage = 'Authentication failed. Please login again.';
-              this.authService.logoutLocal();
+              this.authService.logout();
             } else if (employeeError.status === 403) {
               errorMessage = 'You do not have permission to create employees.';
             } else if (employeeError.status === 500) {

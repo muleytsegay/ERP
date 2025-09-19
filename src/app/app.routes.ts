@@ -7,7 +7,7 @@ import { AttendanceComponent } from './features/attendance/components/attendance
 import { EmployeeComponent } from './features/employee/components/employee.component';
 import { AuthGuard } from './core/guards/auth.guard';
 import { LoginRedirectGuard } from './core/guards/login-redirect.guard';
-import { PayrollRootComponent } from './features/payroll/components/payroll-root.component';
+import { PayrollRootComponent } from './features/payroll/components/payroll-root/payroll-root.component';
 import { EmployeeLeaveComponent } from './features/leave/components/employee-leave.component';
 import { HrLeaveManagementComponent } from './features/leave/components/hr-leave-management.component';
 
@@ -25,8 +25,8 @@ export const routes: Routes = [
   {
     path: 'auth/profile',
     component: ProfileComponent,
-    canActivate: [AuthGuard],
-    data: { roles: ['EMPLOYEE'] }
+    // canActivate: [AuthGuard],
+    // data: { roles: ['EMPLOYEE'] }
   },
 
   // Employee leave page (employee only)
@@ -42,7 +42,7 @@ export const routes: Routes = [
     path: 'hr-leave-management',
     component: HrLeaveManagementComponent,
     canActivate: [AuthGuard],
-    data: { roles: ['HR', 'ADMIN'] }
+    data: { roles: ['hr', 'admin'] }
   },
 
   // Dashboard
@@ -57,6 +57,8 @@ export const routes: Routes = [
     path: 'payroll',
     component: PayrollRootComponent,
     canActivate: [AuthGuard],
+    data: { roles: ['hr', 'finance'] }
+
   },
 
   //Department Routes
@@ -64,17 +66,25 @@ export const routes: Routes = [
     path: 'departments',
     component: DepartmentComponent,
     canActivate: [AuthGuard],
+    data: { roles: ['hr', 'admin'] }
+
   },
 
   // Attendance Route
   {
     path: 'attendance',
     component: AttendanceComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard],data: { roles: ['hr', 'admin'] }
+
   },
 
   // Employee Management Route
-  { path: 'employees', component: EmployeeComponent, canActivate: [AuthGuard] },
+  { path: 'employees',
+    component: EmployeeComponent,
+    canActivate: [AuthGuard],
+    data: { roles: ['hr', 'finance', 'admin'] }
+
+   },
 
   // Wildcard route
   { path: '**', redirectTo: '/auth/login' },

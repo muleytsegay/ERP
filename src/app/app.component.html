@@ -1,6 +1,14 @@
+<!-- Loading state -->
+<div *ngIf="isLoading" class="loading-container">
+  <div class="loading-content">
+    <i class="pi pi-spinner pi-spin" style="font-size: 2rem"></i>
+    <p>Loading...</p>
+  </div>
+</div>
+
 <!-- Authenticated layout -->
 <div
-  *ngIf="isAuthenticated()"
+  *ngIf="!isLoading && isAuthenticated()"
   class="app-container"
   [class.collapsed]="isCollapsed"
 >
@@ -18,37 +26,8 @@
         ></i>
       </div>
 
-      <!-- Sidebar Menu -->
-      <ul class="menu">
-        <li class="menu-item" routerLink="/dashboard" routerLinkActive="active">
-          <i class="pi pi-home"></i>
-          <span *ngIf="!isCollapsed">Dashboard</span>
-        </li>
-        <li class="menu-item" routerLink="/employees" routerLinkActive="active">
-          <i class="pi pi-users"></i>
-          <span *ngIf="!isCollapsed">Employees</span>
-        </li>
-        <li
-          class="menu-item"
-          routerLink="/departments"
-          routerLinkActive="active"
-        >
-          <i class="pi pi-building"></i>
-          <span *ngIf="!isCollapsed">Departments</span>
-        </li>
-        <li
-          class="menu-item"
-          routerLink="/attendance"
-          routerLinkActive="active"
-        >
-          <i class="pi pi-calendar"></i>
-          <span *ngIf="!isCollapsed">Attendance</span>
-        </li>
-        <li class="menu-item" routerLink="/payroll" routerLinkActive="active">
-          <i class="pi pi-wallet"></i>
-          <span *ngIf="!isCollapsed">Payroll</span>
-        </li>
-      </ul>
+      <!-- Use the SidabarComponent for role-based menu -->
+      <app-sidabar></app-sidabar>
     </div>
 
     <!-- Main Content -->
@@ -59,6 +38,6 @@
 </div>
 
 <!-- Unauthenticated layout -->
-<div *ngIf="!isAuthenticated()" class="unauth-container">
+<div *ngIf="!isLoading && !isAuthenticated()" class="unauth-container">
   <router-outlet></router-outlet>
 </div>
