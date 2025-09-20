@@ -25,8 +25,10 @@ export const routes: Routes = [
   {
     path: 'auth/profile',
     component: ProfileComponent,
+
     // canActivate: [AuthGuard],
     // data: { roles: ['EMPLOYEE'] }
+
   },
 
   // Employee leave page (employee only)
@@ -34,7 +36,7 @@ export const routes: Routes = [
     path: 'leave',
     component: EmployeeLeaveComponent,
     canActivate: [AuthGuard],
-    data: { roles: ['EMPLOYEE'] }
+    data: { roles: ['EMPLOYEE'] },
   },
 
   // HR leave management (HR/admin only)
@@ -42,7 +44,9 @@ export const routes: Routes = [
     path: 'hr-leave-management',
     component: HrLeaveManagementComponent,
     canActivate: [AuthGuard],
+
     data: { roles: ['hr', 'admin'] }
+
   },
 
   // Dashboard
