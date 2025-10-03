@@ -1,7 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Leave, LeaveType, LeaveApproval, LeaveStats, EmployeeLeaveStats } from '../models/leave.model';
+import {
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
+import {
+  LeaveRequest,
+  LeaveApproval,
+  LeaveStats,
+  EmployeeLeaveStats,
+} from '../models/leave.model';
 import { LeaveService } from '../services/leave.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { EmployeeService } from '../../employee/services/employee.service';
@@ -18,70 +28,72 @@ import { MessageModule } from 'primeng/message';
 import { TagModule } from 'primeng/tag';
 import { DropdownModule } from 'primeng/dropdown';
 import { TextareaModule } from 'primeng/textarea';
+import { RadioButtonModule } from 'primeng/radiobutton';
 import { CheckboxModule } from 'primeng/checkbox';
 import { PanelModule } from 'primeng/panel';
 import { TabViewModule } from 'primeng/tabview';
 import { ChartModule } from 'primeng/chart';
+import { TooltipModule } from 'primeng/tooltip';
 import { MessageService, ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'app-hr-leave-management',
   standalone: true,
   imports: [
-    CommonModule, 
-    ReactiveFormsModule, 
-    TableModule, 
-    ButtonModule, 
-    DialogModule, 
+    CommonModule,
+    ReactiveFormsModule,
+    TableModule,
+    ButtonModule,
+    DialogModule,
     InputTextModule,
     CalendarModule,
-    CardModule, 
-    ToastModule, 
+    CardModule,
+    ToastModule,
     ConfirmDialogModule,
-    MessageModule, 
+    MessageModule,
     TagModule,
     DropdownModule,
     TextareaModule,
     CheckboxModule,
     PanelModule,
     TabViewModule,
-    ChartModule
+    ChartModule,
+    TooltipModule,
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './hr-leave-management.component.html',
-  styleUrls: ['./hr-leave-management.component.css']
+  styleUrls: ['./hr-leave-management.component.css'],
 })
 export class HrLeaveManagementComponent implements OnInit {
   // Data properties
-  allLeaves: Leave[] = [];
-  pendingLeaves: Leave[] = [];
-  leaveTypes: LeaveType[] = [];
+  allLeaves: LeaveRequest[] = [];
+  pendingLeaves: LeaveRequest[] = [];
   employees: Employee[] = [];
   leaveStats: LeaveStats | null = null;
   employeeLeaveStats: EmployeeLeaveStats[] = [];
-  
+
   // Form properties
   approvalForm!: FormGroup;
   leaveTypeForm!: FormGroup;
   filterForm!: FormGroup;
-  
+
   // UI state
   showApprovalModal = false;
   showLeaveTypeModal = false;
   showViewModal = false;
-  selectedLeave: Leave | null = null;
+  selectedLeave: LeaveRequest | null = null;
   isEditingLeaveType = false;
   editingLeaveTypeId = '';
   loading = false;
   activeTab = 0;
-  
+
   // Filter options
   statusOptions = [
     { label: 'All', value: null },
     { label: 'Pending', value: 'pending' },
     { label: 'Approved', value: 'approved' },
     { label: 'Rejected', value: 'rejected' },
-    { label: 'Cancelled', value: 'cancelled' }
+    { label: 'Cancelled', value: 'cancelled' },
   ];
 
   employeeOptions: { label: string; value: string }[] = [];
@@ -92,24 +104,28 @@ export class HrLeaveManagementComponent implements OnInit {
   leaveChartOptions: any;
 
   constructor(
-    private formBuilder: FormBuilder,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService,
-    private leaveService: LeaveService,
-    private authService: AuthService,
-    private employeeService: EmployeeService
+    private readonly formBuilder: FormBuilder,
+    private readonly messageService: MessageService,
+    private readonly confirmationService: ConfirmationService,
+    private readonly leaveService: LeaveService,
+    private readonly authService: AuthService,
+    private readonly employeeService: EmployeeService
   ) {
     this.initializeForms();
     this.setupChartOptions();
   }
 
   ngOnInit(): void {
+    // Initialize current user
+    this.currentUser = this.authService.getCurrentUser();
+    console.log('HrLeaveManagementComponent: Current user:', this.currentUser);
+
     // Check if user has HR permissions
     if (!this.leaveService.canManageLeaves()) {
       this.messageService.add({
         severity: 'error',
         summary: 'Access Denied',
-        detail: 'You do not have permission to access this page'
+        detail: 'You do not have permission to access this page',
       });
       return;
     }
@@ -120,7 +136,18 @@ export class HrLeaveManagementComponent implements OnInit {
   private initializeForms(): void {
     this.approvalForm = this.formBuilder.group({
       action: ['', Validators.required],
-      comments: ['', Validators.required]
+      comments: [''],
+    });
+
+    // Add dynamic validation for comments based on action
+    this.approvalForm.get('action')?.valueChanges.subscribe((action) => {
+      const commentsControl = this.approvalForm.get('comments');
+      if (action === 'reject') {
+        commentsControl?.setValidators([Validators.required]);
+      } else {
+        commentsControl?.clearValidators();
+      }
+      commentsControl?.updateValueAndValidity();
     });
 
     this.leaveTypeForm = this.formBuilder.group({
@@ -132,7 +159,7 @@ export class HrLeaveManagementComponent implements OnInit {
       requiresApproval: [true],
       allowedForEmployees: [true],
       minimumNoticeRays: [1, [Validators.required, Validators.min(0)]],
-      isActive: [true]
+      isActive: [true],
     });
 
     this.filterForm = this.formBuilder.group({
@@ -140,7 +167,7 @@ export class HrLeaveManagementComponent implements OnInit {
       leaveTypeId: [null],
       status: [null],
       startDate: [null],
-      endDate: [null]
+      endDate: [null],
     });
   }
 
@@ -150,16 +177,15 @@ export class HrLeaveManagementComponent implements OnInit {
       maintainAspectRatio: false,
       plugins: {
         legend: {
-          position: 'bottom'
-        }
-      }
+          position: 'bottom',
+        },
+      },
     };
   }
 
   private loadInitialData(): void {
     this.loadAllLeaves();
     this.loadPendingLeaves();
-    this.loadLeaveTypes();
     this.loadEmployees();
     this.loadLeaveStats();
     this.loadEmployeeLeaveStats();
@@ -168,7 +194,7 @@ export class HrLeaveManagementComponent implements OnInit {
   loadAllLeaves(): void {
     console.log('HrLeaveManagementComponent: Loading all leaves');
     this.loading = true;
-    
+
     this.leaveService.getLeaves().subscribe({
       next: (leaves) => {
         console.log('HrLeaveManagementComponent: All leaves loaded:', leaves);
@@ -177,118 +203,135 @@ export class HrLeaveManagementComponent implements OnInit {
         this.loading = false;
       },
       error: (error) => {
-        console.error('HrLeaveManagementComponent: Failed to load leaves:', error);
+        console.error(
+          'HrLeaveManagementComponent: Failed to load leaves:',
+          error
+        );
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: error.userMessage || 'Failed to load leave records'
+          detail: error.userMessage || 'Failed to load leave records',
         });
         this.loading = false;
-      }
+      },
     });
   }
 
   loadPendingLeaves(): void {
     console.log('HrLeaveManagementComponent: Loading pending leaves');
-    
+
     this.leaveService.getPendingLeaves().subscribe({
       next: (leaves) => {
-        console.log('HrLeaveManagementComponent: Pending leaves loaded:', leaves);
+        console.log(
+          'HrLeaveManagementComponent: Pending leaves loaded:',
+          leaves
+        );
+        console.log(
+          'HrLeaveManagementComponent: Number of pending leaves:',
+          leaves.length
+        );
+        leaves.forEach((leave, index) => {
+          console.log(`Leave ${index + 1}:`, {
+            id: leave.id,
+            employeeId: leave.employeeId,
+            status: leave.status,
+            startDate: leave.startDate,
+            endDate: leave.endDate,
+            reason: leave.reason,
+          });
+        });
         this.pendingLeaves = leaves;
       },
       error: (error) => {
-        console.error('HrLeaveManagementComponent: Failed to load pending leaves:', error);
+        console.error(
+          'HrLeaveManagementComponent: Failed to load pending leaves:',
+          error
+        );
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: error.userMessage || 'Failed to load pending leaves'
+          detail: error.userMessage || 'Failed to load pending leaves',
         });
-      }
-    });
-  }
-
-  loadLeaveTypes(): void {
-    console.log('HrLeaveManagementComponent: Loading leave types');
-    
-    this.leaveService.getLeaveTypes().subscribe({
-      next: (types) => {
-        console.log('HrLeaveManagementComponent: Leave types loaded:', types);
-        this.leaveTypes = types;
-        this.leaveTypeOptions = types.map(type => ({
-          label: type.name,
-          value: type.id
-        }));
       },
-      error: (error) => {
-        console.error('HrLeaveManagementComponent: Failed to load leave types:', error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: error.userMessage || 'Failed to load leave types'
-        });
-      }
     });
   }
 
   loadEmployees(): void {
     console.log('HrLeaveManagementComponent: Loading employees');
-    
+
     this.employeeService.getEmployees().subscribe({
       next: (employees) => {
         console.log('HrLeaveManagementComponent: Employees loaded:', employees);
         this.employees = employees;
-        this.employeeOptions = employees.map(emp => ({
+        this.employeeOptions = employees.map((emp) => ({
           label: `${emp.firstName} ${emp.lastName} - ${emp.department}`,
-          value: emp.id
+          value: emp.id,
         }));
       },
       error: (error) => {
-        console.error('HrLeaveManagementComponent: Failed to load employees:', error);
+        console.error(
+          'HrLeaveManagementComponent: Failed to load employees:',
+          error
+        );
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: error.userMessage || 'Failed to load employees'
+          detail: error.userMessage || 'Failed to load employees',
         });
-      }
+      },
     });
   }
 
   loadLeaveStats(): void {
     console.log('HrLeaveManagementComponent: Loading leave statistics');
-    
+
     this.leaveService.getLeaveStats().subscribe({
       next: (stats) => {
-        console.log('HrLeaveManagementComponent: Leave statistics loaded:', stats);
+        console.log(
+          'HrLeaveManagementComponent: Leave statistics loaded:',
+          stats
+        );
         this.leaveStats = stats;
       },
       error: (error) => {
-        console.error('HrLeaveManagementComponent: Failed to load leave statistics:', error);
+        console.error(
+          'HrLeaveManagementComponent: Failed to load leave statistics:',
+          error
+        );
         // Don't show error for stats as it's not critical
-      }
+      },
     });
   }
 
   loadEmployeeLeaveStats(): void {
-    console.log('HrLeaveManagementComponent: Loading employee leave statistics');
-    
+    console.log(
+      'HrLeaveManagementComponent: Loading employee leave statistics'
+    );
+
     this.leaveService.getEmployeeLeaveStats().subscribe({
       next: (stats) => {
-        console.log('HrLeaveManagementComponent: Employee leave statistics loaded:', stats);
+        console.log(
+          'HrLeaveManagementComponent: Employee leave statistics loaded:',
+          stats
+        );
         this.employeeLeaveStats = stats;
       },
       error: (error) => {
-        console.error('HrLeaveManagementComponent: Failed to load employee leave statistics:', error);
+        console.error(
+          'HrLeaveManagementComponent: Failed to load employee leave statistics:',
+          error
+        );
         // Don't show error for stats as it's not critical
-      }
+      },
     });
   }
 
   // Leave Approval Methods
-  openApprovalModal(leave: Leave, action: 'approve' | 'reject'): void {
+  openApprovalModal(leave: LeaveRequest, action: 'approve' | 'reject'): void {
     this.selectedLeave = leave;
     this.approvalForm.patchValue({
       action: action,
-      comments: ''
+      comments: '',
     });
     this.showApprovalModal = true;
   }
@@ -301,7 +344,6 @@ export class HrLeaveManagementComponent implements OnInit {
 
   currentUser: any;
 
-
   onApprovalSubmit(): void {
     if (this.approvalForm.valid && this.selectedLeave && this.currentUser) {
       this.loading = true;
@@ -310,20 +352,24 @@ export class HrLeaveManagementComponent implements OnInit {
         leaveId: this.selectedLeave.id,
         action: formValue.action,
         comments: formValue.comments,
-        approvedBy: this.currentUser?.employeeId || this.currentUser?.id || ''
+        approvedBy: this.currentUser?.employeeId || this.currentUser?.id || '',
       };
 
-      const actionMethod = formValue.action === 'approve' 
-        ? this.leaveService.approveLeave(approval)
-        : this.leaveService.rejectLeave(approval);
+      const actionMethod =
+        formValue.action === 'approve'
+          ? this.leaveService.approveLeave(approval)
+          : this.leaveService.rejectLeave(approval);
 
       actionMethod.subscribe({
         next: (leave) => {
-          console.log('HrLeaveManagementComponent: Leave action completed:', leave);
+          console.log(
+            'HrLeaveManagementComponent: Leave action completed:',
+            leave
+          );
           this.messageService.add({
             severity: 'success',
             summary: 'Success',
-            detail: `Leave request ${formValue.action}d successfully`
+            detail: `Leave request ${formValue.action}d successfully`,
           });
           this.closeApprovalModal();
           this.loadAllLeaves();
@@ -332,114 +378,25 @@ export class HrLeaveManagementComponent implements OnInit {
           this.loading = false;
         },
         error: (error) => {
-          console.error('HrLeaveManagementComponent: Failed to process leave action:', error);
+          console.error(
+            'HrLeaveManagementComponent: Failed to process leave action:',
+            error
+          );
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
-            detail: error.userMessage || `Failed to ${formValue.action} leave request`
+            detail:
+              error.userMessage ||
+              `Failed to ${formValue.action} leave request`,
           });
-          this.loading = false;
-        }
-      });
-    }
-  }
-
-  // Leave Type Management
-  openLeaveTypeModal(leaveType?: LeaveType): void {
-    this.isEditingLeaveType = !!leaveType;
-    this.editingLeaveTypeId = leaveType?.id || '';
-    
-    if (leaveType) {
-      this.leaveTypeForm.patchValue(leaveType);
-    } else {
-      this.leaveTypeForm.reset({
-        name: '',
-        description: '',
-        maxDaysPerYear: 0,
-        carryForwardAllowed: false,
-        maxCarryForward: 0,
-        requiresApproval: true,
-        allowedForEmployees: true,
-        minimumNoticeRays: 1,
-        isActive: true
-      });
-    }
-    
-    this.showLeaveTypeModal = true;
-  }
-
-  closeLeaveTypeModal(): void {
-    this.showLeaveTypeModal = false;
-    this.isEditingLeaveType = false;
-    this.editingLeaveTypeId = '';
-    this.leaveTypeForm.reset();
-  }
-
-  onLeaveTypeSubmit(): void {
-    if (this.leaveTypeForm.valid) {
-      this.loading = true;
-      const formValue = this.leaveTypeForm.value;
-      
-      const operation = this.isEditingLeaveType
-        ? this.leaveService.updateLeaveType(this.editingLeaveTypeId, formValue)
-        : this.leaveService.createLeaveType(formValue);
-
-      operation.subscribe({
-        next: (leaveType) => {
-          console.log('HrLeaveManagementComponent: Leave type operation completed:', leaveType);
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success',
-            detail: `Leave type ${this.isEditingLeaveType ? 'updated' : 'created'} successfully`
-          });
-          this.closeLeaveTypeModal();
-          this.loadLeaveTypes();
           this.loading = false;
         },
-        error: (error) => {
-          console.error('HrLeaveManagementComponent: Failed to save leave type:', error);
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: error.userMessage || `Failed to ${this.isEditingLeaveType ? 'update' : 'create'} leave type`
-          });
-          this.loading = false;
-        }
       });
     }
-  }
-
-  deleteLeaveType(leaveType: LeaveType): void {
-    this.confirmationService.confirm({
-      message: `Are you sure you want to delete the leave type "${leaveType.name}"?`,
-      header: 'Confirm Delete',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.leaveService.deleteLeaveType(leaveType.id).subscribe({
-          next: () => {
-            console.log('HrLeaveManagementComponent: Leave type deleted');
-            this.messageService.add({
-              severity: 'success',
-              summary: 'Success',
-              detail: 'Leave type deleted successfully'
-            });
-            this.loadLeaveTypes();
-          },
-          error: (error) => {
-            console.error('HrLeaveManagementComponent: Failed to delete leave type:', error);
-            this.messageService.add({
-              severity: 'error',
-              summary: 'Error',
-              detail: error.userMessage || 'Failed to delete leave type'
-            });
-          }
-        });
-      }
-    });
   }
 
   // View Methods
-  viewLeaveDetails(leave: Leave): void {
+  viewLeaveDetails(leave: LeaveRequest): void {
     this.selectedLeave = leave;
     this.showViewModal = true;
   }
@@ -451,49 +408,67 @@ export class HrLeaveManagementComponent implements OnInit {
 
   // Utility Methods
   getEmployeeName(employeeId: string): string {
-    const employee = this.employees.find(emp => emp.id === employeeId);
-    return employee ? `${employee.firstName} ${employee.lastName}` : 'Unknown Employee';
+    const employee = this.employees.find((emp) => emp.id === employeeId);
+    return employee
+      ? `${employee.firstName} ${employee.lastName}`
+      : 'Unknown Employee';
   }
 
   getEmployeeDepartment(employeeId: string): string {
-    const employee = this.employees.find(emp => emp.id === employeeId);
+    const employee = this.employees.find((emp) => emp.id === employeeId);
     return employee?.department || 'Unknown Department';
-  }
-
-  getLeaveTypeName(leaveTypeId: string): string {
-    const leaveType = this.leaveTypes.find(type => type.id === leaveTypeId);
-    return leaveType?.name || 'Unknown Type';
   }
 
   getStatusSeverity(status: string): string {
     switch (status.toLowerCase()) {
-      case 'approved': return 'success';
-      case 'pending': return 'warning';
-      case 'rejected': return 'danger';
-      case 'cancelled': return 'secondary';
-      default: return 'info';
+      case 'approved':
+        return 'success';
+      case 'pending':
+        return 'warning';
+      case 'rejected':
+        return 'danger';
+      case 'cancelled':
+        return 'secondary';
+      default:
+        return 'info';
     }
   }
 
-  canApprove(leave: Leave): boolean {
-    return leave.status === 'pending' && this.leaveService.canApproveLeaves();
+  canApprove(leave: LeaveRequest): boolean {
+    const result =
+      leave.status === 'pending' && this.leaveService.canApproveLeaves();
+    console.log('HR Component: canApprove check:', {
+      leaveId: leave.id,
+      leaveStatus: leave.status,
+      isPending: leave.status === 'pending',
+      canApproveLeaves: this.leaveService.canApproveLeaves(),
+      result: result,
+    });
+    return result;
   }
 
   private updateChartData(): void {
     const statusCounts = {
-      pending: this.allLeaves.filter(l => l.status === 'pending').length,
-      approved: this.allLeaves.filter(l => l.status === 'approved').length,
-      rejected: this.allLeaves.filter(l => l.status === 'rejected').length,
-      cancelled: this.allLeaves.filter(l => l.status === 'cancelled').length
+      pending: this.allLeaves.filter((l) => l.status === 'pending').length,
+      approved: this.allLeaves.filter((l) => l.status === 'approved').length,
+      rejected: this.allLeaves.filter((l) => l.status === 'rejected').length,
+      cancelled: this.allLeaves.filter((l) => l.status === 'cancelled').length,
     };
 
     this.leaveChartData = {
       labels: ['Pending', 'Approved', 'Rejected', 'Cancelled'],
-      datasets: [{
-        data: [statusCounts.pending, statusCounts.approved, statusCounts.rejected, statusCounts.cancelled],
-        backgroundColor: ['#FFA726', '#66BB6A', '#EF5350', '#78909C'],
-        hoverBackgroundColor: ['#FF9800', '#4CAF50', '#F44336', '#607D8B']
-      }]
+      datasets: [
+        {
+          data: [
+            statusCounts.pending,
+            statusCounts.approved,
+            statusCounts.rejected,
+            statusCounts.cancelled,
+          ],
+          backgroundColor: ['#FFA726', '#66BB6A', '#EF5350', '#78909C'],
+          hoverBackgroundColor: ['#FF9800', '#4CAF50', '#F44336', '#607D8B'],
+        },
+      ],
     };
   }
 
@@ -515,7 +490,7 @@ export class HrLeaveManagementComponent implements OnInit {
     this.messageService.add({
       severity: 'info',
       summary: 'Export',
-      detail: 'Report export functionality to be implemented'
+      detail: 'Report export functionality to be implemented',
     });
   }
 }

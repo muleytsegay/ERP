@@ -1,8 +1,18 @@
-export interface Leave {
+import { Employee } from '../../employee/models/employee.model';
+
+export interface LeaveRequest {
   id: string;
   employeeId: string;
   employee?: Employee;
-  leaveType: LeaveType;
+  leaveType: [
+    'sick',
+    'maternity',
+    'paternity',
+    'annual',
+    'casual',
+    'emergency',
+    'study'
+  ];
   leaveTypeId: string;
   startDate: Date;
   endDate: Date;
@@ -20,45 +30,11 @@ export interface Leave {
   createdAt: Date;
   updatedAt: Date;
 }
-
-export interface LeaveBalance {
-  id: string;
-  employeeId: string;
-  employee?: Employee;
-  leaveType: LeaveType;
-  leaveTypeId: string;
-  totalAllotted: number;
-  totalUsed: number;
-  totalRemaining: number;
-  carryForward: number;
-  year: number;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
-
-export interface LeaveType {
-  id: string;
-  name: string;
-  description: string;
-  maxDaysPerYear: number;
-  carryForwardAllowed: boolean;
-  maxCarryForward: number;
-  requiresApproval: boolean;
-  isActive: boolean;
-  allowedForEmployees: boolean;
-  minimumNoticeRays: number;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
 export interface LeaveApplication {
   employeeId: string;
-  leaveTypeId: string;
   startDate: Date;
   endDate: Date;
   reason: string;
-  isEmergency?: boolean;
-  attachments?: File[];
 }
 
 export interface LeaveApproval {
@@ -90,7 +66,7 @@ export enum LeaveStatus {
   PENDING = 'pending',
   APPROVED = 'approved',
   REJECTED = 'rejected',
-  CANCELLED = 'cancelled'
+  CANCELLED = 'cancelled',
 }
 
 export enum DefaultLeaveTypes {
@@ -100,7 +76,5 @@ export enum DefaultLeaveTypes {
   PATERNITY = 'paternity',
   EMERGENCY = 'emergency',
   CASUAL = 'casual',
-  STUDY = 'study'
+  STUDY = 'study',
 }
-
-import { Employee } from '../../employee/models/employee.model';

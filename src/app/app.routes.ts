@@ -25,7 +25,7 @@ export const routes: Routes = [
   {
     path: 'auth/profile',
     component: ProfileComponent,
-    // canActivate: [AuthGuard],
+    canActivate: [AuthGuard],
     // data: { roles: ['EMPLOYEE'] }
   },
 
@@ -34,7 +34,7 @@ export const routes: Routes = [
     path: 'leave',
     component: EmployeeLeaveComponent,
     canActivate: [AuthGuard],
-    data: { roles: ['EMPLOYEE'] }
+    data: { roles: ['employee'] },
   },
 
   // HR leave management (HR/admin only)
@@ -42,7 +42,7 @@ export const routes: Routes = [
     path: 'hr-leave-management',
     component: HrLeaveManagementComponent,
     canActivate: [AuthGuard],
-    data: { roles: ['hr', 'admin'] }
+    data: { roles: ['hr', 'admin'] },
   },
 
   // Dashboard
@@ -57,8 +57,7 @@ export const routes: Routes = [
     path: 'payroll',
     component: PayrollRootComponent,
     canActivate: [AuthGuard],
-    data: { roles: ['hr', 'finance'] }
-
+    data: { roles: ['finance'] },
   },
 
   //Department Routes
@@ -66,26 +65,24 @@ export const routes: Routes = [
     path: 'departments',
     component: DepartmentComponent,
     canActivate: [AuthGuard],
-    data: { roles: ['hr', 'admin'] }
-
+    data: { roles: ['hr', 'admin'] },
   },
 
   // Attendance Route
   {
     path: 'attendance',
     component: AttendanceComponent,
-    canActivate: [AuthGuard],data: { roles: ['hr', 'admin'] }
-
+    canActivate: [AuthGuard],
+    data: { roles: ['hr', 'admin'] },
   },
 
   // Employee Management Route
-  { path: 'employees',
+  {
+    path: 'employees',
     component: EmployeeComponent,
     canActivate: [AuthGuard],
-    data: { roles: ['hr', 'finance', 'admin'] }
-
-   },
-
+    data: { roles: ['hr', 'finance', 'admin'] },
+  },
   // Wildcard route
   { path: '**', redirectTo: '/auth/login' },
 ];

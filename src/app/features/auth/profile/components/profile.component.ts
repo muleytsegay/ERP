@@ -61,15 +61,21 @@ export class ProfileComponent implements OnInit {
   }
 
   loadUserProfile(): void {
+    console.log('ProfileComponent: Loading user profile...');
     this.authService.currentUser$.subscribe(user => {
+      console.log('ProfileComponent: Received user from auth service:', user);
       if (user) {
         this.user = user;
+        console.log('ProfileComponent: User role:', user.role);
+        console.log('ProfileComponent: User object keys:', Object.keys(user));
         this.profileForm.patchValue({
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
           username: user.username
         });
+      } else {
+        console.log('ProfileComponent: No user received from auth service');
       }
     });
   }
