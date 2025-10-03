@@ -1,17 +1,13 @@
-<aside class="sidebar-container">
-  <div class="navigation-menu">
-    <ul class="nav-list">
-      <li *ngFor="let item of menuItems" class="nav-item">
-        <a
-          [routerLink]="item.routerLink"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }"
-          class="nav-link flex align-items-center gap-3"
-        >
-          <i [class]="item.icon"></i>
-          <span class="font-medium">{{ item.label }}</span>
-        </a>
-      </li>
-    </ul>
-  </div>
-</aside>
+<!-- Navigation Menu -->
+<nav class="navigation-menu">
+  <ul class="nav-list">
+    <li *ngFor="let item of menuItems" class="nav-item">
+      <a [routerLink]="item.routerLink" 
+         routerLinkActive="active"
+         class="nav-link">
+        <i [class]="item.icon"></i>
+        <span>{{ item.label }}</span>
+      </a>
+    </li>
+  </ul>
+</nav>

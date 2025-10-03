@@ -99,30 +99,43 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router, RouterOutlet } from '@angular/router';
 import { AuthService } from './core/services/auth.service';
 import { TopbarComponent } from './layout/topbar/topbar.component';
-// import { SidabarComponent } from './layout/sidabar/sidabar.component';
+import { SidabarComponent } from './layout/sidabar/sidabar.component';
+import { User } from './features/auth/profile/models/user.model';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterModule, TopbarComponent],
+  imports: [CommonModule, RouterOutlet, RouterModule, TopbarComponent, SidabarComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
-  // currentUser: User | null = null;
-  // menuItems: MenuItem[] = [];
   isCollapsed = false;
+  isLoading = true;
+  currentUser: User | null = null;
 
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
-    // No initialization needed for HTTP-based auth
-    // User will be loaded automatically if valid token exists
+    console.log('AppComponent initializing...');
     
-    // this.authService.currentUser$.subscribe((user) => {
-    //   this.currentUser = user;
-    //   if (user) this.initializeMenu();
-    // });
+    // Subscribe to current user changes
+    this.authService.currentUser$.subscribe(user => {
+      console.log('AppComponent: User changed:', user);
+      this.currentUser = user;
+      this.isLoading = false;
+      
+      if (!user) {
+        // No user, redirect to login if not already on auth page
+        const currentUrl = this.router.url;
+        if (!currentUrl.startsWith('/auth/')) {
+          this.router.navigate(['/auth/login']);
+        }
+      }
+    });
+
+    // The AuthService already loads user from storage in its constructor
+    // So we just need to wait for the subscription to trigger
   }
 
   toggleSidebar() {
@@ -130,6 +143,9 @@ export class AppComponent implements OnInit {
   }
 
   isAuthenticated(): boolean {
-    return this.authService.isAuthenticated();
+    const hasToken = this.authService.isAuthenticated();
+    const hasUser = !!this.currentUser;
+    console.log('AppComponent isAuthenticated: token=', hasToken, 'user=', hasUser);
+    return hasToken && hasUser;
   }
 }

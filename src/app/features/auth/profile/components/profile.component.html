@@ -108,7 +108,7 @@
           <div class="col-12 md:col-6">
             <label class="block text-900 font-medium mb-2">Role</label>
             <div class="p-3 surface-100 border-round text-900">
-              {{ user.role | titlecase }}
+              {{ user.role }}
             </div>
           </div>
 
@@ -116,6 +116,14 @@
             <label class="block text-900 font-medium mb-2">Account Created</label>
             <div class="p-3 surface-100 border-round text-900">
               {{ user.createdAt | date: 'mediumDate' }}
+            </div>
+          </div>
+
+          <!-- Debug Section -->
+          <div class="col-12">
+            <label class="block text-900 font-medium mb-2">Debug Info</label>
+            <div class="p-3 surface-100 border-round text-900">
+              <pre>{{ user | json }}</pre>
             </div>
           </div>
         </div>

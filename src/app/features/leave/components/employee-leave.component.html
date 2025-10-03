@@ -48,36 +48,7 @@
     </div>
   </div>
 
-  <!-- Leave Balance Section -->
-  <div class="grid mb-4">
-    <div class="col-12">
-      <p-panel header="Leave Balance" [toggleable]="true">
-        <div class="grid">
-          <div class="col-12 md:col-4" *ngFor="let balance of leaveBalances">
-            <p-card>
-              <div class="text-center">
-                <h4>{{balance.leaveType.name || 'Unknown Type'}}</h4>
-                <div class="grid">
-                  <div class="col-4">
-                    <div class="text-sm text-gray-600">Allotted</div>
-                    <div class="text-lg font-bold">{{balance.totalAllotted}}</div>
-                  </div>
-                  <div class="col-4">
-                    <div class="text-sm text-gray-600">Used</div>
-                    <div class="text-lg font-bold text-orange-500">{{balance.totalUsed}}</div>
-                  </div>
-                  <div class="col-4">
-                    <div class="text-sm text-gray-600">Remaining</div>
-                    <div class="text-lg font-bold text-green-500">{{balance.totalRemaining}}</div>
-                  </div>
-                </div>
-              </div>
-            </p-card>
-          </div>
-        </div>
-      </p-panel>
-    </div>
-  </div>
+
 
   <!-- Leave Requests Table -->
   <div class="card">
@@ -92,7 +63,6 @@
       
       <ng-template pTemplate="header">
         <tr>
-          <th>Leave Type</th>
           <th>Start Date</th>
           <th>End Date</th>
           <th>Days</th>
@@ -106,7 +76,6 @@
 
       <ng-template pTemplate="body" let-leave>
         <tr>
-          <td>{{getLeaveTypeName(leave.leaveTypeId)}}</td>
           <td>{{leave.startDate | date:'mediumDate'}}</td>
           <td>{{leave.endDate | date:'mediumDate'}}</td>
           <td>{{leave.numberOfDays}}</td>
@@ -156,29 +125,6 @@
     
     <form [formGroup]="leaveForm" (ngSubmit)="onLeaveSubmit()">
       <div class="grid">
-        <!-- Leave Type -->
-        <div class="col-12 md:col-6">
-          <label for="leaveType">Leave Type *</label>
-          <p-dropdown 
-            id="leaveType"
-            formControlName="leaveTypeId"
-            [options]="leaveTypes"
-            optionLabel="name"
-            optionValue="id"
-            placeholder="Select Leave Type"
-            styleClass="w-full">
-          </p-dropdown>
-        </div>
-
-        <!-- Emergency Leave Checkbox -->
-        <div class="col-12 md:col-6 flex align-items-end">
-          <p-checkbox 
-            formControlName="isEmergency"
-            label="Emergency Leave"
-            binary="true">
-          </p-checkbox>
-        </div>
-
         <!-- Start Date -->
         <div class="col-12 md:col-6">
           <label for="startDate">Start Date *</label>
@@ -213,13 +159,7 @@
           </p-message>
         </div>
 
-        <!-- Remaining Balance Display -->
-        <div class="col-12" *ngIf="leaveForm.get('leaveTypeId')?.value">
-          <p-message 
-            severity="warn" 
-            [text]="'Remaining Balance: ' + getRemainingBalance(leaveForm.get('leaveTypeId')?.value) + ' days'">
-          </p-message>
-        </div>
+       
 
         <!-- Reason -->
         <div class="col-12">

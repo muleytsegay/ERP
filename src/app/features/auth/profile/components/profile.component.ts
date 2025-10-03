@@ -61,15 +61,21 @@ export class ProfileComponent implements OnInit {
   }
 
   loadUserProfile(): void {
+    console.log('ProfileComponent: Loading user profile...');
     this.authService.currentUser$.subscribe(user => {
+      console.log('ProfileComponent: Received user from auth service:', user);
       if (user) {
         this.user = user;
+        console.log('ProfileComponent: User role:', user.role);
+        console.log('ProfileComponent: User object keys:', Object.keys(user));
         this.profileForm.patchValue({
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
           username: user.username
         });
+      } else {
+        console.log('ProfileComponent: No user received from auth service');
       }
     });
   }
@@ -157,16 +163,8 @@ export class ProfileComponent implements OnInit {
     console.log('ProfileComponent: User initiated logout');
     console.log('ProfileComponent: Current user before logout:', this.user);
     
-    this.authService.logout().subscribe({
-      next: () => {
-        console.log('ProfileComponent: Logout successful, navigating to login');
-        this.router.navigate(['/auth/login']);
-      },
-      error: (error) => {
-        console.error('ProfileComponent: Logout failed, but navigating to login anyway:', error);
-        // Navigate to login even if logout fails (user still logged out locally)
-        this.router.navigate(['/auth/login']);
-      }
-    });
+    this.authService.logout();
+    console.log('ProfileComponent: Logout completed, navigating to login');
+    this.router.navigate(['/auth/login']);
   }
 }

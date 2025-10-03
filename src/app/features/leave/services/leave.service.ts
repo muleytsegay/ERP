@@ -2,23 +2,21 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
-import { 
-  Leave, 
-  LeaveBalance, 
-  LeaveType, 
-  LeaveApplication, 
-  LeaveApproval, 
-  LeaveStats, 
-  EmployeeLeaveStats 
+import {
+  LeaveRequest,
+  LeaveApplication,
+  LeaveApproval,
+  LeaveStats,
+  EmployeeLeaveStats,
 } from '../models/leave.model';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class LeaveService {
-  private readonly apiUrl = 'https://gateway-microservice.onrender.com/hrms/api/v1';
-
+  private readonly apiUrl =
+    'https://gateway-microservice.onrender.com/hrms/api/v1';
 
   private currentUser: any = null;
   private currentUserSub = new BehaviorSubject<any>(null);
@@ -34,264 +32,325 @@ export class LeaveService {
   }
 
   // Leave CRUD operations with role-based access
-  getLeaves(): Observable<Leave[]> {
+  getLeaves(): Observable<LeaveRequest[]> {
     console.log('LeaveService: Getting all leaves');
-    
-    return this.http.get<Leave[]>(`${this.apiUrl}/leaves`).pipe(
-      map(leaves => leaves.map(leave => this.mapLeaveResponse(leave))),
-      tap(leaves => console.log('LeaveService: Leaves loaded:', leaves)),
-      catchError(error => this.handleError(error, 'Failed to load leaves'))
+
+    return this.http.get<LeaveRequest[]>(`${this.apiUrl}/leave-requests`).pipe(
+      map((leaves) => leaves.map((leave) => this.mapLeaveResponse(leave))),
+      tap((leaves) => console.log('LeaveService: Leaves loaded:', leaves)),
+      catchError((error) => this.handleError(error, 'Failed to load leaves'))
     );
   }
 
-  getLeave(id: string): Observable<Leave> {
+  getLeave(id: string): Observable<LeaveRequest> {
     console.log('LeaveService: Getting leave by ID:', id);
-    
-    return this.http.get<Leave>(`${this.apiUrl}/leaves/${id}`).pipe(
-      map(leave => this.mapLeaveResponse(leave)),
-      tap(leave => console.log('LeaveService: Leave loaded:', leave)),
-      catchError(error => this.handleError(error, 'Failed to load leave details'))
-    );
+
+    return this.http
+      .get<LeaveRequest>(`${this.apiUrl}/leave-requests/${id}`)
+      .pipe(
+        map((leave) => this.mapLeaveResponse(leave)),
+        tap((leave) => console.log('LeaveService: Leave loaded:', leave)),
+        catchError((error) =>
+          this.handleError(error, 'Failed to load leave details')
+        )
+      );
   }
 
-  getLeavesByEmployee(employeeId: string): Observable<Leave[]> {
+  getLeavesByEmployee(employeeId: string): Observable<LeaveRequest[]> {
     console.log('LeaveService: Getting leaves for employee:', employeeId);
-    
-    return this.http.get<Leave[]>(`${this.apiUrl}/leaves/employee/${employeeId}`).pipe(
-      map(leaves => leaves.map(leave => this.mapLeaveResponse(leave))),
-      tap(leaves => console.log('LeaveService: Employee leaves loaded:', leaves)),
-      catchError(error => this.handleError(error, 'Failed to load employee leaves'))
-    );
+
+    return this.http
+      .get<LeaveRequest[]>(
+        `${this.apiUrl}/leave-requests/employee/${employeeId}`
+      )
+      .pipe(
+        map((leaves) => leaves.map((leave) => this.mapLeaveResponse(leave))),
+        tap((leaves) =>
+          console.log('LeaveService: Employee leaves loaded:', leaves)
+        ),
+        catchError((error) =>
+          this.handleError(error, 'Failed to load employee leaves')
+        )
+      );
   }
 
-  getMyLeaves(): Observable<Leave[]> {
+  getMyLeaves(): Observable<LeaveRequest[]> {
     console.log('LeaveService: Getting current user leaves');
-    if (!this.currentUser?.employeeId) {
-      return throwError(() => new Error('User not authenticated or employee ID not found'));
+    if (!this.currentUser?.id) {
+      return throwError(
+        () => new Error('User not authenticated or user ID not found')
+      );
     }
-    return this.getLeavesByEmployee(this.currentUser.employeeId);
+    return this.getLeavesByEmployee(this.currentUser.id);
   }
 
-  getPendingLeaves(): Observable<Leave[]> {
+  getPendingLeaves(): Observable<LeaveRequest[]> {
     console.log('LeaveService: Getting pending leaves for approval');
-    
-    return this.http.get<Leave[]>(`${this.apiUrl}/leaves/pending`).pipe(
-      map(leaves => leaves.map(leave => this.mapLeaveResponse(leave))),
-      tap(leaves => console.log('LeaveService: Pending leaves loaded:', leaves)),
-      catchError(error => this.handleError(error, 'Failed to load pending leaves'))
-    );
+
+    // Try different possible endpoints - uncomment the correct one:
+    // Option 1: Query parameter approach
+    return this.http
+      .get<LeaveRequest[]>(`${this.apiUrl}/leave-requests?status=pending`)
+      .pipe(
+        map((leaves) => leaves.map((leave) => this.mapLeaveResponse(leave))),
+        tap((leaves) =>
+          console.log('LeaveService: Pending leaves loaded:', leaves)
+        ),
+        catchError((error) =>
+          this.handleError(error, 'Failed to load pending leaves')
+        )
+      );
+
+    // Option 2: Route parameter approach (uncomment if above doesn't work)
+    // return this.http
+    //   .get<LeaveRequest[]>(`${this.apiUrl}/leave-requests/pending`)
+    //   .pipe(
+    //     map((leaves) => leaves.map((leave) => this.mapLeaveResponse(leave))),
+    //     tap((leaves) =>
+    //       console.log('LeaveService: Pending leaves loaded:', leaves)
+    //     ),
+    //     catchError((error) =>
+    //       this.handleError(error, 'Failed to load pending leaves')
+    //     )
+    //   );
+
+    // Option 3: Status route approach (uncomment if others don't work)
+    // return this.http
+    //   .get<LeaveRequest[]>(`${this.apiUrl}/leave-requests/status/pending`)
+    //   .pipe(
+    //     map((leaves) => leaves.map((leave) => this.mapLeaveResponse(leave))),
+    //     tap((leaves) =>
+    //       console.log('LeaveService: Pending leaves loaded:', leaves)
+    //     ),
+    //     catchError((error) =>
+    //       this.handleError(error, 'Failed to load pending leaves')
+    //     )
+    //   );
   }
 
-  applyLeave(application: LeaveApplication): Observable<Leave> {
+  applyLeave(application: LeaveApplication): Observable<LeaveRequest> {
     console.log('LeaveService: Applying for leave:', application);
-    
+
+    // Validate required fields
+    if (
+      !application.employeeId ||
+      !application.startDate ||
+      !application.endDate ||
+      !application.reason
+    ) {
+      return throwError(
+        () => new Error('Missing required fields for leave application')
+      );
+    }
+
+    // Validate dates
+    if (application.startDate > application.endDate) {
+      return throwError(() => new Error('Start date cannot be after end date'));
+    }
+
+    // Try without employeeId first - backend might get it from auth token
     const leaveData = {
-      employeeId: application.employeeId,
-      leaveTypeId: application.leaveTypeId,
       startDate: application.startDate.toISOString(),
       endDate: application.endDate.toISOString(),
-      reason: application.reason,
-      isEmergency: application.isEmergency || false
+      reason: application.reason.trim(),
     };
-    
-    return this.http.post<Leave>(`${this.apiUrl}/leaves/apply`, leaveData).pipe(
-      map(leave => this.mapLeaveResponse(leave)),
-      tap(leave => console.log('LeaveService: Leave application submitted:', leave)),
-      catchError(error => this.handleError(error, 'Failed to submit leave application'))
+
+    // Alternative: Try with different date format if the above fails
+    // const leaveData = {
+    //   startDate: application.startDate.toISOString().split('T')[0], // YYYY-MM-DD format
+    //   endDate: application.endDate.toISOString().split('T')[0],
+    //   reason: application.reason.trim(),
+    // };
+
+    console.log('LeaveService: Sending leave data to API:', leaveData);
+    console.log('LeaveService: API URL:', `${this.apiUrl}/leave-requests`);
+    console.log('LeaveService: Current user:', this.currentUser);
+    console.log(
+      'LeaveService: Auth token exists:',
+      !!this.authService.getToken()
     );
+
+    return this.http
+      .post<LeaveRequest>(`${this.apiUrl}/leave-requests/me`, leaveData)
+      .pipe(
+        map((leave) => this.mapLeaveResponse(leave)),
+        tap((leave) =>
+          console.log('LeaveService: Leave application submitted:', leave)
+        ),
+        catchError((error) =>
+          this.handleError(error, 'Failed to submit leave application')
+        )
+      );
   }
 
-  approveLeave(approval: LeaveApproval): Observable<Leave> {
+  // Alias method for creating leave requests (same as applyLeave)
+  // createLeave(application: LeaveApplication): Observable<LeaveRequest> {
+  //   return this.applyLeave(application);
+  // }
+
+  approveLeave(approval: LeaveApproval): Observable<LeaveRequest> {
     console.log('LeaveService: Approving leave:', approval);
-    
+
+    // Backend only expects status field
     const approvalData = {
-      comments: approval.comments,
-      approvedBy: approval.approvedBy
+      status: 'approved',
     };
-    
-    return this.http.post<Leave>(`${this.apiUrl}/leaves/${approval.leaveId}/approve`, approvalData).pipe(
-      map(leave => this.mapLeaveResponse(leave)),
-      tap(leave => console.log('LeaveService: Leave approved:', leave)),
-      catchError(error => this.handleError(error, 'Failed to approve leave'))
+
+    console.log('LeaveService: Sending approval data:', approvalData);
+    console.log(
+      'LeaveService: API endpoint:',
+      `${this.apiUrl}/leave-requests/${approval.leaveId}/status`
     );
+    console.log('LeaveService: Current user for approval:', this.currentUser);
+
+    return this.http
+      .put<LeaveRequest>(
+        `${this.apiUrl}/leave-requests/${approval.leaveId}/status`,
+        approvalData
+      )
+      .pipe(
+        map((leave) => this.mapLeaveResponse(leave)),
+        tap((leave) => console.log('LeaveService: Leave approved:', leave)),
+        catchError((error) => {
+          console.error('LeaveService: Approval failed with detailed error:', {
+            error: error,
+            requestData: approvalData,
+            endpoint: `${this.apiUrl}/leave-requests/${approval.leaveId}/status`,
+            leaveId: approval.leaveId,
+            errorDetails: error.error,
+          });
+          return this.handleError(error, 'Failed to approve leave');
+        })
+      );
   }
 
-  rejectLeave(approval: LeaveApproval): Observable<Leave> {
+  rejectLeave(approval: LeaveApproval): Observable<LeaveRequest> {
     console.log('LeaveService: Rejecting leave:', approval);
-    
+
+    // Backend only expects status field
     const rejectionData = {
-      comments: approval.comments,
-      approvedBy: approval.approvedBy
+      status: 'rejected',
     };
-    
-    return this.http.post<Leave>(`${this.apiUrl}/leaves/${approval.leaveId}/reject`, rejectionData).pipe(
-      map(leave => this.mapLeaveResponse(leave)),
-      tap(leave => console.log('LeaveService: Leave rejected:', leave)),
-      catchError(error => this.handleError(error, 'Failed to reject leave'))
+
+    console.log('LeaveService: Sending rejection data:', rejectionData);
+    console.log(
+      'LeaveService: API endpoint:',
+      `${this.apiUrl}/leave-requests/${approval.leaveId}/status`
     );
+    console.log('LeaveService: Current user for rejection:', this.currentUser);
+
+    return this.http
+      .put<LeaveRequest>(
+        `${this.apiUrl}/leave-requests/${approval.leaveId}/status`,
+        rejectionData
+      )
+      .pipe(
+        map((leave) => this.mapLeaveResponse(leave)),
+        tap((leave) => console.log('LeaveService: Leave rejected:', leave)),
+        catchError((error) => {
+          console.error('LeaveService: Rejection failed with detailed error:', {
+            error: error,
+            requestData: rejectionData,
+            endpoint: `${this.apiUrl}/leave-requests/${approval.leaveId}/status`,
+            leaveId: approval.leaveId,
+            errorDetails: error.error,
+          });
+          return this.handleError(error, 'Failed to reject leave');
+        })
+      );
   }
-  cancelLeave(id: string): Observable<Leave> {
+  cancelLeave(id: string): Observable<LeaveRequest> {
     console.log('LeaveService: Cancelling leave:', id);
-    
-    return this.http.post<Leave>(`${this.apiUrl}/leaves/${id}/cancel`, {}).pipe(
-      map(leave => this.mapLeaveResponse(leave)),
-      tap(leave => console.log('LeaveService: Leave cancelled:', leave)),
-      catchError(error => this.handleError(error, 'Failed to cancel leave'))
-    );
+
+    return this.http
+      .post<LeaveRequest>(`${this.apiUrl}/leaves/${id}/cancel`, {})
+      .pipe(
+        map((leave) => this.mapLeaveResponse(leave)),
+        tap((leave) => console.log('LeaveService: Leave cancelled:', leave)),
+        catchError((error) => this.handleError(error, 'Failed to cancel leave'))
+      );
   }
 
-  updateLeave(id: string, leave: Partial<Leave>): Observable<Leave> {
+  updateLeave(
+    id: string,
+    leave: Partial<LeaveRequest>
+  ): Observable<LeaveRequest> {
     console.log('LeaveService: Updating leave:', { id, leave });
-    
-    return this.http.put<Leave>(`${this.apiUrl}/leaves/${id}`, leave).pipe(
-      map(leave => this.mapLeaveResponse(leave)),
-      tap(leave => console.log('LeaveService: Leave updated:', leave)),
-      catchError(error => this.handleError(error, 'Failed to update leave'))
-    );
+
+    return this.http
+      .put<LeaveRequest>(`${this.apiUrl}/leave-requests/${id}`, leave)
+      .pipe(
+        map((leave) => this.mapLeaveResponse(leave)),
+        tap((leave) => console.log('LeaveService: Leave updated:', leave)),
+        catchError((error) => this.handleError(error, 'Failed to update leave'))
+      );
   }
 
   deleteLeave(id: string): Observable<void> {
     console.log('LeaveService: Deleting leave:', id);
-    
-    return this.http.delete<void>(`${this.apiUrl}/leaves/${id}`).pipe(
+
+    return this.http.delete<void>(`${this.apiUrl}/leave-requests/${id}`).pipe(
       tap(() => console.log('LeaveService: Leave deleted successfully')),
-      catchError(error => this.handleError(error, 'Failed to delete leave'))
-    );
-  }
-
-  // Leave Balance operations
-  getLeaveBalance(employeeId: string): Observable<LeaveBalance[]> {
-    console.log('LeaveService: Getting leave balance for employee:', employeeId);
-    
-    return this.http.get<LeaveBalance[]>(`${this.apiUrl}/leave-balance/employee/${employeeId}`).pipe(
-      map(balances => balances.map(balance => this.mapLeaveBalanceResponse(balance))),
-      tap(balances => console.log('LeaveService: Leave balances loaded:', balances)),
-      catchError(error => this.handleError(error, 'Failed to load leave balance'))
-    );
-  }
-
-  getMyLeaveBalance(): Observable<LeaveBalance[]> {
-    console.log('LeaveService: Getting current user leave balance');
-    if (!this.currentUser?.employeeId) {
-      return throwError(() => new Error('User not authenticated or employee ID not found'));
-    }
-    return this.getLeaveBalance(this.currentUser.employeeId);
-  }
-
-  getLeaveBalanceByType(employeeId: string, leaveTypeId: string): Observable<LeaveBalance> {
-    console.log('LeaveService: Getting leave balance by type:', { employeeId, leaveTypeId });
-    
-    return this.http.get<LeaveBalance>(`${this.apiUrl}/leave-balance/employee/${employeeId}/type/${leaveTypeId}`).pipe(
-      map(balance => this.mapLeaveBalanceResponse(balance)),
-      tap(balance => console.log('LeaveService: Leave balance by type loaded:', balance)),
-      catchError(error => this.handleError(error, 'Failed to load leave balance by type'))
-    );
-  }
-
-  updateLeaveBalance(id: string, balance: Partial<LeaveBalance>): Observable<LeaveBalance> {
-    console.log('LeaveService: Updating leave balance:', { id, balance });
-    
-    return this.http.put<LeaveBalance>(`${this.apiUrl}/leave-balance/${id}`, balance).pipe(
-      map(balance => this.mapLeaveBalanceResponse(balance)),
-      tap(balance => console.log('LeaveService: Leave balance updated:', balance)),
-      catchError(error => this.handleError(error, 'Failed to update leave balance'))
-    );
-  }
-
-  // Leave Type operations
-  getLeaveTypes(): Observable<LeaveType[]> {
-    console.log('LeaveService: Getting all leave types');
-    
-    return this.http.get<LeaveType[]>(`${this.apiUrl}/leave-types`).pipe(
-      map(types => types.map(type => this.mapLeaveTypeResponse(type))),
-      tap(types => console.log('LeaveService: Leave types loaded:', types)),
-      catchError(error => this.handleError(error, 'Failed to load leave types'))
-    );
-  }
-
-  getActiveLeaveTypes(): Observable<LeaveType[]> {
-    console.log('LeaveService: Getting active leave types');
-    
-    return this.http.get<LeaveType[]>(`${this.apiUrl}/leave-types/active`).pipe(
-      map(types => types.map(type => this.mapLeaveTypeResponse(type))),
-      tap(types => console.log('LeaveService: Active leave types loaded:', types)),
-      catchError(error => this.handleError(error, 'Failed to load active leave types'))
-    );
-  }
-
-  getLeaveType(id: string): Observable<LeaveType> {
-    console.log('LeaveService: Getting leave type by ID:', id);
-    
-    return this.http.get<LeaveType>(`${this.apiUrl}/leave-types/${id}`).pipe(
-      map(type => this.mapLeaveTypeResponse(type)),
-      tap(type => console.log('LeaveService: Leave type loaded:', type)),
-      catchError(error => this.handleError(error, 'Failed to load leave type'))
-    );
-  }
-
-  createLeaveType(leaveType: Omit<LeaveType, 'id' | 'createdAt' | 'updatedAt'>): Observable<LeaveType> {
-    console.log('LeaveService: Creating leave type:', leaveType);
-    
-    return this.http.post<LeaveType>(`${this.apiUrl}/leave-types`, leaveType).pipe(
-      map(type => this.mapLeaveTypeResponse(type)),
-      tap(type => console.log('LeaveService: Leave type created:', type)),
-      catchError(error => this.handleError(error, 'Failed to create leave type'))
-    );
-  }
-
-  updateLeaveType(id: string, leaveType: Partial<LeaveType>): Observable<LeaveType> {
-    console.log('LeaveService: Updating leave type:', { id, leaveType });
-    
-    return this.http.put<LeaveType>(`${this.apiUrl}/leave-types/${id}`, leaveType).pipe(
-      map(type => this.mapLeaveTypeResponse(type)),
-      tap(type => console.log('LeaveService: Leave type updated:', type)),
-      catchError(error => this.handleError(error, 'Failed to update leave type'))
-    );
-  }
-
-  deleteLeaveType(id: string): Observable<void> {
-    console.log('LeaveService: Deleting leave type:', id);
-    
-    return this.http.delete<void>(`${this.apiUrl}/leave-types/${id}`).pipe(
-      tap(() => console.log('LeaveService: Leave type deleted successfully')),
-      catchError(error => this.handleError(error, 'Failed to delete leave type'))
+      catchError((error) => this.handleError(error, 'Failed to delete leave'))
     );
   }
 
   // Statistics and Reports
   getLeaveStats(): Observable<LeaveStats> {
     console.log('LeaveService: Getting leave statistics');
-    
+
     return this.http.get<LeaveStats>(`${this.apiUrl}/leaves/stats`).pipe(
-      tap(stats => console.log('LeaveService: Leave statistics loaded:', stats)),
-      catchError(error => this.handleError(error, 'Failed to load leave statistics'))
+      tap((stats) =>
+        console.log('LeaveService: Leave statistics loaded:', stats)
+      ),
+      catchError((error) =>
+        this.handleError(error, 'Failed to load leave statistics')
+      )
     );
   }
 
   getEmployeeLeaveStats(): Observable<EmployeeLeaveStats[]> {
     console.log('LeaveService: Getting employee leave statistics');
-    
-    return this.http.get<EmployeeLeaveStats[]>(`${this.apiUrl}/leaves/employee-stats`).pipe(
-      tap(stats => console.log('LeaveService: Employee leave statistics loaded:', stats)),
-      catchError(error => this.handleError(error, 'Failed to load employee leave statistics'))
-    );
+
+    return this.http
+      .get<EmployeeLeaveStats[]>(`${this.apiUrl}/leaves/employee-stats`)
+      .pipe(
+        tap((stats) =>
+          console.log('LeaveService: Employee leave statistics loaded:', stats)
+        ),
+        catchError((error) =>
+          this.handleError(error, 'Failed to load employee leave statistics')
+        )
+      );
   }
 
-  getLeaveReport(startDate: Date, endDate: Date, departmentId?: string): Observable<any> {
-    console.log('LeaveService: Getting leave report:', { startDate, endDate, departmentId });
-    
+  getLeaveReport(
+    startDate: Date,
+    endDate: Date,
+    departmentId?: string
+  ): Observable<any> {
+    console.log('LeaveService: Getting leave report:', {
+      startDate,
+      endDate,
+      departmentId,
+    });
+
     const params: any = {
       startDate: startDate.toISOString().split('T')[0],
-      endDate: endDate.toISOString().split('T')[0]
+      endDate: endDate.toISOString().split('T')[0],
     };
-    
+
     if (departmentId) {
       params.departmentId = departmentId;
     }
 
     return this.http.get<any>(`${this.apiUrl}/leaves/report`, { params }).pipe(
-      tap(report => console.log('LeaveService: Leave report loaded:', report)),
-      catchError(error => this.handleError(error, 'Failed to load leave report'))
+      tap((report) =>
+        console.log('LeaveService: Leave report loaded:', report)
+      ),
+      catchError((error) =>
+        this.handleError(error, 'Failed to load leave report')
+      )
     );
   }
 
@@ -325,47 +384,71 @@ export class LeaveService {
 
   // Check if user can access leave management features
   canManageLeaves(): boolean {
-    return this.currentUser?.role === 'HR' || this.currentUser?.role === 'ADMIN';
+    const userRole = this.currentUser?.role?.toLowerCase?.();
+    console.log('LeaveService: canManageLeaves check:', {
+      currentUser: this.currentUser,
+      userRole: userRole,
+      canManage: userRole === 'hr' || userRole === 'admin',
+    });
+    return userRole === 'hr' || userRole === 'admin';
   }
 
   canApproveLeaves(): boolean {
-    return this.currentUser?.role === 'HR' || this.currentUser?.role === 'ADMIN' || this.currentUser?.role === 'MANAGER';
+    const userRole = this.currentUser?.role?.toLowerCase?.();
+    console.log('LeaveService: canApproveLeaves check:', {
+      currentUser: this.currentUser,
+      userRole: userRole,
+      canApprove: userRole === 'hr' || userRole === 'admin',
+    });
+    return userRole === 'hr' || userRole === 'admin';
   }
 
   // Private helper methods
-  private mapLeaveResponse(leave: any): Leave {
+  private mapLeaveResponse(leave: any): LeaveRequest {
     return {
       ...leave,
       startDate: new Date(leave.startDate),
       endDate: new Date(leave.endDate),
       appliedDate: new Date(leave.appliedDate),
-      approvedDate: leave.approvedDate ? new Date(leave.approvedDate) : undefined,
-      rejectedDate: leave.rejectedDate ? new Date(leave.rejectedDate) : undefined,
+      approvedDate: leave.approvedDate
+        ? new Date(leave.approvedDate)
+        : undefined,
+      rejectedDate: leave.rejectedDate
+        ? new Date(leave.rejectedDate)
+        : undefined,
       createdAt: new Date(leave.createdAt),
-      updatedAt: new Date(leave.updatedAt)
+      updatedAt: new Date(leave.updatedAt),
     };
   }
 
-  private mapLeaveBalanceResponse(balance: any): LeaveBalance {
-    return {
-      ...balance,
-      createdAt: balance.createdAt ? new Date(balance.createdAt) : undefined,
-      updatedAt: balance.updatedAt ? new Date(balance.updatedAt) : undefined
-    };
-  }
-
-  private mapLeaveTypeResponse(type: any): LeaveType {
-    return {
-      ...type,
-      createdAt: new Date(type.createdAt),
-      updatedAt: new Date(type.updatedAt)
-    };
-  }
-
-  private handleError(error: HttpErrorResponse, defaultMessage: string): Observable<never> {
+  private handleError(
+    error: HttpErrorResponse,
+    defaultMessage: string
+  ): Observable<never> {
     let errorMessage = defaultMessage;
-    
-    if (error.status === 401) {
+
+    console.error('LeaveService Error Details:', {
+      status: error.status,
+      statusText: error.statusText,
+      url: error.url,
+      error: error.error,
+      message: error.message,
+      headers: error.headers,
+    });
+
+    if (error.status === 400) {
+      if (error.error?.message) {
+        errorMessage = error.error.message;
+      } else if (error.error?.detail) {
+        errorMessage = error.error.detail;
+      } else if (error.error?.errors) {
+        // Handle validation errors
+        const validationErrors = Object.values(error.error.errors).flat();
+        errorMessage = `Validation failed: ${validationErrors.join(', ')}`;
+      } else {
+        errorMessage = 'Invalid request data. Please check your input.';
+      }
+    } else if (error.status === 401) {
       errorMessage = 'Authentication failed. Please login again.';
     } else if (error.status === 403) {
       errorMessage = 'You do not have permission to perform this action.';
@@ -378,7 +461,7 @@ export class LeaveService {
     } else if (error.error?.detail) {
       errorMessage = error.error.detail;
     }
-    
+
     console.error('LeaveService Error:', error);
     return throwError(() => ({ ...error, userMessage: errorMessage }));
   }
